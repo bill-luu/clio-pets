@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getUserPets, deletePet } from "../services/petService";
+import { getPetPixelArt } from "../utils/pixelArt";
 import AddPetModal from "./AddPetModal";
 import "./styles/Home.css";
 
@@ -84,45 +85,53 @@ export default function Home({ user }) {
           </button>
 
           <div className="pets-grid">
-            {pets.map((pet) => (
-              <div key={pet.id} className="pet-card">
-                <div className="pet-card-header">
-                  <h3>{pet.name}</h3>
-                  <button
-                    className="btn-delete"
-                    onClick={() => handleDeletePet(pet.id)}
-                    title="Delete pet"
-                  >
-                    ×
-                  </button>
+            {pets.map((pet) => {
+              const PixelArtComponent = getPetPixelArt(pet.species);
+              return (
+                <div key={pet.id} className="pet-card">
+                  <div className="pet-card-header">
+                    <h3>{pet.name}</h3>
+                    <button
+                      className="btn-delete"
+                      onClick={() => handleDeletePet(pet.id)}
+                      title="Delete pet"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  {PixelArtComponent && (
+                    <div className="pet-card-pixel-art">
+                      <PixelArtComponent />
+                    </div>
+                  )}
+                  <div className="pet-card-body">
+                    <p>
+                      <strong>Species:</strong> {pet.species || "Not specified"}
+                    </p>
+                    {pet.breed && (
+                      <p>
+                        <strong>Breed:</strong> {pet.breed}
+                      </p>
+                    )}
+                    {pet.age && (
+                      <p>
+                        <strong>Age:</strong> {pet.age}
+                      </p>
+                    )}
+                    {pet.color && (
+                      <p>
+                        <strong>Color:</strong> {pet.color}
+                      </p>
+                    )}
+                    {pet.notes && (
+                      <p className="pet-notes">
+                        <strong>Notes:</strong> {pet.notes}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <div className="pet-card-body">
-                  <p>
-                    <strong>Species:</strong> {pet.species || "Not specified"}
-                  </p>
-                  {pet.breed && (
-                    <p>
-                      <strong>Breed:</strong> {pet.breed}
-                    </p>
-                  )}
-                  {pet.age && (
-                    <p>
-                      <strong>Age:</strong> {pet.age}
-                    </p>
-                  )}
-                  {pet.color && (
-                    <p>
-                      <strong>Color:</strong> {pet.color}
-                    </p>
-                  )}
-                  {pet.notes && (
-                    <p className="pet-notes">
-                      <strong>Notes:</strong> {pet.notes}
-                    </p>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

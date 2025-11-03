@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { addPet } from "../services/petService";
+import { PET_SPECIES, getPetPixelArt } from "../utils/pixelArt";
 import "./styles/AddPetModal.css";
 
 export default function AddPetModal({ userId, onClose, onPetAdded }) {
@@ -30,6 +31,11 @@ export default function AddPetModal({ userId, onClose, onPetAdded }) {
       return;
     }
 
+    if (!formData.species) {
+      setError("Please select a species");
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -37,8 +43,8 @@ export default function AddPetModal({ userId, onClose, onPetAdded }) {
       // Only include non-empty fields
       const petData = {};
       Object.keys(formData).forEach((key) => {
-        if (formData[key].trim()) {
-          petData[key] = formData[key].trim();
+        if (formData[key] && formData[key].toString().trim()) {
+          petData[key] = formData[key].toString().trim();
         }
       });
 
@@ -50,6 +56,8 @@ export default function AddPetModal({ userId, onClose, onPetAdded }) {
       setLoading(false);
     }
   };
+
+  const PixelArtComponent = formData.species ? getPetPixelArt(formData.species) : null;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -63,6 +71,12 @@ export default function AddPetModal({ userId, onClose, onPetAdded }) {
 
         <form onSubmit={handleSubmit}>
           {error && <div className="error-message">{error}</div>}
+
+          {PixelArtComponent && (
+            <div className="pixel-art-preview">
+              <PixelArtComponent />
+            </div>
+          )}
 
           <div className="form-group">
             <label htmlFor="name">
@@ -81,16 +95,24 @@ export default function AddPetModal({ userId, onClose, onPetAdded }) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="species">Species</label>
-            <input
-              type="text"
+            <label htmlFor="species">
+              Species <span className="required">*</span>
+            </label>
+            <select
               id="species"
               name="species"
               value={formData.species}
               onChange={handleChange}
-              placeholder="e.g., Dog, Cat, Bird"
+              required
               disabled={loading}
-            />
+            >
+              <option value="">Select a species...</option>
+              {PET_SPECIES.map((pet) => (
+                <option key={pet.value} value={pet.value}>
+                  {pet.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="form-group">
