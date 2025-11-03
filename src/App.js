@@ -1,5 +1,7 @@
 import logo from "./logo.svg";
 import "./App.css";
+import SplashScreen from "./SplashScreen";
+
 
 function App() {
   return (
@@ -14,6 +16,7 @@ function App() {
           rel="noopener noreferrer"
         >
           Learn React
+          <SplashScreen />
         </a>
       </header>
     </div>
