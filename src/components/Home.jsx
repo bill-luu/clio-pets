@@ -3,12 +3,14 @@ import { getUserPets, deletePet } from "../services/petService";
 import { getPetPixelArt } from "../utils/pixelArt";
 import { getStageLabelWithEmoji, getStageInfo } from "../utils/petStages";
 import AddPetModal from "./AddPetModal";
+import PetDetailsModal from "./PetDetailsModal";
 import "./styles/Home.css";
 
 export default function Home({ user }) {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedPet, setSelectedPet] = useState(null);
   const [error, setError] = useState(null);
 
   const loadPets = useCallback(async () => {
@@ -23,7 +25,7 @@ export default function Home({ user }) {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user.uid]);
 
   useEffect(() => {
     loadPets();
@@ -43,6 +45,14 @@ export default function Home({ user }) {
 
   const handlePetAdded = () => {
     setShowAddModal(false);
+    loadPets();
+  };
+
+  const handlePetClick = (pet) => {
+    setSelectedPet(pet);
+  };
+
+  const handlePetUpdated = () => {
     loadPets();
   };
 
@@ -90,12 +100,15 @@ export default function Home({ user }) {
               const PixelArtComponent = getPetPixelArt(pet.species);
               const stageInfo = getStageInfo(pet.stage);
               return (
-                <div key={pet.id} className="pet-card">
+                <div key={pet.id} className="pet-card" onClick={() => handlePetClick(pet)}>
                   <div className="pet-card-header">
                     <h3>{pet.name}</h3>
                     <button
                       className="btn-delete"
-                      onClick={() => handleDeletePet(pet.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeletePet(pet.id);
+                      }}
                       title="Delete pet"
                     >
                       ×
@@ -134,6 +147,24 @@ export default function Home({ user }) {
                       </p>
                     )}
                   </div>
+                  <div className="pet-card-stats">
+                    <div className="mini-stat">
+                      <span>🍖</span>
+                      <span>{pet.fullness || 50}</span>
+                    </div>
+                    <div className="mini-stat">
+                      <span>😊</span>
+                      <span>{pet.happiness || 50}</span>
+                    </div>
+                    <div className="mini-stat">
+                      <span>✨</span>
+                      <span>{pet.cleanliness || 50}</span>
+                    </div>
+                    <div className="mini-stat">
+                      <span>⚡</span>
+                      <span>{pet.energy || 50}</span>
+                    </div>
+                  </div>
                 </div>
               );
             })}
@@ -146,6 +177,14 @@ export default function Home({ user }) {
           userId={user.uid}
           onClose={() => setShowAddModal(false)}
           onPetAdded={handlePetAdded}
+        />
+      )}
+
+      {selectedPet && (
+        <PetDetailsModal
+          pet={selectedPet}
+          onClose={() => setSelectedPet(null)}
+          onPetUpdated={handlePetUpdated}
         />
       )}
     </div>

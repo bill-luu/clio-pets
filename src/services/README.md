@@ -15,6 +15,14 @@ Each pet document has the following structure:
   age: string,           // Optional: e.g., "3 years", "6 months"
   color: string,         // Optional: e.g., "Brown and white"
   notes: string,         // Optional: Additional notes
+  // Pet stats (auto-initialized on creation)
+  fullness: number,      // 0-100: How full/fed the pet is
+  happiness: number,     // 0-100: Pet's happiness level
+  cleanliness: number,   // 0-100: How clean the pet is
+  energy: number,        // 0-100: Pet's energy level
+  xp: number,            // 0+: Experience points earned
+  lastActionAt: Timestamp,  // Last time an action was performed
+  lastActionType: string,   // Type of last action performed
   createdAt: Timestamp,  // Auto-generated
   updatedAt: Timestamp   // Auto-generated
 }
@@ -72,7 +80,13 @@ console.log(pet);
 
 ### `addPet(userId, petData)`
 
-Creates a new pet for a user.
+Creates a new pet for a user. All pets are automatically initialized with stats:
+
+- fullness: 50
+- happiness: 50
+- cleanliness: 50
+- energy: 50
+- xp: 0
 
 **Parameters:**
 
@@ -171,3 +185,166 @@ The Firestore security rules ensure that:
 - All operations require authentication
 
 See `firestore.rules` for the complete security configuration.
+
+---
+
+# Pet Action Service API
+
+This service provides functions to perform actions on pets and manage their stats.
+
+## Available Actions
+
+- **feed**: Increases fullness (+20), grants XP (+5)
+- **play**: Increases happiness (+20), decreases energy (-10), grants XP (+10)
+- **clean**: Increases cleanliness (+25), grants XP (+5)
+- **rest**: Increases energy (+30), grants XP (+5)
+- **exercise**: Decreases energy (-15), increases happiness (+10), decreases fullness (-10), grants XP (+15)
+- **treat**: Increases fullness (+10), increases happiness (+15), grants XP (+5)
+
+All stats are clamped between 0-100 (except XP which only increases).
+
+**Cooldown:** There is a 10-second cooldown between actions to prevent spam. Attempting to perform an action during cooldown will throw an error.
+
+## Available Functions
+
+### `performPetAction(petId, actionType)`
+
+Performs an action on a pet, updating its stats accordingly.
+
+**Parameters:**
+
+- `petId` (string): The pet's document ID
+- `actionType` (string): Type of action ('feed', 'play', 'clean', 'rest', 'exercise', 'treat')
+
+**Returns:**
+
+- Promise<Object>: Result object with success status, action type, effects, and new stats
+
+**Example:**
+
+```javascript
+import { performPetAction } from "./services/petActionService";
+
+const result = await performPetAction("abc123", "feed");
+console.log(result);
+// {
+//   success: true,
+//   actionType: 'feed',
+//   effects: { fullness: 20, xp: 5 },
+//   newStats: { fullness: 70, happiness: 50, cleanliness: 50, energy: 50, xp: 5 }
+// }
+```
+
+---
+
+### `applyStatDecay(petId, decayAmount)`
+
+Applies natural decay to all pet stats (except XP) over time.
+
+**Parameters:**
+
+- `petId` (string): The pet's document ID
+- `decayAmount` (number): Amount to decrease each stat (default: 5)
+
+**Returns:**
+
+- Promise<Object>: Result object with success status and new stats
+
+**Example:**
+
+```javascript
+import { applyStatDecay } from "./services/petActionService";
+
+const result = await applyStatDecay("abc123", 5);
+console.log(result.newStats);
+```
+
+---
+
+### `checkCooldown(pet)`
+
+Checks if a pet is currently on cooldown from the last action.
+
+**Parameters:**
+
+- `pet` (Object): The pet object with lastActionAt timestamp
+
+**Returns:**
+
+- Object: Cooldown status with `isOnCooldown` (boolean) and `remainingSeconds` (number)
+
+**Example:**
+
+```javascript
+import { checkCooldown } from "./services/petActionService";
+
+const cooldownStatus = checkCooldown(pet);
+console.log(cooldownStatus);
+// { isOnCooldown: true, remainingSeconds: 7 }
+
+if (cooldownStatus.isOnCooldown) {
+  console.log(`Please wait ${cooldownStatus.remainingSeconds} seconds`);
+}
+```
+
+---
+
+### `getAvailableActions(pet)`
+
+Returns a list of available actions for a pet with UI information.
+
+**Parameters:**
+
+- `pet` (Object): The pet object with current stats
+
+**Returns:**
+
+- Array: Array of action objects with type, name, description, icon, urgent flag, and disabled state
+
+**Example:**
+
+```javascript
+import { getAvailableActions } from "./services/petActionService";
+
+const actions = getAvailableActions(pet);
+// [
+//   {
+//     type: 'feed',
+//     name: 'Feed',
+//     description: 'Give your pet food to increase fullness',
+//     icon: '🍖',
+//     urgent: false,
+//     disabled: false
+//   },
+//   ...
+// ]
+```
+
+---
+
+### `getPetStatus(pet)`
+
+Evaluates the overall health and status of a pet based on its stats.
+
+**Parameters:**
+
+- `pet` (Object): The pet object with current stats
+
+**Returns:**
+
+- Object: Status information with status level, message, average stat, and critical stats
+
+**Example:**
+
+```javascript
+import { getPetStatus } from "./services/petActionService";
+
+const status = getPetStatus(pet);
+console.log(status);
+// {
+//   status: 'happy',
+//   message: 'Your pet is doing great!',
+//   avgStat: 65,
+//   criticalStats: []
+// }
+```
