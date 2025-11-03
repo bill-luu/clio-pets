@@ -11,6 +11,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "firebase.js";
 
 import SplashScreen from "components/SplashScreen";
+import Home from "components/Home";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -72,15 +73,6 @@ export default function App() {
         </Routes>
       </div>
     </Router>
-  );
-}
-
-function Home({ user }) {
-  return (
-    <div>
-      <h2>Home</h2>
-      <p>Welcome, {user.email}!</p>
-    </div>
   );
 }
 
