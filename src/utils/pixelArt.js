@@ -1,12 +1,17 @@
 import React from "react";
 
 // Tiny pixel-art helper
-export const PixelArt = ({ pixels, size = 16 }) => (
+export const PixelArt = ({ pixels, size = 16, scale = 1 }) => (
   <svg
     className="pixel-art"
     viewBox={`0 0 ${size} ${size}`}
     shapeRendering="crispEdges"
     aria-hidden="true"
+    style={{ 
+      transform: `scale(${scale})`,
+      transformOrigin: 'center',
+      transition: 'transform 0.3s ease'
+    }}
   >
     {pixels.map(([x, y, color], i) => (
       <rect key={i} x={x} y={y} width="1" height="1" fill={color} />
@@ -84,9 +89,33 @@ const {
   lizard: LIZARD_PIXELS,
 } = buildPixels();
 
-export const PixelDog = () => <PixelArt pixels={DOG_PIXELS} />;
-export const PixelCat = () => <PixelArt pixels={CAT_PIXELS} />;
-export const PixelLizard = () => <PixelArt pixels={LIZARD_PIXELS} />;
+/**
+ * Get scale factor based on pet stage
+ * Baby: 0.7x, Teen: 0.85x, Adult: 1.0x
+ */
+const getScaleForStage = (stage) => {
+  switch (stage) {
+    case 1: // Baby
+      return 0.7;
+    case 2: // Teen
+      return 0.85;
+    case 3: // Adult
+    default:
+      return 1.0;
+  }
+};
+
+export const PixelDog = ({ stage = 1 }) => (
+  <PixelArt pixels={DOG_PIXELS} scale={getScaleForStage(stage)} />
+);
+
+export const PixelCat = ({ stage = 1 }) => (
+  <PixelArt pixels={CAT_PIXELS} scale={getScaleForStage(stage)} />
+);
+
+export const PixelLizard = ({ stage = 1 }) => (
+  <PixelArt pixels={LIZARD_PIXELS} scale={getScaleForStage(stage)} />
+);
 
 // Available pet species with their pixel art components
 export const PET_SPECIES = [

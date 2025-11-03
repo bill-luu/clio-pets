@@ -11,6 +11,7 @@ export default function AddPetModal({ userId, onClose, onPetAdded }) {
     age: "",
     color: "",
     notes: "",
+    stage: 1, // Default to baby stage
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -44,7 +45,12 @@ export default function AddPetModal({ userId, onClose, onPetAdded }) {
       const petData = {};
       Object.keys(formData).forEach((key) => {
         if (formData[key] && formData[key].toString().trim()) {
-          petData[key] = formData[key].toString().trim();
+          // Keep stage as a number
+          if (key === 'stage') {
+            petData[key] = parseInt(formData[key], 10);
+          } else {
+            petData[key] = formData[key].toString().trim();
+          }
         }
       });
 
@@ -74,7 +80,7 @@ export default function AddPetModal({ userId, onClose, onPetAdded }) {
 
           {PixelArtComponent && (
             <div className="pixel-art-preview">
-              <PixelArtComponent />
+              <PixelArtComponent stage={formData.stage} />
             </div>
           )}
 
