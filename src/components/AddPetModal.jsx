@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { addPet } from "../services/petService";
 import { PET_SPECIES, getPetPixelArt } from "../utils/pixelArt";
+import CustomSelect from "./CustomSelect";
 import "./styles/AddPetModal.css";
 
 export default function AddPetModal({ userId, onClose, onPetAdded }) {
@@ -104,21 +105,16 @@ export default function AddPetModal({ userId, onClose, onPetAdded }) {
             <label htmlFor="species">
               Species <span className="required">*</span>
             </label>
-            <select
+            <CustomSelect
               id="species"
               name="species"
               value={formData.species}
               onChange={handleChange}
+              options={PET_SPECIES}
+              placeholder="Select a species..."
               required
               disabled={loading}
-            >
-              <option value="">Select a species...</option>
-              {PET_SPECIES.map((pet) => (
-                <option key={pet.value} value={pet.value}>
-                  {pet.label}
-                </option>
-              ))}
-            </select>
+            />
           </div>
 
           <div className="form-group">

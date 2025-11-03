@@ -4,7 +4,6 @@ import {
   Routes,
   Route,
   Link,
-  Navigate,
 } from "react-router-dom";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
@@ -12,6 +11,7 @@ import { auth } from "firebase.js";
 
 import SplashScreen from "components/SplashScreen";
 import Home from "components/Home";
+import "./App.css";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -49,28 +49,40 @@ export default function App() {
   // If logged in, show the main app
   return (
     <Router>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/about">About</Link>
-            </li>
-            <li>
-              <Link to="/users">Users</Link>
-            </li>
-            <li>
-              <button onClick={handleLogout}>Logout</button>
-            </li>
-          </ul>
+      <div className="app-container">
+        <nav className="navbar">
+          <div className="navbar-content">
+            <div className="navbar-brand">
+              <Link to="/" className="brand-link">
+                🐾 Clio Pets
+              </Link>
+            </div>
+            <ul className="navbar-menu">
+              <li>
+                <Link to="/" className="nav-link">Home</Link>
+              </li>
+              <li>
+                <Link to="/about" className="nav-link">About</Link>
+              </li>
+              <li>
+                <Link to="/users" className="nav-link">Users</Link>
+              </li>
+            </ul>
+            <div className="navbar-actions">
+              <span className="user-email">{user.email}</span>
+              <button className="logout-btn" onClick={handleLogout}>
+                Logout
+              </button>
+            </div>
+          </div>
         </nav>
-        <Routes>
-          <Route path="/about" element={<About />} />
-          <Route path="/users" element={<Users />} />
-          <Route path="/" element={<Home user={user} />} />
-        </Routes>
+        <main className="main-content">
+          <Routes>
+            <Route path="/about" element={<About />} />
+            <Route path="/users" element={<Users />} />
+            <Route path="/" element={<Home user={user} />} />
+          </Routes>
+        </main>
       </div>
     </Router>
   );
