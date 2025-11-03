@@ -3,6 +3,7 @@ import { getUserPets, deletePet } from "../services/petService";
 import { getPetPixelArt } from "../utils/pixelArt";
 import AddPetModal from "./AddPetModal";
 import PetDetailsModal from "./PetDetailsModal";
+import ConfirmModal from "./ConfirmModal";
 import "./styles/Home.css";
 
 export default function Home({ user }) {
@@ -11,6 +12,7 @@ export default function Home({ user }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedPet, setSelectedPet] = useState(null);
   const [error, setError] = useState(null);
+  const [petToDelete, setPetToDelete] = useState(null);
 
   const loadPets = useCallback(async () => {
     try {
@@ -30,15 +32,17 @@ export default function Home({ user }) {
     loadPets();
   }, [loadPets]);
 
-  const handleDeletePet = async (petId) => {
-    if (window.confirm("Are you sure you want to delete this pet?")) {
-      try {
-        await deletePet(petId);
-        setPets(pets.filter((pet) => pet.id !== petId));
-      } catch (err) {
-        console.error("Error deleting pet:", err);
-        alert("Failed to delete pet. Please try again.");
-      }
+  const handleDeletePet = async () => {
+    if (!petToDelete) return;
+
+    try {
+      await deletePet(petToDelete.id);
+      setPets(pets.filter((pet) => pet.id !== petToDelete.id));
+      setPetToDelete(null);
+    } catch (err) {
+      console.error("Error deleting pet:", err);
+      setError("Failed to delete pet. Please try again.");
+      setPetToDelete(null);
     }
   };
 
@@ -103,10 +107,7 @@ export default function Home({ user }) {
                     <h3>{pet.name}</h3>
                     <button
                       className="btn-delete"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeletePet(pet.id);
-                      }}
+                      onClick={() => setPetToDelete(pet)}
                       title="Delete pet"
                     >
                       ×
@@ -182,6 +183,16 @@ export default function Home({ user }) {
           onPetUpdated={handlePetUpdated}
         />
       )}
+      <ConfirmModal
+        isOpen={!!petToDelete}
+        title="Delete Pet"
+        message={`Are you sure you want to delete ${petToDelete?.name}? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmButtonClass="btn-danger"
+        onConfirm={handleDeletePet}
+        onCancel={() => setPetToDelete(null)}
+      />
     </div>
   );
 }
