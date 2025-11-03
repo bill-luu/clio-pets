@@ -1,32 +1,113 @@
 /**
- * Import function triggers from their respective submodules:
+ * Cloud Functions for Clio Pets
  *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
+ * Scheduled functions for pet stat decay and maintenance
  */
 
-const {setGlobalOptions} = require("firebase-functions");
-const {onRequest} = require("firebase-functions/https");
-const logger = require("firebase-functions/logger");
+const {setGlobalOptions} = require("firebase-functions/v2");
+const {onSchedule} = require("firebase-functions/v2/scheduler");
+const {logger} = require("firebase-functions");
+const admin = require("firebase-admin");
 
-// For cost control, you can set the maximum number of containers that can be
-// running at the same time. This helps mitigate the impact of unexpected
-// traffic spikes by instead downgrading performance. This limit is a
-// per-function limit. You can override the limit for each function using the
-// `maxInstances` option in the function's options, e.g.
-// `onRequest({ maxInstances: 5 }, (req, res) => { ... })`.
-// NOTE: setGlobalOptions does not apply to functions using the v1 API. V1
-// functions should each use functions.runWith({ maxInstances: 10 }) instead.
-// In the v1 API, each function can only serve one request per container, so
-// this will be the maximum concurrent request count.
-setGlobalOptions({ maxInstances: 10 });
+// Initialize Firebase Admin
+admin.initializeApp();
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+// For cost control, set maximum instances
+setGlobalOptions({maxInstances: 10});
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+/**
+ * Configuration
+ */
+const DECAY_AMOUNT = 5; // Points to decay per stat per run
+const MIN_STAT_VALUE = 0; // Minimum value stats can reach
+
+/**
+ * Scheduled function to decay pet stats
+ * Runs every hour
+ * Cron schedule: "0 * * * *" (at minute 0 of every hour)
+ */
+exports.decayPetStats = onSchedule(
+    {
+      schedule: "0 * * * *", // Every hour
+      timeZone: "America/Los_Angeles", // Change to your timezone
+      memory: "256MiB",
+      timeoutSeconds: 540,
+    },
+    async (event) => {
+      logger.info("Starting pet stat decay process...");
+
+      const db = admin.firestore();
+      const petsRef = db.collection("pets");
+
+      try {
+      // Get all pets
+        const snapshot = await petsRef.get();
+
+        if (snapshot.empty) {
+          logger.info("No pets found to decay.");
+          return null;
+        }
+
+        logger.info(`Processing ${snapshot.size} pets...`);
+
+        // Batch updates for better performance
+        const batch = db.batch();
+        let updateCount = 0;
+        let batchCount = 0;
+
+        for (const doc of snapshot.docs) {
+          const pet = doc.data();
+
+          // Calculate new stat values (clamped to minimum)
+          const newStats = {
+            fullness: Math.max(
+                MIN_STAT_VALUE,
+                (pet.fullness || 50) - DECAY_AMOUNT,
+            ),
+            happiness: Math.max(
+                MIN_STAT_VALUE,
+                (pet.happiness || 50) - DECAY_AMOUNT,
+            ),
+            cleanliness: Math.max(
+                MIN_STAT_VALUE,
+                (pet.cleanliness || 50) - DECAY_AMOUNT,
+            ),
+            energy: Math.max(MIN_STAT_VALUE, (pet.energy || 50) - DECAY_AMOUNT),
+            xp: pet.xp || 0, // XP doesn't decay
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          };
+
+          batch.update(doc.ref, newStats);
+          updateCount++;
+
+          // Firestore batch limit is 500 operations
+          if (updateCount % 500 === 0) {
+            await batch.commit();
+            batchCount++;
+            const msg = `Committed batch ${batchCount}`;
+            logger.info(`${msg} (${updateCount} pets updated)`);
+          }
+        }
+
+        // Commit any remaining updates
+        if (updateCount % 500 !== 0) {
+          await batch.commit();
+          batchCount++;
+        }
+
+        const successMsg = "Pet stat decay completed successfully.";
+        logger.info(
+            `${successMsg} Updated ${updateCount} pets ` +
+          `in ${batchCount} batch(es).`,
+        );
+        return {
+          success: true,
+          petsUpdated: updateCount,
+          batches: batchCount,
+        };
+      } catch (error) {
+        logger.error("Error during pet stat decay:", error);
+        throw error;
+      }
+    },
+);
