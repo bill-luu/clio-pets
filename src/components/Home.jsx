@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { getUserPets, deletePet } from "../services/petService";
 import { getPetPixelArt } from "../utils/pixelArt";
 import { getStageLabelWithEmoji, getStageInfo } from "../utils/petStages";
@@ -11,11 +11,7 @@ export default function Home({ user }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    loadPets();
-  }, [user]);
-
-  const loadPets = async () => {
+  const loadPets = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -27,7 +23,11 @@ export default function Home({ user }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    loadPets();
+  }, [loadPets]);
 
   const handleDeletePet = async (petId) => {
     if (window.confirm("Are you sure you want to delete this pet?")) {
