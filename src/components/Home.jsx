@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { getUserPets, deletePet } from "../services/petService";
 import { getPetPixelArt } from "../utils/pixelArt";
+import { getStageLabelWithEmoji, getStageInfo } from "../utils/petStages";
 import AddPetModal from "./AddPetModal";
 import PetDetailsModal from "./PetDetailsModal";
 import "./styles/Home.css";
@@ -97,6 +98,7 @@ export default function Home({ user }) {
           <div className="pets-grid">
             {pets.map((pet) => {
               const PixelArtComponent = getPetPixelArt(pet.species);
+              const stageInfo = getStageInfo(pet.stage);
               return (
                 <div key={pet.id} className="pet-card" onClick={() => handlePetClick(pet)}>
                   <div className="pet-card-header">
@@ -112,9 +114,12 @@ export default function Home({ user }) {
                       ×
                     </button>
                   </div>
+                  <div className="pet-stage-badge" style={{ backgroundColor: stageInfo.color }}>
+                    {getStageLabelWithEmoji(pet.stage)}
+                  </div>
                   {PixelArtComponent && (
                     <div className="pet-card-pixel-art">
-                      <PixelArtComponent />
+                      <PixelArtComponent stage={pet.stage || 1} />
                     </div>
                   )}
                   <div className="pet-card-body">
