@@ -1,20 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { getUserPets, deletePet } from "../services/petService";
 import { getPetPixelArt } from "../utils/pixelArt";
 import AddPetModal from "./AddPetModal";
+import PetDetailsModal from "./PetDetailsModal";
 import "./styles/Home.css";
 
 export default function Home({ user }) {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedPet, setSelectedPet] = useState(null);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    loadPets();
-  }, [user]);
-
-  const loadPets = async () => {
+  const loadPets = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -26,7 +24,11 @@ export default function Home({ user }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user.uid]);
+
+  useEffect(() => {
+    loadPets();
+  }, [loadPets]);
 
   const handleDeletePet = async (petId) => {
     if (window.confirm("Are you sure you want to delete this pet?")) {
@@ -42,6 +44,14 @@ export default function Home({ user }) {
 
   const handlePetAdded = () => {
     setShowAddModal(false);
+    loadPets();
+  };
+
+  const handlePetClick = (pet) => {
+    setSelectedPet(pet);
+  };
+
+  const handlePetUpdated = () => {
     loadPets();
   };
 
@@ -88,12 +98,15 @@ export default function Home({ user }) {
             {pets.map((pet) => {
               const PixelArtComponent = getPetPixelArt(pet.species);
               return (
-                <div key={pet.id} className="pet-card">
+                <div key={pet.id} className="pet-card" onClick={() => handlePetClick(pet)}>
                   <div className="pet-card-header">
                     <h3>{pet.name}</h3>
                     <button
                       className="btn-delete"
-                      onClick={() => handleDeletePet(pet.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeletePet(pet.id);
+                      }}
                       title="Delete pet"
                     >
                       ×
@@ -129,6 +142,24 @@ export default function Home({ user }) {
                       </p>
                     )}
                   </div>
+                  <div className="pet-card-stats">
+                    <div className="mini-stat">
+                      <span>🍖</span>
+                      <span>{pet.fullness || 50}</span>
+                    </div>
+                    <div className="mini-stat">
+                      <span>😊</span>
+                      <span>{pet.happiness || 50}</span>
+                    </div>
+                    <div className="mini-stat">
+                      <span>✨</span>
+                      <span>{pet.cleanliness || 50}</span>
+                    </div>
+                    <div className="mini-stat">
+                      <span>⚡</span>
+                      <span>{pet.energy || 50}</span>
+                    </div>
+                  </div>
                 </div>
               );
             })}
@@ -141,6 +172,14 @@ export default function Home({ user }) {
           userId={user.uid}
           onClose={() => setShowAddModal(false)}
           onPetAdded={handlePetAdded}
+        />
+      )}
+
+      {selectedPet && (
+        <PetDetailsModal
+          pet={selectedPet}
+          onClose={() => setSelectedPet(null)}
+          onPetUpdated={handlePetUpdated}
         />
       )}
     </div>

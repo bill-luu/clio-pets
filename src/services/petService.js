@@ -79,6 +79,12 @@ export const addPet = async (userId, petData) => {
     const docRef = await addDoc(petsRef, {
       userId,
       ...petData,
+      // Initialize pet stats
+      fullness: 50,
+      happiness: 50,
+      cleanliness: 50,
+      energy: 50,
+      xp: 0,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
