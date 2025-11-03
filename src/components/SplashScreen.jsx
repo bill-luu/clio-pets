@@ -1,8 +1,9 @@
-// SplashScreen.jsx
 import React, { useState } from "react";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "./firebase";
-import './SplashScreen.css';
+
+import { auth } from "firebase.js";
+
+import './styles/SplashScreen.css';
 
 // Tiny pixel-art helper
 const PixelArt = ({ pixels, size = 16 }) => (
