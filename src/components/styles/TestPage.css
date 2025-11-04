@@ -67,6 +67,51 @@
   margin: 0.25rem 0;
 }
 
+.info-box {
+  background: #d1ecf1;
+  border: 2px solid #17a2b8;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.info-box strong {
+  display: block;
+  color: #0c5460;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.info-box ul {
+  margin: 0.5rem 0 0 0;
+  padding-left: 1.5rem;
+  color: #0c5460;
+}
+
+.info-box li {
+  margin: 0.25rem 0;
+}
+
+.info-box small {
+  display: block;
+  margin-top: 0.5rem;
+  color: #0c5460;
+  font-style: italic;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+}
+
 .error-message {
   background: #f8d7da;
   color: #721c24;

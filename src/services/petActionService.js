@@ -4,6 +4,13 @@ import { getPetById } from "./petService";
 import { evaluatePetAge } from "../utils/petAge";
 import { checkEvolution } from "../utils/petProgression";
 import { createNotification } from "./notificationService";
+import {
+  calculateStreak,
+  getTodayDateString,
+  checkStreakMilestone,
+} from "../utils/streakTracker";
+import { calculateRemainingCooldown } from "../utils/cooldownCalculator";
+import { getInteractionCount } from "./sharedPetService";
 
 /**
  * Cooldown duration in seconds
@@ -56,28 +63,36 @@ const clamp = (value, min, max) => {
 };
 
 /**
- * Check if a pet is on cooldown
+ * Check if a pet is on cooldown (with dynamic cooldown reduction)
  * @param {Object} pet - The pet object
+ * @param {number} uniqueInteractors - Number of unique interactors (optional, will fetch if not provided)
  * @returns {Object} Cooldown status with isOnCooldown and remainingSeconds
  */
-export const checkCooldown = (pet) => {
-  if (!pet.lastActionAt) {
-    return { isOnCooldown: false, remainingSeconds: 0 };
+export const checkCooldown = async (pet, uniqueInteractors = null) => {
+  // If uniqueInteractors not provided, fetch it
+  if (uniqueInteractors === null && pet.sharingEnabled) {
+    try {
+      const stats = await getInteractionCount(pet.id);
+      uniqueInteractors = stats.uniqueInteractors;
+    } catch (error) {
+      console.error("Error fetching interaction count:", error);
+      uniqueInteractors = 0;
+    }
+  } else if (uniqueInteractors === null) {
+    uniqueInteractors = 0;
   }
 
-  const now = Date.now();
-  const lastActionTime = pet.lastActionAt.toMillis
-    ? pet.lastActionAt.toMillis()
-    : pet.lastActionAt;
-  const timeSinceLastAction = (now - lastActionTime) / 1000; // Convert to seconds
-  const remainingSeconds = Math.max(
-    0,
-    ACTION_COOLDOWN_SECONDS - timeSinceLastAction
+  const streak = pet.currentStreak || 0;
+  const cooldownStatus = calculateRemainingCooldown(
+    pet.lastActionAt,
+    streak,
+    uniqueInteractors
   );
 
   return {
-    isOnCooldown: remainingSeconds > 0,
-    remainingSeconds: Math.ceil(remainingSeconds),
+    isOnCooldown: cooldownStatus.isOnCooldown,
+    remainingSeconds: cooldownStatus.remainingSeconds,
+    effectiveCooldown: cooldownStatus.effectiveCooldown,
   };
 };
 
@@ -98,13 +113,37 @@ export const performPetAction = async (petId, actionType, userId = null) => {
     // Get current pet data
     const pet = await getPetById(petId);
 
-    // Check cooldown
-    const cooldownStatus = checkCooldown(pet);
+    // Get interaction count for cooldown calculation
+    let uniqueInteractors = 0;
+    if (pet.sharingEnabled) {
+      try {
+        const stats = await getInteractionCount(pet.id);
+        uniqueInteractors = stats.uniqueInteractors;
+      } catch (error) {
+        console.error("Error fetching interaction count:", error);
+      }
+    }
+
+    // Check cooldown with bonuses
+    const cooldownStatus = await checkCooldown(pet, uniqueInteractors);
     if (cooldownStatus.isOnCooldown) {
       throw new Error(
         `Please wait ${cooldownStatus.remainingSeconds} seconds before performing another action.`
       );
     }
+
+    // Calculate and update streak
+    const streakResult = calculateStreak(
+      pet.lastInteractionDate,
+      pet.currentStreak || 0
+    );
+    const today = getTodayDateString();
+
+    // Check for streak milestone
+    const milestone = checkStreakMilestone(
+      pet.currentStreak || 0,
+      streakResult.newStreak
+    );
 
     // Store old stats for notification
     const oldStats = {
@@ -152,6 +191,10 @@ export const performPetAction = async (petId, actionType, userId = null) => {
       lastActionAt: serverTimestamp(),
       lastActionType: actionType,
       updatedAt: serverTimestamp(),
+      // Update streak data
+      lastInteractionDate: today,
+      currentStreak: streakResult.newStreak,
+      longestStreak: Math.max(pet.longestStreak || 0, streakResult.newStreak),
     };
 
     // If pet evolved, update stage
@@ -180,7 +223,9 @@ export const performPetAction = async (petId, actionType, userId = null) => {
       Object.keys(oldStats).forEach((stat) => {
         statChanges[stat] = {
           before: oldStats[stat],
-          after: ageEvaluation.shouldUpdate ? ageEvaluation.newStats[stat] : newStats[stat],
+          after: ageEvaluation.shouldUpdate
+            ? ageEvaluation.newStats[stat]
+            : newStats[stat],
         };
       });
 
@@ -204,12 +249,24 @@ export const performPetAction = async (petId, actionType, userId = null) => {
       newStats: ageEvaluation.shouldUpdate ? ageEvaluation.newStats : newStats,
       evolution: evolutionResult.evolved ? evolutionResult : null,
       aging: ageEvaluation.aged ? ageEvaluation : null,
+      streak: {
+        current: streakResult.newStreak,
+        isNewDay: streakResult.isNewDay,
+        streakBroken: streakResult.streakBroken,
+        milestone: milestone,
+      },
       notifications: [
         ...(evolutionResult.evolved ? [evolutionResult.message] : []),
         ...(ageEvaluation.aged ? [ageEvaluation.message] : []),
         ...(ageEvaluation.decayed && ageEvaluation.decayAmount > 0
-          ? [`Stats decayed by ${ageEvaluation.decayAmount} due to time passing.`]
+          ? [
+              `Stats decayed by ${ageEvaluation.decayAmount} due to time passing.`,
+            ]
           : []),
+        ...(streakResult.message && streakResult.isNewDay
+          ? [streakResult.message]
+          : []),
+        ...(milestone ? [milestone.message] : []),
       ],
     };
   } catch (error) {

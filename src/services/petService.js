@@ -117,11 +117,16 @@ export const addPet = async (userId, petData, ownerEmail = null) => {
       ageInYears: 0,
       lastAgeCheck: serverTimestamp(),
       stage: 1, // Default to Baby stage
-      // Spread petData AFTER defaults to allow overrides (for test pets)
-      ...petData,
-      // Initialize sharing (always set these)
+      // Initialize streak tracking
+      lastInteractionDate: null,
+      currentStreak: 0,
+      longestStreak: 0,
+      // Initialize sharing defaults
       shareableId: generateShareableId(),
       sharingEnabled: false,
+      // Spread petData AFTER defaults to allow overrides (for test pets)
+      ...petData,
+      // Always set these timestamps
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
