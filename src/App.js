@@ -8,6 +8,8 @@ import SplashScreen from "components/SplashScreen";
 import Home from "components/Home";
 import SharedPetView from "components/SharedPetView";
 import OtherPets from "components/OtherPets";
+import TestPage from "components/TestPage";
+import SharedPetView from "components/SharedPetView";
 import {
   NotificationProvider,
   useNotifications,
@@ -97,10 +99,17 @@ function AuthenticatedApp({ user, handleLogout }) {
               </Link>
             </li>
             <li>
-              <Link to="/other-pets" className="nav-link">
+              <Link to="/users" className="nav-link">
                 Other Clio-Pets
               </Link>
             </li>
+            {process.env.NODE_ENV === 'development' && (
+              <li>
+                <Link to="/test" className="nav-link" style={{ color: '#ffc107' }}>
+                  🧪 Test
+                </Link>
+              </li>
+            )}
           </ul>
           <div className="navbar-actions">
             <span className="user-email">{user.email}</span>
@@ -113,7 +122,10 @@ function AuthenticatedApp({ user, handleLogout }) {
       <main className="main-content">
         <Routes>
           <Route path="/about" element={<About />} />
-          <Route path="/other-pets" element={<OtherPets user={user} />} />
+          <Route path="/users" element={<OtherPets user={user} />} />
+          {process.env.NODE_ENV === 'development' && (
+            <Route path="/test" element={<TestPage />} />
+          )}
           <Route path="/" element={<Home user={user} />} />
         </Routes>
       </main>

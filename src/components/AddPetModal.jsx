@@ -9,7 +9,6 @@ export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) 
     name: "",
     species: "",
     breed: "",
-    age: "",
     color: "",
     notes: "",
     stage: 1, // Default to baby stage
@@ -126,19 +125,6 @@ export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) 
               value={formData.breed}
               onChange={handleChange}
               placeholder="e.g., Golden Retriever"
-              disabled={loading}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="age">Age</label>
-            <input
-              type="text"
-              id="age"
-              name="age"
-              value={formData.age}
-              onChange={handleChange}
-              placeholder="e.g., 3 years, 6 months"
               disabled={loading}
             />
           </div>

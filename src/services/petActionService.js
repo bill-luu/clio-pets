@@ -1,6 +1,8 @@
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 import { getPetById } from "./petService";
+import { evaluatePetAge } from "../utils/petAge";
+import { checkEvolution } from "../utils/petProgression";
 import { createNotification } from "./notificationService";
 
 /**
@@ -84,7 +86,7 @@ export const checkCooldown = (pet) => {
  * @param {string} petId - The pet's document ID
  * @param {string} actionType - Type of action (feed, play, clean, rest, exercise, treat)
  * @param {string} userId - The user performing the action (optional, for notification)
- * @returns {Promise<Object>} Updated pet stats
+ * @returns {Promise<Object>} Updated pet stats, evolution, and age info
  */
 export const performPetAction = async (petId, actionType, userId = null) => {
   try {
@@ -131,14 +133,46 @@ export const performPetAction = async (petId, actionType, userId = null) => {
       xp: (pet.xp || 0) + (effects.xp || 0),
     };
 
-    // Update pet in database
-    const petRef = doc(db, "pets", petId);
-    await updateDoc(petRef, {
+    // Check for stage evolution based on new XP
+    const currentStage = pet.stage || 1;
+    const evolutionResult = checkEvolution(currentStage, newStats.xp);
+
+    // Create a temporary pet object with new stats for age evaluation
+    const petWithNewStats = {
+      ...pet,
+      ...newStats,
+    };
+
+    // Evaluate pet age (checks if 24+ hours passed and applies decay)
+    const ageEvaluation = evaluatePetAge(petWithNewStats);
+
+    // Prepare update data
+    const updateData = {
       ...newStats,
       lastActionAt: serverTimestamp(),
       lastActionType: actionType,
       updatedAt: serverTimestamp(),
-    });
+    };
+
+    // If pet evolved, update stage
+    if (evolutionResult.evolved) {
+      updateData.stage = evolutionResult.newStage;
+    }
+
+    // If age evaluation happened, update age and stats after decay
+    if (ageEvaluation.shouldUpdate) {
+      updateData.ageInYears = ageEvaluation.newAge;
+      updateData.lastAgeCheck = serverTimestamp();
+      // Use decayed stats instead of pre-decay stats
+      updateData.fullness = ageEvaluation.newStats.fullness;
+      updateData.happiness = ageEvaluation.newStats.happiness;
+      updateData.cleanliness = ageEvaluation.newStats.cleanliness;
+      updateData.energy = ageEvaluation.newStats.energy;
+    }
+
+    // Update pet in database
+    const petRef = doc(db, "pets", petId);
+    await updateDoc(petRef, updateData);
 
     // Create notification for pet owner
     try {
@@ -146,7 +180,7 @@ export const performPetAction = async (petId, actionType, userId = null) => {
       Object.keys(oldStats).forEach((stat) => {
         statChanges[stat] = {
           before: oldStats[stat],
-          after: newStats[stat],
+          after: ageEvaluation.shouldUpdate ? ageEvaluation.newStats[stat] : newStats[stat],
         };
       });
 
@@ -163,12 +197,20 @@ export const performPetAction = async (petId, actionType, userId = null) => {
       // Don't fail the action if notification creation fails
       console.error("Error creating notification:", notificationError);
     }
-
     return {
       success: true,
       actionType,
       effects,
-      newStats,
+      newStats: ageEvaluation.shouldUpdate ? ageEvaluation.newStats : newStats,
+      evolution: evolutionResult.evolved ? evolutionResult : null,
+      aging: ageEvaluation.aged ? ageEvaluation : null,
+      notifications: [
+        ...(evolutionResult.evolved ? [evolutionResult.message] : []),
+        ...(ageEvaluation.aged ? [ageEvaluation.message] : []),
+        ...(ageEvaluation.decayed && ageEvaluation.decayAmount > 0
+          ? [`Stats decayed by ${ageEvaluation.decayAmount} due to time passing.`]
+          : []),
+      ],
     };
   } catch (error) {
     console.error("Error performing pet action:", error);
