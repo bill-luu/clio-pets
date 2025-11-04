@@ -2,6 +2,8 @@
 
 This service provides helper functions to interact with the Firestore `pets` collection.
 
+> 📚 **For complete system documentation** including age progression, stage evolution, and stat decay mechanics, see [PROGRESSION_SYSTEM.md](../../PROGRESSION_SYSTEM.md) in the root directory.
+
 ## Data Structure
 
 Each pet document has the following structure:
@@ -21,8 +23,11 @@ Each pet document has the following structure:
   cleanliness: number,   // 0-100: How clean the pet is
   energy: number,        // 0-100: Pet's energy level
   xp: number,            // 0+: Experience points earned
+  stage: number,         // 1=Baby, 2=Teen, 3=Adult (XP-based)
+  ageInYears: number,    // 0+: Pet age in years (care-based)
   lastActionAt: Timestamp,  // Last time an action was performed
   lastActionType: string,   // Type of last action performed
+  lastAgeCheck: Timestamp,  // Last time age was evaluated
   createdAt: Timestamp,  // Auto-generated
   updatedAt: Timestamp   // Auto-generated
 }
@@ -80,13 +85,19 @@ console.log(pet);
 
 ### `addPet(userId, petData)`
 
-Creates a new pet for a user. All pets are automatically initialized with stats:
+Creates a new pet for a user. All pets are automatically initialized with:
 
+**Stats:**
 - fullness: 50
 - happiness: 50
 - cleanliness: 50
 - energy: 50
+
+**Progression:**
 - xp: 0
+- stage: 1 (Baby)
+- ageInYears: 0 (Newborn)
+- lastAgeCheck: serverTimestamp()
 
 **Parameters:**
 
@@ -203,7 +214,12 @@ This service provides functions to perform actions on pets and manage their stat
 
 All stats are clamped between 0-100 (except XP which only increases).
 
-**Cooldown:** There is a 10-second cooldown between actions to prevent spam. Attempting to perform an action during cooldown will throw an error.
+**Cooldown:** There is a 10-minute (600 second) cooldown between actions to prevent spam. Attempting to perform an action during cooldown will throw an error.
+
+**Progression Integration:** Actions now also trigger:
+- **Age Evaluation**: Checks if 24+ hours passed, applies decay, evaluates age threshold
+- **Stage Evolution**: Checks if XP crosses evolution thresholds (100 XP → Teen, 300 XP → Adult)
+- See [PROGRESSION_SYSTEM.md](../../PROGRESSION_SYSTEM.md) for complete details
 
 ## Available Functions
 
@@ -218,7 +234,7 @@ Performs an action on a pet, updating its stats accordingly.
 
 **Returns:**
 
-- Promise<Object>: Result object with success status, action type, effects, and new stats
+- Promise<Object>: Result object with success, stats, evolution, aging, and notifications
 
 **Example:**
 
@@ -231,7 +247,10 @@ console.log(result);
 //   success: true,
 //   actionType: 'feed',
 //   effects: { fullness: 20, xp: 5 },
-//   newStats: { fullness: 70, happiness: 50, cleanliness: 50, energy: 50, xp: 5 }
+//   newStats: { fullness: 70, happiness: 50, cleanliness: 50, energy: 50, xp: 5 },
+//   evolution: null,  // or { evolved: true, newStage: 2, message: "🎉 Your pet evolved to Teen!" }
+//   aging: null,      // or { aged: true, yearsGained: 1, message: "Your pet aged 1 year!" }
+//   notifications: [] // array of notification messages
 // }
 ```
 
