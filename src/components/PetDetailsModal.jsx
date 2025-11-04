@@ -200,7 +200,19 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
 
           {/* Progression Section */}
           <div className="progression-section">
-            <h3>Progression</h3>
+            <div className="section-header-with-info">
+              <h3>Progression</h3>
+              <div className="info-icon-wrapper">
+                <span className="info-icon">ℹ️</span>
+                <div className="info-tooltip">
+                  <strong>📊 Progression Info:</strong>
+                  <p><strong>Age:</strong> 1 real day = 1 pet month (if well cared for)</p>
+                  <p><strong>Stage:</strong> Baby (0-199 XP) → Teen (200-599 XP) → Adult (600+ XP)</p>
+                  <p><strong>Streak:</strong> Consecutive days of interaction</p>
+                  <p><strong>Social:</strong> Unique visitors who interact with your pet</p>
+                </div>
+              </div>
+            </div>
             <div className="progression-grid">
               <div className="progression-item">
                 <span className="progression-label">Age</span>
@@ -359,7 +371,32 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
           {/* Cooldown Bonuses Section */}
           {(streakBonus.reductionSeconds > 0 || socialBonus.reductionSeconds > 0) && (
             <div className="bonuses-section">
-              <h3>Cooldown Bonuses</h3>
+              <div className="section-header-with-info">
+                <h3>Cooldown Bonuses</h3>
+                <div className="info-icon-wrapper">
+                  <span className="info-icon">ℹ️</span>
+                  <div className="info-tooltip">
+                    <strong>🔥 Streak Tiers:</strong>
+                    <ul>
+                      <li>1-2 days: Starting (0 min)</li>
+                      <li>3-6 days: Common (-2 min)</li>
+                      <li>7-13 days: Uncommon (-4 min)</li>
+                      <li>14-29 days: Rare (-6 min)</li>
+                      <li>30-59 days: Epic (-8 min)</li>
+                      <li>60+ days: Legendary (-10 min)</li>
+                    </ul>
+                    <strong>👥 Social Tiers:</strong>
+                    <ul>
+                      <li>0-4 people: Private (0 min)</li>
+                      <li>5-9 people: Shared (-1 min)</li>
+                      <li>10-19 people: Friendly (-2 min)</li>
+                      <li>20-49 people: Social (-3 min)</li>
+                      <li>50-99 people: Popular (-4 min)</li>
+                      <li>100+ people: Viral (-5 min)</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
               <div className="bonuses-grid">
                 {streakBonus.reductionSeconds > 0 && (
                   <div className="bonus-item" style={{ borderColor: streakTierInfo.color }}>
@@ -396,7 +433,40 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
           {/* Actions Section */}
           <div className="actions-section">
             <div className="actions-header">
-              <h3>Actions</h3>
+              <div className="section-header-with-info">
+                <h3>Actions</h3>
+                <div className="info-icon-wrapper">
+                  <span className="info-icon">ℹ️</span>
+                  <div className="info-tooltip info-tooltip-large">
+                    <strong>⏱️ Cooldown Reduction System:</strong>
+                    <p>Reduce the 10-minute cooldown between actions by building streaks and sharing your pet!</p>
+                    
+                    <strong style={{ marginTop: '1rem' }}>🔥 Streak Tier Bonuses:</strong>
+                    <ul style={{ fontSize: '0.8rem' }}>
+                      <li>1-2 days: Starting (0 min)</li>
+                      <li>3-6 days: Common (-2 min)</li>
+                      <li>7-13 days: Uncommon (-4 min)</li>
+                      <li>14-29 days: Rare (-6 min)</li>
+                      <li>30-59 days: Epic (-8 min)</li>
+                      <li>60+ days: Legendary (-10 min)</li>
+                    </ul>
+                    
+                    <strong>👥 Social Tier Bonuses:</strong>
+                    <ul style={{ fontSize: '0.8rem' }}>
+                      <li>0-4 people: Private (0 min)</li>
+                      <li>5-9 people: Shared (-1 min)</li>
+                      <li>10-19 people: Friendly (-2 min)</li>
+                      <li>20-49 people: Social (-3 min)</li>
+                      <li>50-99 people: Popular (-4 min)</li>
+                      <li>100+ people: Viral (-5 min)</li>
+                    </ul>
+                    
+                    <p style={{ marginTop: '0.75rem', fontSize: '0.8rem', fontStyle: 'italic' }}>
+                      💡 Bonuses stack! Max reduction: 15 min = instant interactions!
+                    </p>
+                  </div>
+                </div>
+              </div>
               {cooldownRemaining > 0 ? (
                 <div className="cooldown-indicator">
                   ⏱️ {formatCooldownTime(cooldownRemaining)}
