@@ -10,6 +10,7 @@ import {
   orderBy,
   serverTimestamp,
   getDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { generateShareableId } from "./sharedPetService";
@@ -191,5 +192,121 @@ export const togglePetSharing = async (petId, enabled) => {
   } catch (error) {
     console.error("Error toggling pet sharing:", error);
     throw error;
+  }
+};
+
+/**
+ * Subscribe to real-time updates for all pets belonging to a specific user
+ * @param {string} userId - The user's UID
+ * @param {Function} callback - Callback function that receives (pets, error)
+ * @returns {Function} Unsubscribe function to stop listening
+ */
+export const subscribeToUserPets = (userId, callback) => {
+  try {
+    const petsRef = collection(db, "pets");
+    const q = query(
+      petsRef,
+      where("userId", "==", userId),
+      orderBy("createdAt", "desc")
+    );
+
+    const unsubscribe = onSnapshot(
+      q,
+      (querySnapshot) => {
+        const pets = [];
+        querySnapshot.forEach((doc) => {
+          pets.push({
+            id: doc.id,
+            ...doc.data(),
+          });
+        });
+        callback(pets, null);
+      },
+      (error) => {
+        console.error("Error in user pets subscription:", error);
+        callback(null, error);
+      }
+    );
+
+    return unsubscribe;
+  } catch (error) {
+    console.error("Error setting up user pets subscription:", error);
+    callback(null, error);
+    return () => {}; // Return no-op unsubscribe function
+  }
+};
+
+/**
+ * Subscribe to real-time updates for all pets in the system
+ * @param {Function} callback - Callback function that receives (pets, error)
+ * @returns {Function} Unsubscribe function to stop listening
+ */
+export const subscribeToAllPets = (callback) => {
+  try {
+    const petsRef = collection(db, "pets");
+    const q = query(petsRef, orderBy("createdAt", "desc"));
+
+    const unsubscribe = onSnapshot(
+      q,
+      (querySnapshot) => {
+        const pets = [];
+        querySnapshot.forEach((doc) => {
+          pets.push({
+            id: doc.id,
+            ...doc.data(),
+          });
+        });
+        callback(pets, null);
+      },
+      (error) => {
+        console.error("Error in all pets subscription:", error);
+        callback(null, error);
+      }
+    );
+
+    return unsubscribe;
+  } catch (error) {
+    console.error("Error setting up all pets subscription:", error);
+    callback(null, error);
+    return () => {}; // Return no-op unsubscribe function
+  }
+};
+
+/**
+ * Subscribe to real-time updates for a single pet by ID
+ * @param {string} petId - The pet's document ID
+ * @param {Function} callback - Callback function that receives (pet, error)
+ * @returns {Function} Unsubscribe function to stop listening
+ */
+export const subscribeToPetById = (petId, callback) => {
+  try {
+    const petRef = doc(db, "pets", petId);
+
+    const unsubscribe = onSnapshot(
+      petRef,
+      (petDoc) => {
+        if (petDoc.exists()) {
+          callback(
+            {
+              id: petDoc.id,
+              ...petDoc.data(),
+            },
+            null
+          );
+        } else {
+          callback(null, new Error("Pet not found"));
+        }
+      },
+      (error) => {
+        console.error("Error in pet subscription:", error);
+        callback(null, error);
+      }
+    );
+
+    return unsubscribe;
+  } catch (error) {
+    console.error("Error setting up pet subscription:", error);
+    callback(null, error);
+    return () => {}; // Return no-op unsubscribe function
   }
 };
