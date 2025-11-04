@@ -20,7 +20,7 @@ export const STAGE_THRESHOLDS = {
   TEEN: {
     id: 2,
     name: "Teen",
-    emoji: "🧒",
+    emoji: "🐾",
     minXP: 200,
     maxXP: 599,
     label: "Teen"
@@ -28,7 +28,7 @@ export const STAGE_THRESHOLDS = {
   ADULT: {
     id: 3,
     name: "Adult",
-    emoji: "👨",
+    emoji: "👑",
     minXP: 600,
     maxXP: Infinity,
     label: "Adult"
