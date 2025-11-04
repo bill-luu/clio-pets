@@ -49,41 +49,47 @@ export default function App() {
           path="/*"
           element={
             user ? (
-            <div className="app-container">
-        <nav className="navbar">
-          <div className="navbar-content">
-            <div className="navbar-brand">
-              <Link to="/" className="brand-link">
-                🐾 Clio Pets
-              </Link>
-            </div>
-            <ul className="navbar-menu">
-              <li>
-                <Link to="/" className="nav-link">Home</Link>
-              </li>
-              <li>
-                <Link to="/about" className="nav-link">About</Link>
-              </li>
-              <li>
-                <Link to="/users" className="nav-link">Other Clio-Pets</Link>
-              </li>
-            </ul>
-            <div className="navbar-actions">
-              <span className="user-email">{user.email}</span>
-              <button className="logout-btn" onClick={handleLogout}>
-                Logout
-              </button>
-            </div>
-          </div>
-        </nav>
-        <main className="main-content">
-          <Routes>
-            <Route path="/about" element={<About />} />
-            <Route path="/users" element={<OtherPets user={user} />} />
-            <Route path="/" element={<Home user={user} />} />
-          </Routes>
-        </main>
-      </div> 
+              <div className="app-container">
+                <nav className="navbar">
+                  <div className="navbar-content">
+                    <div className="navbar-brand">
+                      <Link to="/" className="brand-link">
+                        🐾 Clio Pets
+                      </Link>
+                    </div>
+                    <ul className="navbar-menu">
+                      <li>
+                        <Link to="/" className="nav-link">
+                          Home
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/about" className="nav-link">
+                          About
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/users" className="nav-link">
+                          Other Clio-Pets
+                        </Link>
+                      </li>
+                    </ul>
+                    <div className="navbar-actions">
+                      <span className="user-email">{user.email}</span>
+                      <button className="logout-btn" onClick={handleLogout}>
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                </nav>
+                <main className="main-content">
+                  <Routes>
+                    <Route path="/about" element={<About />} />
+                    <Route path="/users" element={<OtherPets user={user} />} />
+                    <Route path="/" element={<Home user={user} />} />
+                  </Routes>
+                </main>
+              </div>
             ) : (
               <SplashScreen />
             )
@@ -100,13 +106,19 @@ export default function App() {
             </div>
             <ul className="navbar-menu">
               <li>
-                <Link to="/" className="nav-link">Home</Link>
+                <Link to="/" className="nav-link">
+                  Home
+                </Link>
               </li>
               <li>
-                <Link to="/about" className="nav-link">About</Link>
+                <Link to="/about" className="nav-link">
+                  About
+                </Link>
               </li>
               <li>
-                <Link to="/users" className="nav-link">Other Clio-Pets</Link>
+                <Link to="/users" className="nav-link">
+                  Other Clio-Pets
+                </Link>
               </li>
             </ul>
             <div className="navbar-actions">
