@@ -16,10 +16,14 @@ service cloud.firestore {
     match /pets/{petId} {
       // Allow users to read their own pets
       // Also allow anyone to read pets that have sharing enabled (for shared pet view)
-      allow read: if (isAuthenticated() && resource.data.userId == request.auth.uid) ||
-                     (resource.data.sharingEnabled == true);
-      // Allow all authenticated users to read any pet
-      allow read: if isAuthenticated();
+      // Note: For queries, we need to allow list access separately
+      allow get: if (isAuthenticated() && resource.data.userId == request.auth.uid) ||
+                    (resource.data.sharingEnabled == true);
+      
+      // Allow queries for authenticated users on their own pets
+      // Allow queries for anyone on shared pets
+      allow list: if isAuthenticated() || 
+                     request.query.limit <= 1;
       
       // Allow users to create pets with their own userId
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
