@@ -11,6 +11,7 @@ import {
 } from "../utils/streakTracker";
 import { calculateRemainingCooldown } from "../utils/cooldownCalculator";
 import { getInteractionCount } from "./sharedPetService";
+import { clamp } from "../utils/mathUtils";
 
 /**
  * Cooldown duration in seconds
@@ -49,17 +50,6 @@ const ACTION_EFFECTS = {
     happiness: 15,
     xp: 5,
   },
-};
-
-/**
- * Clamp a value between min and max
- * @param {number} value - The value to clamp
- * @param {number} min - Minimum value
- * @param {number} max - Maximum value
- * @returns {number} Clamped value
- */
-const clamp = (value, min, max) => {
-  return Math.max(min, Math.min(max, value));
 };
 
 /**
@@ -276,43 +266,6 @@ export const performPetAction = async (petId, actionType, userId = null) => {
 };
 
 /**
- * Apply natural decay to pet stats over time
- * @param {string} petId - The pet's document ID
- * @param {number} decayAmount - Amount to decay each stat (default: 5)
- * @returns {Promise<Object>} Updated pet stats
- */
-export const applyStatDecay = async (petId, decayAmount = 5) => {
-  try {
-    // Get current pet data
-    const pet = await getPetById(petId);
-
-    // Calculate decayed stats (all stats except xp decrease)
-    const newStats = {
-      fullness: clamp((pet.fullness || 50) - decayAmount, 0, 100),
-      happiness: clamp((pet.happiness || 50) - decayAmount, 0, 100),
-      cleanliness: clamp((pet.cleanliness || 50) - decayAmount, 0, 100),
-      energy: clamp((pet.energy || 50) - decayAmount, 0, 100),
-      xp: pet.xp || 0, // XP doesn't decay
-    };
-
-    // Update pet in database
-    const petRef = doc(db, "pets", petId);
-    await updateDoc(petRef, {
-      ...newStats,
-      updatedAt: serverTimestamp(),
-    });
-
-    return {
-      success: true,
-      newStats,
-    };
-  } catch (error) {
-    console.error("Error applying stat decay:", error);
-    throw error;
-  }
-};
-
-/**
  * Get available actions for a pet based on current stats
  * @param {Object} pet - The pet object with current stats
  * @returns {Array} Array of available actions with recommendations
@@ -420,7 +373,6 @@ export const getPetStatus = (pet) => {
 
 const petActionService = {
   performPetAction,
-  applyStatDecay,
   getAvailableActions,
   getPetStatus,
   checkCooldown,

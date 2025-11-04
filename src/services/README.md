@@ -257,29 +257,7 @@ console.log(result);
 
 **Note:** This function now automatically creates a notification for the pet owner when an action is performed.
 
----
-
-### `applyStatDecay(petId, decayAmount)`
-
-Applies natural decay to all pet stats (except XP) over time.
-
-**Parameters:**
-
-- `petId` (string): The pet's document ID
-- `decayAmount` (number): Amount to decrease each stat (default: 5)
-
-**Returns:**
-
-- Promise<Object>: Result object with success status and new stats
-
-**Example:**
-
-```javascript
-import { applyStatDecay } from "./services/petActionService";
-
-const result = await applyStatDecay("abc123", 5);
-console.log(result.newStats);
-```
+**Stat Decay:** Decay is handled automatically within `performPetAction` using the `evaluatePetAge` function. See `src/utils/petAge.js` for decay implementation details.
 
 ---
 

@@ -1,4 +1,5 @@
 // Pet age calculation and stat decay utilities
+import { clamp } from "./mathUtils";
 
 /**
  * Calculate stat decay amount based on time elapsed
@@ -42,17 +43,6 @@ export const checkStatsThreshold = (stats) => {
   
   const statsAboveThreshold = statValues.filter(stat => stat >= 45).length;
   return statsAboveThreshold >= 3;
-};
-
-/**
- * Clamp a value between min and max
- * @param {number} value - The value to clamp
- * @param {number} min - Minimum value
- * @param {number} max - Maximum value
- * @returns {number} Clamped value
- */
-const clamp = (value, min, max) => {
-  return Math.max(min, Math.min(max, value));
 };
 
 /**

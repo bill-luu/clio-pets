@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { createNotification } from "./notificationService";
+import { clamp } from "../utils/mathUtils";
 
 /**
  * Cooldown duration in seconds for play dates (6 hours)
@@ -89,13 +90,6 @@ const PLAYDATE_ACTIVITIES = {
       xp: 50,
     },
   },
-};
-
-/**
- * Clamp a value between min and max
- */
-const clamp = (value, min, max) => {
-  return Math.max(min, Math.min(max, value));
 };
 
 /**
