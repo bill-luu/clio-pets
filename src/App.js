@@ -6,6 +6,7 @@ import { auth } from "firebase.js";
 
 import SplashScreen from "components/SplashScreen";
 import Home from "components/Home";
+import SharedPetView from "components/SharedPetView";
 import OtherPets from "components/OtherPets";
 import {
   NotificationProvider,
@@ -116,6 +117,17 @@ function AuthenticatedApp({ user, handleLogout }) {
           <Route path="/" element={<Home user={user} />} />
         </Routes>
       </main>
+
+      {/* Notification Toast Container */}
+      <div className="notification-toast-container">
+        {toasts.map((notification) => (
+          <NotificationToast
+            key={notification.id}
+            notification={notification}
+            onDismiss={removeToast}
+          />
+        ))}
+      </div>
     </div>
   );
 }
