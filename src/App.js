@@ -9,7 +9,7 @@ import Home from "components/Home";
 import SharedPetView from "components/SharedPetView";
 import OtherPets from "components/OtherPets";
 import TestPage from "components/TestPage";
-import SharedPetView from "components/SharedPetView";
+
 import {
   NotificationProvider,
   useNotifications,
