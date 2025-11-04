@@ -2,15 +2,11 @@ import React, { useState } from "react";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
 import { auth } from "firebase.js";
-import { PixelDog, PixelCat, PixelLizard } from "../utils/pixelArt";
+import { PixelCat, PixelDog, PixelLizard } from "../utils/pixelArt";
 
 import './styles/SplashScreen.css';
 
-const PETS = [
-  { id: 1, Component: PixelDog, label: "Dog", name: "Muffy" },
-  { id: 2, Component: PixelCat, label: "Cat", name: "Mittens" },
-  { id: 3, Component: PixelLizard, label: "Lizard", name: "Nardo" },
-];
+// Splash shows only the adult cat
 
 const SplashScreen = () => {
 
@@ -45,15 +41,27 @@ const SplashScreen = () => {
       <h1 className="title">Welcome to Clio Pets!</h1>
 
       <div className="pets-container">
-        {PETS.map(({ id, Component, label, name }) => (
-          <div key={id} className="pet" onClick={() => handlePetClick(id)}>
-            <div className="pet-art" role="img" aria-label={label} title={label}>
-              <Component />
-              {clickedPet === id && <div className="heart">❤️</div>}
-            </div>
-            <div className="pet-name">{name}</div>
+        <div className="pet" onClick={() => handlePetClick(2)}>
+          <div className="pet-art" style={{ width: 170, height: 170 }} role="img" aria-label="Cat" title="Cat">
+            <PixelCat stage={3} />
+            {clickedPet === 2 && <div className="heart">❤️</div>}
           </div>
-        ))}
+          <div className="pet-name">Mittens</div>
+        </div>
+        <div className="pet" onClick={() => handlePetClick(1)}>
+          <div className="pet-art" style={{ width: 170, height: 170 }} role="img" aria-label="Dog" title="Dog">
+            <PixelDog stage={3} />
+            {clickedPet === 1 && <div className="heart">❤️</div>}
+          </div>
+          <div className="pet-name">Muffy</div>
+        </div>
+        <div className="pet" onClick={() => handlePetClick(3)}>
+          <div className="pet-art" style={{ width: 170, height: 170 }} role="img" aria-label="Lizard" title="Lizard">
+            <PixelLizard stage={3} />
+            {clickedPet === 3 && <div className="heart">❤️</div>}
+          </div>
+          <div className="pet-name">Nardo</div>
+        </div>
       </div>
 
       <div className="auth-form">
