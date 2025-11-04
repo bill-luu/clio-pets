@@ -1,69 +1,38 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { getUserPets, deletePet } from "../services/petService";
+import React, { useState, useEffect } from "react";
+import { getAllPets } from "../services/petService";
 import { getPetPixelArt } from "../utils/pixelArt";
 import { getStageLabelWithEmoji, getStageInfo } from "../utils/petStages";
-import AddPetModal from "./AddPetModal";
-import PetDetailsModal from "./PetDetailsModal";
-import ConfirmModal from "./ConfirmModal";
 import "./styles/Home.css";
 
-export default function Home({ user }) {
+export default function OtherPets({ user }) {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedPet, setSelectedPet] = useState(null);
   const [error, setError] = useState(null);
-  const [petToDelete, setPetToDelete] = useState(null);
-
-  const loadPets = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const userPets = await getUserPets(user.uid);
-      setPets(userPets);
-    } catch (err) {
-      console.error("Error loading pets:", err);
-      setError("Failed to load pets. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, [user.uid]);
 
   useEffect(() => {
-    loadPets();
-  }, [loadPets]);
+    const loadAllPets = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const allPets = await getAllPets();
+        // Filter out the current user's pets
+        const otherUsersPets = allPets.filter((pet) => pet.userId !== user.uid);
+        setPets(otherUsersPets);
+      } catch (err) {
+        console.error("Error loading pets:", err);
+        setError("Failed to load pets. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleDeletePet = async () => {
-    if (!petToDelete) return;
-
-    try {
-      await deletePet(petToDelete.id);
-      setPets(pets.filter((pet) => pet.id !== petToDelete.id));
-      setPetToDelete(null);
-    } catch (err) {
-      console.error("Error deleting pet:", err);
-      setError("Failed to delete pet. Please try again.");
-      setPetToDelete(null);
-    }
-  };
-
-  const handlePetAdded = () => {
-    setShowAddModal(false);
-    loadPets();
-  };
-
-  const handlePetClick = (pet) => {
-    setSelectedPet(pet);
-  };
-
-  const handlePetUpdated = () => {
-    loadPets();
-  };
+    loadAllPets();
+  }, [user.uid]);
 
   if (loading) {
     return (
       <div className="home-container">
-        <div className="loading">Loading your pets...</div>
+        <div className="loading">Loading other pets...</div>
       </div>
     );
   }
@@ -71,8 +40,8 @@ export default function Home({ user }) {
   return (
     <div className="home-container">
       <div className="home-header">
-        <h2>My Pets</h2>
-        <p className="welcome-text">Welcome, {user.email}!</p>
+        <h2>Other Clio-Pets</h2>
+        <p className="welcome-text">Explore pets from the Clio community!</p>
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -80,40 +49,20 @@ export default function Home({ user }) {
       {pets.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-content">
-            <h3>No pets yet!</h3>
-            <p>Start by adding your first pet to keep track of their information.</p>
-            <button
-              className="btn btn-primary"
-              onClick={() => setShowAddModal(true)}
-            >
-              Add Your First Pet
-            </button>
+            <h3>No other pets yet!</h3>
+            <p>Be the first to add a pet to the community.</p>
           </div>
         </div>
       ) : (
         <div className="pets-section">
-          <button
-            className="btn btn-primary add-pet-btn"
-            onClick={() => setShowAddModal(true)}
-          >
-            + Add Pet
-          </button>
-
           <div className="pets-grid">
             {pets.map((pet) => {
               const PixelArtComponent = getPetPixelArt(pet.species);
               const stageInfo = getStageInfo(pet.stage);
               return (
-                <div key={pet.id} className="pet-card" onClick={() => handlePetClick(pet)}>
+                <div key={pet.id} className="pet-card">
                   <div className="pet-card-header">
                     <h3>{pet.name}</h3>
-                    <button
-                      className="btn-delete"
-                      onClick={() => setPetToDelete(pet)}
-                      title="Delete pet"
-                    >
-                      ×
-                    </button>
                   </div>
                   <div className="pet-stage-badge" style={{ backgroundColor: stageInfo.color }}>
                     {getStageLabelWithEmoji(pet.stage)}
@@ -124,6 +73,11 @@ export default function Home({ user }) {
                     </div>
                   )}
                   <div className="pet-card-body">
+                    {pet.ownerEmail && (
+                      <p>
+                        <strong>Owner:</strong> {pet.ownerEmail}
+                      </p>
+                    )}
                     <p>
                       <strong>Species:</strong> {pet.species || "Not specified"}
                     </p>
@@ -172,33 +126,6 @@ export default function Home({ user }) {
           </div>
         </div>
       )}
-
-      {showAddModal && (
-        <AddPetModal
-          userId={user.uid}
-          userEmail={user.email}
-          onClose={() => setShowAddModal(false)}
-          onPetAdded={handlePetAdded}
-        />
-      )}
-
-      {selectedPet && (
-        <PetDetailsModal
-          pet={selectedPet}
-          onClose={() => setSelectedPet(null)}
-          onPetUpdated={handlePetUpdated}
-        />
-      )}
-      <ConfirmModal
-        isOpen={!!petToDelete}
-        title="Delete Pet"
-        message={`Are you sure you want to delete ${petToDelete?.name}? This action cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Cancel"
-        confirmButtonClass="btn-danger"
-        onConfirm={handleDeletePet}
-        onCancel={() => setPetToDelete(null)}
-      />
     </div>
   );
 }

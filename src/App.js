@@ -7,6 +7,7 @@ import { auth } from "firebase.js";
 import SplashScreen from "components/SplashScreen";
 import Home from "components/Home";
 import SharedPetView from "components/SharedPetView";
+import OtherPets from "components/OtherPets";
 import "./App.css";
 
 export default function App() {
@@ -48,61 +49,86 @@ export default function App() {
           path="/*"
           element={
             user ? (
-              <div className="app-container">
-                <nav className="navbar">
-                  <div className="navbar-content">
-                    <div className="navbar-brand">
-                      <Link to="/" className="brand-link">
-                        🐾 Clio Pets
-                      </Link>
-                    </div>
-                    <ul className="navbar-menu">
-                      <li>
-                        <Link to="/" className="nav-link">
-                          Home
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to="/about" className="nav-link">
-                          About
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to="/users" className="nav-link">
-                          Users
-                        </Link>
-                      </li>
-                    </ul>
-                    <div className="navbar-actions">
-                      <span className="user-email">{user.email}</span>
-                      <button className="logout-btn" onClick={handleLogout}>
-                        Logout
-                      </button>
-                    </div>
-                  </div>
-                </nav>
-                <main className="main-content">
-                  <Routes>
-                    <Route path="/about" element={<About />} />
-                    <Route path="/users" element={<Users />} />
-                    <Route path="/" element={<Home user={user} />} />
-                  </Routes>
-                </main>
-              </div>
+            <div className="app-container">
+        <nav className="navbar">
+          <div className="navbar-content">
+            <div className="navbar-brand">
+              <Link to="/" className="brand-link">
+                🐾 Clio Pets
+              </Link>
+            </div>
+            <ul className="navbar-menu">
+              <li>
+                <Link to="/" className="nav-link">Home</Link>
+              </li>
+              <li>
+                <Link to="/about" className="nav-link">About</Link>
+              </li>
+              <li>
+                <Link to="/users" className="nav-link">Other Clio-Pets</Link>
+              </li>
+            </ul>
+            <div className="navbar-actions">
+              <span className="user-email">{user.email}</span>
+              <button className="logout-btn" onClick={handleLogout}>
+                Logout
+              </button>
+            </div>
+          </div>
+        </nav>
+        <main className="main-content">
+          <Routes>
+            <Route path="/about" element={<About />} />
+            <Route path="/users" element={<OtherPets user={user} />} />
+            <Route path="/" element={<Home user={user} />} />
+          </Routes>
+        </main>
+      </div> 
             ) : (
               <SplashScreen />
             )
           }
         />
       </Routes>
+      <div className="app-container">
+        <nav className="navbar">
+          <div className="navbar-content">
+            <div className="navbar-brand">
+              <Link to="/" className="brand-link">
+                🐾 Clio Pets
+              </Link>
+            </div>
+            <ul className="navbar-menu">
+              <li>
+                <Link to="/" className="nav-link">Home</Link>
+              </li>
+              <li>
+                <Link to="/about" className="nav-link">About</Link>
+              </li>
+              <li>
+                <Link to="/users" className="nav-link">Other Clio-Pets</Link>
+              </li>
+            </ul>
+            <div className="navbar-actions">
+              <span className="user-email">{user.email}</span>
+              <button className="logout-btn" onClick={handleLogout}>
+                Logout
+              </button>
+            </div>
+          </div>
+        </nav>
+        <main className="main-content">
+          <Routes>
+            <Route path="/about" element={<About />} />
+            <Route path="/users" element={<OtherPets user={user} />} />
+            <Route path="/" element={<Home user={user} />} />
+          </Routes>
+        </main>
+      </div>
     </Router>
   );
 }
 
 function About() {
   return <h2>About</h2>;
-}
-
-function Users() {
-  return <h2>Users</h2>;
 }

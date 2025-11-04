@@ -4,7 +4,7 @@ import { PET_SPECIES, getPetPixelArt } from "../utils/pixelArt";
 import CustomSelect from "./CustomSelect";
 import "./styles/AddPetModal.css";
 
-export default function AddPetModal({ userId, onClose, onPetAdded }) {
+export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) {
   const [formData, setFormData] = useState({
     name: "",
     species: "",
@@ -55,7 +55,7 @@ export default function AddPetModal({ userId, onClose, onPetAdded }) {
         }
       });
 
-      await addPet(userId, petData);
+      await addPet(userId, petData, userEmail);
       onPetAdded();
     } catch (err) {
       console.error("Error adding pet:", err);

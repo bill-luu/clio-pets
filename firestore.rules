@@ -18,6 +18,8 @@ service cloud.firestore {
       // Also allow anyone to read pets that have sharing enabled (for shared pet view)
       allow read: if (isAuthenticated() && resource.data.userId == request.auth.uid) ||
                      (resource.data.sharingEnabled == true);
+      // Allow all authenticated users to read any pet
+      allow read: if isAuthenticated();
       
       // Allow users to create pets with their own userId
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
