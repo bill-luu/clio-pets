@@ -12,6 +12,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { generateShareableId } from "./sharedPetService";
 
 /**
  * Get all pets for a specific user
@@ -112,6 +113,9 @@ export const addPet = async (userId, petData, ownerEmail = null) => {
       cleanliness: 50,
       energy: 50,
       xp: 0,
+      // Initialize sharing
+      shareableId: generateShareableId(),
+      sharingEnabled: false,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -153,6 +157,39 @@ export const deletePet = async (petId) => {
     await deleteDoc(petRef);
   } catch (error) {
     console.error("Error deleting pet:", error);
+    throw error;
+  }
+};
+
+/**
+ * Enable or disable sharing for a pet
+ * @param {string} petId - The pet's document ID
+ * @param {boolean} enabled - Whether sharing should be enabled
+ * @returns {Promise<void>}
+ */
+export const togglePetSharing = async (petId, enabled) => {
+  try {
+    const petRef = doc(db, "pets", petId);
+    const petDoc = await getDoc(petRef);
+
+    if (!petDoc.exists()) {
+      throw new Error("Pet not found");
+    }
+
+    const petData = petDoc.data();
+    const updateData = {
+      sharingEnabled: enabled,
+      updatedAt: serverTimestamp(),
+    };
+
+    // Generate a new shareable ID if one doesn't exist
+    if (!petData.shareableId) {
+      updateData.shareableId = generateShareableId();
+    }
+
+    await updateDoc(petRef, updateData);
+  } catch (error) {
+    console.error("Error toggling pet sharing:", error);
     throw error;
   }
 };

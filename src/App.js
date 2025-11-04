@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
 import { auth } from "firebase.js";
 
 import SplashScreen from "components/SplashScreen";
 import Home from "components/Home";
+import SharedPetView from "components/SharedPetView";
 import OtherPets from "components/OtherPets";
 import "./App.css";
 
@@ -42,49 +38,64 @@ export default function App() {
     return <div>Loading...</div>;
   }
 
-  // If not logged in, show splash screen
-  if (!user) {
-    return <SplashScreen />;
-  }
-
-  // If logged in, show the main app
   return (
     <Router>
-      <div className="app-container">
-        <nav className="navbar">
-          <div className="navbar-content">
-            <div className="navbar-brand">
-              <Link to="/" className="brand-link">
-                🐾 Clio Pets
-              </Link>
-            </div>
-            <ul className="navbar-menu">
-              <li>
-                <Link to="/" className="nav-link">Home</Link>
-              </li>
-              <li>
-                <Link to="/about" className="nav-link">About</Link>
-              </li>
-              <li>
-                <Link to="/users" className="nav-link">Other Clio-Pets</Link>
-              </li>
-            </ul>
-            <div className="navbar-actions">
-              <span className="user-email">{user.email}</span>
-              <button className="logout-btn" onClick={handleLogout}>
-                Logout
-              </button>
-            </div>
-          </div>
-        </nav>
-        <main className="main-content">
-          <Routes>
-            <Route path="/about" element={<About />} />
-            <Route path="/users" element={<OtherPets user={user} />} />
-            <Route path="/" element={<Home user={user} />} />
-          </Routes>
-        </main>
-      </div>
+      <Routes>
+        {/* Public route for shared pets - no authentication required */}
+        <Route path="/shared-pet/:shareableId" element={<SharedPetView />} />
+
+        {/* Protected routes - require authentication */}
+        <Route
+          path="/*"
+          element={
+            user ? (
+              <div className="app-container">
+                <nav className="navbar">
+                  <div className="navbar-content">
+                    <div className="navbar-brand">
+                      <Link to="/" className="brand-link">
+                        🐾 Clio Pets
+                      </Link>
+                    </div>
+                    <ul className="navbar-menu">
+                      <li>
+                        <Link to="/" className="nav-link">
+                          Home
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/about" className="nav-link">
+                          About
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/users" className="nav-link">
+                          Other Clio-Pets
+                        </Link>
+                      </li>
+                    </ul>
+                    <div className="navbar-actions">
+                      <span className="user-email">{user.email}</span>
+                      <button className="logout-btn" onClick={handleLogout}>
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                </nav>
+                <main className="main-content">
+                  <Routes>
+                    <Route path="/about" element={<About />} />
+                    <Route path="/users" element={<OtherPets user={user} />} />
+                    <Route path="/" element={<Home user={user} />} />
+                  </Routes>
+                </main>
+              </div>
+            ) : (
+              <SplashScreen />
+            )
+          }
+        />
+      </Routes>
     </Router>
   );
 }
