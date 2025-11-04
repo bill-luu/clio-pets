@@ -97,7 +97,7 @@ export default function TestPage() {
         <form onSubmit={handleSubmit} className="test-form">
           <div className="form-section">
             <h3>Basic Information</h3>
-            
+
             <div className="form-group">
               <label htmlFor="name">Pet Name *</label>
               <input
@@ -123,8 +123,8 @@ export default function TestPage() {
                 <option value="Dog">Dog</option>
                 <option value="Cat">Cat</option>
                 <option value="Bird">Bird</option>
-                <option value="Rabbit">Rabbit</option>
-                <option value="Hamster">Hamster</option>
+                <option value="Bunny">Bunny</option>
+                <option value="Lizard">Lizard</option>
               </select>
             </div>
 
@@ -167,7 +167,7 @@ export default function TestPage() {
 
           <div className="form-section">
             <h3>Progression Settings</h3>
-            
+
             <div className="warning-box">
               <strong>⚠️ Typical Progression:</strong>
               <ul>

@@ -100,10 +100,57 @@ export const PixelLizard = ({ stage = 1 }) => (
       : <AnimatedBabyLizard />
 );
 
+const AnimatedAdultBird = () => (
+  <div style={{ position: "relative", width: 170, height: 170 }}>
+    <div className="pixelart-bird-adult" aria-label="Adult Bird" />
+  </div>
+);
+
+const AnimatedTeenBird = () => (
+  <div style={{ position: "relative", width: 170, height: 170 }}>
+    <div className="pixelart-bird-teen" aria-label="Teen Bird" />
+  </div>
+);
+
+const AnimatedBabyBird = () => (
+  <div style={{ position: "relative", width: 170, height: 170 }}>
+    <div className="pixelart-bird-baby" aria-label="Baby Bird" />
+  </div>
+);
+
+export const PixelBird = ({ stage = 1 }) => (
+  stage === 3 ? <AnimatedAdultBird /> : stage === 2 ? <AnimatedTeenBird /> : <AnimatedBabyBird />
+);
+
+const AnimatedBabyBunny = () => (
+  <div style={{ position: "relative", width: 170, height: 170 }}>
+    <div className="pixelart-bunny-baby" aria-label="Baby Bunny" />
+  </div>
+);
+
+const AnimatedTeenBunny = () => (
+  <div style={{ position: "relative", width: 170, height: 170 }}>
+    <div className="pixelart-bunny-teen" aria-label="Teen Bunny" />
+  </div>
+);
+
+const AnimatedAdultBunny = () => (
+
+  <div style={{ position: "relative", width: 170, height: 170 }}>
+    <div className="pixelart-bunny-adult" aria-label="Adult Bunny" />
+  </div>
+);
+
+export const PixelBunny = ({ stage = 1 }) => (
+  stage === 3 ? <AnimatedAdultBunny /> : stage === 2 ? <AnimatedTeenBunny /> : <AnimatedBabyBunny />
+);
+
 // Available pet species with their pixel art components
 export const PET_SPECIES = [
   { value: "Dog", label: "Dog", Component: PixelDog },
   { value: "Cat", label: "Cat", Component: PixelCat },
+  { value: "Bird", label: "Bird", Component: PixelBird },
+  { value: "Bunny", label: "Bunny", Component: PixelBunny },
   { value: "Lizard", label: "Lizard", Component: PixelLizard },
 ];
 
