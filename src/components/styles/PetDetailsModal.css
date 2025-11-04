@@ -512,3 +512,27 @@
   }
 }
 
+/* Sharing Section */
+.sharing-section {
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.share-btn {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.interaction-count {
+  margin-top: 1rem;
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  color: #495057;
+  font-style: italic;
+}
+

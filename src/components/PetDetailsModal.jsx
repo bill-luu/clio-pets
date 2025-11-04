@@ -10,6 +10,8 @@ import {
 import { formatAgeDisplay } from "../utils/petAge";
 import { getProgressToNextStage, getStageLabelWithEmoji } from "../utils/petProgression";
 import { getStageInfo } from "../utils/petStages";
+import { getInteractionCount } from "../services/sharedPetService";
+import SharePetModal from "./SharePetModal";
 import "./styles/PetDetailsModal.css";
 
 export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
@@ -24,6 +26,24 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
   const [lastAction, setLastAction] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [interactionStats, setInteractionStats] = useState(null);
+
+  // Load interaction stats
+  useEffect(() => {
+    const loadStats = async () => {
+      if (currentPet.sharingEnabled) {
+        try {
+          const stats = await getInteractionCount(currentPet.id);
+          setInteractionStats(stats);
+        } catch (err) {
+          console.error("Error loading interaction stats:", err);
+        }
+      }
+    };
+
+    loadStats();
+  }, [currentPet.id, currentPet.sharingEnabled]);
 
   // Cooldown timer
   useEffect(() => {
@@ -55,6 +75,18 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
       onPetUpdated();
     }
     onClose();
+  };
+
+  const handleSharingToggled = async () => {
+    // Reload pet data when sharing is toggled
+    const updatedPet = await getPetById(currentPet.id);
+    setCurrentPet(updatedPet);
+    
+    // Reload interaction stats
+    if (updatedPet.sharingEnabled) {
+      const stats = await getInteractionCount(updatedPet.id);
+      setInteractionStats(stats);
+    }
   };
 
   const handleAction = async (actionType) => {
@@ -360,6 +392,21 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
               )}
             </div>
           </div>
+
+          {/* Sharing Section */}
+          <div className="sharing-section">
+            <button
+              className="btn btn-primary share-btn"
+              onClick={() => setShowShareModal(true)}
+            >
+              🔗 Share Pet
+            </button>
+            {interactionStats && interactionStats.uniqueInteractors > 0 && (
+              <p className="interaction-count">
+                {interactionStats.uniqueInteractors} {interactionStats.uniqueInteractors === 1 ? 'person has' : 'people have'} interacted with {currentPet.name}
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="modal-footer">
@@ -368,6 +415,14 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
           </button>
         </div>
       </div>
+
+      {showShareModal && (
+        <SharePetModal
+          pet={currentPet}
+          onClose={() => setShowShareModal(false)}
+          onSharingToggled={handleSharingToggled}
+        />
+      )}
     </div>
   );
 }

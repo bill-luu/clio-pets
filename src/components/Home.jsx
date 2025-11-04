@@ -202,6 +202,7 @@ export default function Home({ user }) {
       {showAddModal && (
         <AddPetModal
           userId={user.uid}
+          userEmail={user.email}
           onClose={() => setShowAddModal(false)}
           onPetAdded={handlePetAdded}
         />
