@@ -1,0 +1,84 @@
+/* Import base modal styles from PetDetailsModal */
+@import './PetDetailsModal.css';
+
+/* Specific styles for Other Pet Details Modal */
+.other-pet-details-modal {
+  max-width: 600px;
+}
+
+.pet-owner {
+  color: #666;
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0 0;
+  font-style: italic;
+}
+
+/* Sharing Badge in Pet Card Header */
+.sharing-badge {
+  font-size: 1.2rem;
+  margin-left: 0.5rem;
+  opacity: 0.8;
+  cursor: help;
+}
+
+/* Interactions Disabled Section */
+.interactions-disabled {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.interactions-disabled p {
+  margin: 0.5rem 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.interactions-disabled p:first-child {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #333;
+  margin-bottom: 0.75rem;
+}
+
+/* Clickable Pet Card Styles */
+.clickable-pet-card {
+  transition: all 0.2s ease;
+}
+
+.clickable-pet-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  border-color: #667eea;
+}
+
+.clickable-pet-card .pet-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cooldown-info {
+  text-align: center;
+  margin-top: 1rem;
+  margin-bottom: 0;
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* Override actions grid for shared pets (only 2 actions) */
+.other-pet-details-modal .actions-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .other-pet-details-modal {
+    max-width: 100%;
+    margin: 0.5rem;
+  }
+}
+
