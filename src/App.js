@@ -8,6 +8,7 @@ import SplashScreen from "components/SplashScreen";
 import Home from "components/Home";
 import SharedPetView from "components/SharedPetView";
 import OtherPets from "components/OtherPets";
+import TestPage from "components/TestPage";
 import "./App.css";
 
 export default function App() {
@@ -73,6 +74,13 @@ export default function App() {
                           Other Clio-Pets
                         </Link>
                       </li>
+                      {process.env.NODE_ENV === 'development' && (
+                        <li>
+                          <Link to="/test" className="nav-link" style={{ color: '#ffc107' }}>
+                            🧪 Test
+                          </Link>
+                        </li>
+                      )}
                     </ul>
                     <div className="navbar-actions">
                       <span className="user-email">{user.email}</span>
@@ -86,6 +94,9 @@ export default function App() {
                   <Routes>
                     <Route path="/about" element={<About />} />
                     <Route path="/users" element={<OtherPets user={user} />} />
+                    {process.env.NODE_ENV === 'development' && (
+                      <Route path="/test" element={<TestPage />} />
+                    )}
                     <Route path="/" element={<Home user={user} />} />
                   </Routes>
                 </main>

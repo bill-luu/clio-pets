@@ -106,17 +106,19 @@ export const addPet = async (userId, petData, ownerEmail = null) => {
     const docRef = await addDoc(petsRef, {
       userId,
       ownerEmail,
-      ...petData,
-      // Initialize pet stats
+      // Initialize pet stats with defaults (can be overridden by petData)
       fullness: 50,
       happiness: 50,
       cleanliness: 50,
       energy: 50,
       xp: 0,
-      // Initialize age tracking
+      // Initialize age tracking (ageInYears stores months)
       ageInYears: 0,
       lastAgeCheck: serverTimestamp(),
-      // Initialize sharing
+      stage: 1, // Default to Baby stage
+      // Spread petData AFTER defaults to allow overrides (for test pets)
+      ...petData,
+      // Initialize sharing (always set these)
       shareableId: generateShareableId(),
       sharingEnabled: false,
       createdAt: serverTimestamp(),
