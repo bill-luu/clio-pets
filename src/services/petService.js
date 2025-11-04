@@ -85,6 +85,9 @@ export const addPet = async (userId, petData) => {
       cleanliness: 50,
       energy: 50,
       xp: 0,
+      // Initialize age tracking
+      ageInYears: 0,
+      lastAgeCheck: serverTimestamp(),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
