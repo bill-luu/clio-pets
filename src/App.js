@@ -45,12 +45,7 @@ export default function App() {
     return <div>Loading...</div>;
   }
 
-  // If not logged in, show splash screen
-  if (!user) {
-    return <SplashScreen />;
-  }
-
-  // If logged in, show the main app
+  // Always render Router to make shared pet route accessible
   return (
     <Router>
       <NotificationProvider user={user}>
@@ -103,9 +98,13 @@ function AuthenticatedApp({ user, handleLogout }) {
                 Other Clio-Pets
               </Link>
             </li>
-            {process.env.NODE_ENV === 'development' && (
+            {process.env.NODE_ENV === "development" && (
               <li>
-                <Link to="/test" className="nav-link" style={{ color: '#ffc107' }}>
+                <Link
+                  to="/test"
+                  className="nav-link"
+                  style={{ color: "#ffc107" }}
+                >
                   🧪 Test
                 </Link>
               </li>
@@ -123,7 +122,7 @@ function AuthenticatedApp({ user, handleLogout }) {
         <Routes>
           <Route path="/about" element={<About />} />
           <Route path="/users" element={<OtherPets user={user} />} />
-          {process.env.NODE_ENV === 'development' && (
+          {process.env.NODE_ENV === "development" && (
             <Route path="/test" element={<TestPage />} />
           )}
           <Route path="/" element={<Home user={user} />} />
