@@ -232,9 +232,3 @@ else stage = Adult
 - Skipping multiple days (stats will decay)
 - Focusing only on one stat (need 3/4 above threshold)
 
----
-
-**Version:** 1.2  
-**Last Updated:** November 2025  
-**Age System:** 1 month/day with 3/4 stats ≥ 45 threshold  
-**Stage System:** 200 XP → Teen, 600 XP → Adult
