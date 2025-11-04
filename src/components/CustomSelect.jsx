@@ -74,7 +74,6 @@ export default function CustomSelect({
         disabled={disabled}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        aria-required={required}
       >
         <span className="custom-select-value">
           {selectedLabel || placeholder}

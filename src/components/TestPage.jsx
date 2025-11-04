@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
 import { addPet } from "../services/petService";
-import { STAGE_THRESHOLDS } from "../utils/petProgression";
 import "./styles/TestPage.css";
 
 export default function TestPage() {

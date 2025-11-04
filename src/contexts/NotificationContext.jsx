@@ -16,6 +16,15 @@ export const NotificationProvider = ({ children, user }) => {
   const [toasts, setToasts] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
+  // Define addToast before useEffect so it can be included in dependencies
+  const addToast = useCallback((notification) => {
+    setToasts((prev) => {
+      // Limit to 3 toasts at a time
+      const newToasts = [notification, ...prev].slice(0, 3);
+      return newToasts;
+    });
+  }, []);
+
   useEffect(() => {
     if (!user) {
       setNotifications([]);
@@ -59,15 +68,7 @@ export const NotificationProvider = ({ children, user }) => {
     );
 
     return () => unsubscribe();
-  }, [user]);
-
-  const addToast = useCallback((notification) => {
-    setToasts((prev) => {
-      // Limit to 3 toasts at a time
-      const newToasts = [notification, ...prev].slice(0, 3);
-      return newToasts;
-    });
-  }, []);
+  }, [user, addToast]);
 
   const removeToast = useCallback((notificationId) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== notificationId));

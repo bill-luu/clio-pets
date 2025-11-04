@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { subscribeToUserPets, deletePet } from "../services/petService";
 import { getPetPixelArt } from "../utils/pixelArt";
 import { getStageLabelWithEmoji, getStageInfo } from "../utils/petStages";
