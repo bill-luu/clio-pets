@@ -6,7 +6,6 @@ import { auth } from "firebase.js";
 
 import SplashScreen from "components/SplashScreen";
 import Home from "components/Home";
-import SharedPetView from "components/SharedPetView";
 import OtherPets from "components/OtherPets";
 import {
   NotificationProvider,
@@ -43,6 +42,12 @@ export default function App() {
     return <div>Loading...</div>;
   }
 
+  // If not logged in, show splash screen
+  if (!user) {
+    return <SplashScreen />;
+  }
+
+  // If logged in, show the main app
   return (
     <Router>
       <NotificationProvider user={user}>
@@ -91,7 +96,7 @@ function AuthenticatedApp({ user, handleLogout }) {
               </Link>
             </li>
             <li>
-              <Link to="/users" className="nav-link">
+              <Link to="/other-pets" className="nav-link">
                 Other Clio-Pets
               </Link>
             </li>
@@ -107,21 +112,10 @@ function AuthenticatedApp({ user, handleLogout }) {
       <main className="main-content">
         <Routes>
           <Route path="/about" element={<About />} />
-          <Route path="/users" element={<OtherPets user={user} />} />
+          <Route path="/other-pets" element={<OtherPets user={user} />} />
           <Route path="/" element={<Home user={user} />} />
         </Routes>
       </main>
-
-      {/* Notification Toast Container */}
-      <div className="notification-toast-container">
-        {toasts.map((notification) => (
-          <NotificationToast
-            key={notification.id}
-            notification={notification}
-            onDismiss={removeToast}
-          />
-        ))}
-      </div>
     </div>
   );
 }
