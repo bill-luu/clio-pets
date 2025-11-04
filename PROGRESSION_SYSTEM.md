@@ -41,10 +41,17 @@ Every pet has four stats (0-100 range):
 
 **Rate:** Stats decay by **5 points per day**
 
-- Evaluated when you perform an action after 24+ hours
+**How It Works:**
+- Decay is calculated **client-side** when you interact with your pet
+- Evaluated when you perform an action after 24+ hours have passed
 - All four stats decay equally
 - XP never decays
 - Stats capped at 0 minimum, 100 maximum
+
+**"Schrödinger's Pet" Mechanic:**
+- Your pet doesn't decay in real-time while you're away
+- When you return, appropriate decay is calculated based on time elapsed
+- This provides a forgiving, casual gameplay experience
 
 ---
 
