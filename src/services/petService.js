@@ -117,6 +117,10 @@ export const addPet = async (userId, petData, ownerEmail = null) => {
       ageInYears: 0,
       lastAgeCheck: serverTimestamp(),
       stage: 1, // Default to Baby stage
+      // Initialize streak tracking
+      lastInteractionDate: null,
+      currentStreak: 0,
+      longestStreak: 0,
       // Spread petData AFTER defaults to allow overrides (for test pets)
       ...petData,
       // Initialize sharing (always set these)

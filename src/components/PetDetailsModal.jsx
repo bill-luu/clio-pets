@@ -11,6 +11,9 @@ import { formatAgeDisplay } from "../utils/petAge";
 import { getProgressToNextStage, getStageLabelWithEmoji } from "../utils/petProgression";
 import { getStageInfo } from "../utils/petStages";
 import { getInteractionCount } from "../services/sharedPetService";
+import { getStreakBonus, getStreakTierInfo } from "../utils/streakTracker";
+import { getSocialBonus, getSocialTierInfo } from "../utils/socialBonus";
+import { getCooldownBreakdown, formatCooldownTime } from "../utils/cooldownCalculator";
 import SharePetModal from "./SharePetModal";
 import "./styles/PetDetailsModal.css";
 
@@ -56,8 +59,8 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
 
   // Cooldown timer
   useEffect(() => {
-    const updateCooldown = () => {
-      const cooldownStatus = checkCooldown(currentPet);
+    const updateCooldown = async () => {
+      const cooldownStatus = await checkCooldown(currentPet, interactionStats?.uniqueInteractors || 0);
       setCooldownRemaining(cooldownStatus.remainingSeconds);
     };
 
@@ -68,7 +71,7 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
     const interval = setInterval(updateCooldown, 1000);
 
     return () => clearInterval(interval);
-  }, [currentPet, currentPet.lastActionAt]);
+  }, [currentPet, currentPet.lastActionAt, interactionStats]);
 
   // Use useMemo to ensure these recalculate when currentPet changes
   const PixelArtComponent = getPetPixelArt(currentPet.species);
@@ -77,6 +80,24 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
   const progressInfo = useMemo(() => getProgressToNextStage(currentPet.xp || 0), [currentPet.xp]);
   const stageInfo = useMemo(() => getStageInfo(currentPet.stage || 1), [currentPet.stage]);
   const ageDisplay = formatAgeDisplay(currentPet.ageInYears || 0);
+  
+  // Streak and bonus information
+  const streakBonus = useMemo(() => getStreakBonus(currentPet.currentStreak || 0), [currentPet.currentStreak]);
+  const streakTierInfo = useMemo(() => getStreakTierInfo(streakBonus.tier), [streakBonus.tier]);
+  const socialBonus = useMemo(() => getSocialBonus(interactionStats?.uniqueInteractors || 0), [interactionStats?.uniqueInteractors]);
+  const socialTierInfo = useMemo(() => getSocialTierInfo(socialBonus.tier), [socialBonus.tier]);
+  const cooldownBreakdown = useMemo(() => {
+    if (cooldownRemaining === 0) return null;
+    const effectiveCooldown = 600 - streakBonus.reductionSeconds - socialBonus.reductionSeconds;
+    return getCooldownBreakdown({
+      baseCooldown: 600,
+      streakBonus: { seconds: streakBonus.reductionSeconds, minutes: streakBonus.reductionMinutes },
+      socialBonus: { seconds: socialBonus.reductionSeconds, minutes: socialBonus.reductionMinutes },
+      effectiveCooldown: effectiveCooldown,
+      effectiveCooldownMinutes: Math.floor(effectiveCooldown / 60),
+      hasNoCooldown: effectiveCooldown === 0,
+    });
+  }, [streakBonus, socialBonus, cooldownRemaining]);
 
   const handleClose = () => {
     // Notify parent to refresh pet list when modal closes
@@ -191,6 +212,24 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
                   {getStageLabelWithEmoji(currentPet.stage || 1)}
                 </span>
               </div>
+              <div className="progression-item">
+                <span className="progression-label">Streak</span>
+                <span className="progression-value" style={{ color: streakTierInfo.color }}>
+                  {streakTierInfo.emoji} {currentPet.currentStreak || 0} days
+                </span>
+              </div>
+              <div className="progression-item">
+                <span className="progression-label">Social</span>
+                <span className="progression-value" style={{ color: socialTierInfo.color }}>
+                  {socialTierInfo.emoji} {interactionStats?.uniqueInteractors || 0} friends
+                </span>
+              </div>
+              {currentPet.longestStreak > 0 && (
+                <div className="progression-item">
+                  <span className="progression-label">Best Streak</span>
+                  <span className="progression-value">🏆 {currentPet.longestStreak} days</span>
+                </div>
+              )}
             </div>
             <div className="xp-progress">
               <div className="xp-progress-header">
@@ -317,13 +356,55 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
             </div>
           </div>
 
+          {/* Cooldown Bonuses Section */}
+          {(streakBonus.reductionSeconds > 0 || socialBonus.reductionSeconds > 0) && (
+            <div className="bonuses-section">
+              <h3>Cooldown Bonuses</h3>
+              <div className="bonuses-grid">
+                {streakBonus.reductionSeconds > 0 && (
+                  <div className="bonus-item" style={{ borderColor: streakTierInfo.color }}>
+                    <span className="bonus-icon">{streakTierInfo.emoji}</span>
+                    <div className="bonus-info">
+                      <span className="bonus-label">{streakTierInfo.name} Streak</span>
+                      <span className="bonus-value">-{streakBonus.reductionMinutes} min</span>
+                    </div>
+                  </div>
+                )}
+                {socialBonus.reductionSeconds > 0 && (
+                  <div className="bonus-item" style={{ borderColor: socialTierInfo.color }}>
+                    <span className="bonus-icon">{socialTierInfo.emoji}</span>
+                    <div className="bonus-info">
+                      <span className="bonus-label">{socialTierInfo.name}</span>
+                      <span className="bonus-value">-{socialBonus.reductionMinutes} min</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {streakBonus.nextMilestone && (
+                <p className="bonus-hint">
+                  🎯 {streakBonus.nextMilestone.days - (currentPet.currentStreak || 0)} more days for next streak bonus!
+                </p>
+              )}
+              {socialBonus.nextMilestone && (
+                <p className="bonus-hint">
+                  🎯 {socialBonus.nextMilestone.count - (interactionStats?.uniqueInteractors || 0)} more friends for next social bonus!
+                </p>
+              )}
+            </div>
+          )}
+
           {/* Actions Section */}
           <div className="actions-section">
             <div className="actions-header">
               <h3>Actions</h3>
-              {cooldownRemaining > 0 && (
+              {cooldownRemaining > 0 ? (
                 <div className="cooldown-indicator">
-                  ⏱️ Cooldown: {cooldownRemaining}s
+                  ⏱️ {formatCooldownTime(cooldownRemaining)}
+                  {cooldownBreakdown && <div className="cooldown-breakdown">{cooldownBreakdown}</div>}
+                </div>
+              ) : (
+                <div className="cooldown-indicator ready">
+                  ✅ Ready!
                 </div>
               )}
             </div>
