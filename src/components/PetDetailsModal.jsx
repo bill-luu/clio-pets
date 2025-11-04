@@ -435,7 +435,7 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
             <div className="actions-header">
               <div className="section-header-with-info">
                 <h3>Actions</h3>
-                <div className="info-icon-wrapper">
+                <div className="info-icon-wrapper tooltip-right">
                   <span className="info-icon">ℹ️</span>
                   <div className="info-tooltip info-tooltip-large">
                     <strong>⏱️ Cooldown Reduction System:</strong>
