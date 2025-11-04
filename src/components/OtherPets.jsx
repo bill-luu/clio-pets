@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import { subscribeToAllPets } from "../services/petService";
 import { getPetPixelArt } from "../utils/pixelArt";
 import { getStageLabelWithEmoji, getStageInfo } from "../utils/petStages";
+import OtherPetDetailsModal from "./OtherPetDetailsModal";
 import "./styles/Home.css";
 
 export default function OtherPets({ user }) {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedPet, setSelectedPet] = useState(null);
 
   useEffect(() => {
     setLoading(true);
@@ -62,9 +64,19 @@ export default function OtherPets({ user }) {
               const PixelArtComponent = getPetPixelArt(pet.species);
               const stageInfo = getStageInfo(pet.stage);
               return (
-                <div key={pet.id} className="pet-card">
+                <div 
+                  key={pet.id} 
+                  className="pet-card clickable-pet-card" 
+                  onClick={() => setSelectedPet(pet)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className="pet-card-header">
                     <h3>{pet.name}</h3>
+                    {pet.sharingEnabled && (
+                      <span className="sharing-badge" title="Interactions enabled">
+                        🤝
+                      </span>
+                    )}
                   </div>
                   <div className="pet-stage-badge" style={{ backgroundColor: stageInfo.color }}>
                     {getStageLabelWithEmoji(pet.stage)}
@@ -127,6 +139,13 @@ export default function OtherPets({ user }) {
             })}
           </div>
         </div>
+      )}
+
+      {selectedPet && (
+        <OtherPetDetailsModal
+          pet={selectedPet}
+          onClose={() => setSelectedPet(null)}
+        />
       )}
     </div>
   );
