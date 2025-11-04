@@ -2,7 +2,7 @@
 
 /**
  * Calculate stat decay amount based on time elapsed
- * Formula: Base decay (10 per day) + Inactivity decay (5 per day since last action)
+ * Formula: Base decay (5 per day)
  * 
  * @param {Object} pet - The pet object with timestamps
  * @param {number} now - Current timestamp in milliseconds
@@ -19,20 +19,10 @@ export const calculateStatDecay = (pet, now) => {
     return 0; // No decay on same day
   }
   
-  // Base decay: -10 per day
-  const baseDecay = daysSinceLastCheck * 10;
+  // Base decay: -5 per day
+  const baseDecay = daysSinceLastCheck * 5;
   
-  // Calculate inactivity decay
-  const lastAction = pet.lastActionAt?.toMillis 
-    ? pet.lastActionAt.toMillis() 
-    : pet.lastActionAt || pet.createdAt?.toMillis?.() || now;
-  
-  const daysSinceAction = Math.floor((now - lastAction) / (1000 * 60 * 60 * 24));
-  
-  // Extra -5 per day of inactivity
-  const inactivityDecay = daysSinceAction > 0 ? daysSinceAction * 5 : 0;
-  
-  return baseDecay + inactivityDecay;
+  return baseDecay;
 };
 
 /**
