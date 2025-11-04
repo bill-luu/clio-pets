@@ -15,13 +15,13 @@ export const STAGE_INFO = {
   },
   2: {
     name: "Teen",
-    emoji: "🧒",
+    emoji: "🐾",
     label: "Teen",
     color: "#55efc4", // Light green
   },
   3: {
     name: "Adult",
-    emoji: "👨",
+    emoji: "👑",
     label: "Adult",
     color: "#6c5ce7", // Purple
   },
