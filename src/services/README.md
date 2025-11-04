@@ -24,7 +24,7 @@ Each pet document has the following structure:
   energy: number,        // 0-100: Pet's energy level
   xp: number,            // 0+: Experience points earned
   stage: number,         // 1=Baby, 2=Teen, 3=Adult (XP-based)
-  ageInYears: number,    // 0+: Pet age in years (care-based)
+  ageInYears: number,    // 0+: Pet age in months (care-based, grows 1 month/day)
   lastActionAt: Timestamp,  // Last time an action was performed
   lastActionType: string,   // Type of last action performed
   lastAgeCheck: Timestamp,  // Last time age was evaluated
@@ -96,7 +96,7 @@ Creates a new pet for a user. All pets are automatically initialized with:
 **Progression:**
 - xp: 0
 - stage: 1 (Baby)
-- ageInYears: 0 (Newborn)
+- ageInYears: 0 (stores age in months, displays as "Newborn")
 - lastAgeCheck: serverTimestamp()
 
 **Parameters:**
@@ -218,7 +218,7 @@ All stats are clamped between 0-100 (except XP which only increases).
 
 **Progression Integration:** Actions now also trigger:
 - **Age Evaluation**: Checks if 24+ hours passed, applies decay, evaluates age threshold
-- **Stage Evolution**: Checks if XP crosses evolution thresholds (100 XP → Teen, 300 XP → Adult)
+- **Stage Evolution**: Checks if XP crosses evolution thresholds (200 XP → Teen, 600 XP → Adult)
 - See [PROGRESSION_SYSTEM.md](../../PROGRESSION_SYSTEM.md) for complete details
 
 ## Available Functions

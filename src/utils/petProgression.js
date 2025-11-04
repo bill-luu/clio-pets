@@ -3,6 +3,10 @@
 /**
  * Stage threshold configuration
  * Defines XP ranges for each life stage
+ * 
+ * Thresholds designed to align with age progression (1 month/day):
+ * - Teen at 200 XP (~6 days) = 6 months old
+ * - Adult at 600 XP (~16 days) = 16-18 months old
  */
 export const STAGE_THRESHOLDS = {
   BABY: {
@@ -10,22 +14,22 @@ export const STAGE_THRESHOLDS = {
     name: "Baby",
     emoji: "🍼",
     minXP: 0,
-    maxXP: 99,
+    maxXP: 199,
     label: "Baby"
   },
   TEEN: {
     id: 2,
     name: "Teen",
     emoji: "🧒",
-    minXP: 100,
-    maxXP: 299,
+    minXP: 200,
+    maxXP: 599,
     label: "Teen"
   },
   ADULT: {
     id: 3,
     name: "Adult",
     emoji: "👨",
-    minXP: 300,
+    minXP: 600,
     maxXP: Infinity,
     label: "Adult"
   }
@@ -55,6 +59,11 @@ export const getStageConfig = (stageId) => {
  * 
  * @param {number} xp - Current XP
  * @returns {number} Stage ID (1 = Baby, 2 = Teen, 3 = Adult)
+ * 
+ * Thresholds:
+ * - Baby: 0-199 XP
+ * - Teen: 200-599 XP
+ * - Adult: 600+ XP
  */
 export const getStageFromXP = (xp) => {
   if (xp >= STAGE_THRESHOLDS.ADULT.minXP) {

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import { getUserPets, deletePet } from "../services/petService";
 import { getPetPixelArt } from "../utils/pixelArt";
 import { getStageLabelWithEmoji, getStageInfo } from "../utils/petStages";
+import { formatAgeDisplay } from "../utils/petAge";
+import { getProgressToNextStage } from "../utils/petProgression";
 import AddPetModal from "./AddPetModal";
 import PetDetailsModal from "./PetDetailsModal";
 import ConfirmModal from "./ConfirmModal";
@@ -103,13 +105,19 @@ export default function Home({ user }) {
             {pets.map((pet) => {
               const PixelArtComponent = getPetPixelArt(pet.species);
               const stageInfo = getStageInfo(pet.stage);
+              const progressInfo = getProgressToNextStage(pet.xp || 0);
+              const ageDisplay = formatAgeDisplay(pet.ageInYears || 0);
+              
               return (
                 <div key={pet.id} className="pet-card" onClick={() => handlePetClick(pet)}>
                   <div className="pet-card-header">
                     <h3>{pet.name}</h3>
                     <button
                       className="btn-delete"
-                      onClick={() => setPetToDelete(pet)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPetToDelete(pet);
+                      }}
                       title="Delete pet"
                     >
                       ×
@@ -132,11 +140,9 @@ export default function Home({ user }) {
                         <strong>Breed:</strong> {pet.breed}
                       </p>
                     )}
-                    {pet.age && (
-                      <p>
-                        <strong>Age:</strong> {pet.age}
-                      </p>
-                    )}
+                    <p>
+                      <strong>Age:</strong> {ageDisplay}
+                    </p>
                     {pet.color && (
                       <p>
                         <strong>Color:</strong> {pet.color}
@@ -164,6 +170,26 @@ export default function Home({ user }) {
                     <div className="mini-stat">
                       <span>⚡</span>
                       <span>{pet.energy || 50}</span>
+                    </div>
+                  </div>
+                  <div className="pet-card-progress">
+                    <div className="progress-label">
+                      <span>⭐ {pet.xp || 0} XP</span>
+                      {!progressInfo.isMaxStage && (
+                        <span className="progress-next">{progressInfo.message}</span>
+                      )}
+                      {progressInfo.isMaxStage && (
+                        <span className="progress-max">Max Stage!</span>
+                      )}
+                    </div>
+                    <div className="progress-bar">
+                      <div 
+                        className="progress-bar-fill" 
+                        style={{ 
+                          width: `${progressInfo.percentage}%`,
+                          backgroundColor: stageInfo.color 
+                        }}
+                      />
                     </div>
                   </div>
                 </div>

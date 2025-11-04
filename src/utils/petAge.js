@@ -62,7 +62,7 @@ const clamp = (value, min, max) => {
  * 1. Calculate decay amount
  * 2. Calculate stats before and after decay
  * 3. Use AVERAGE of before/after stats to check threshold
- * 4. If threshold met: age increases
+ * 4. If threshold met: age increases by 1 month per day
  * 5. Apply decay to stats
  * 
  * @param {Object} pet - The pet object with all stats and timestamps
@@ -124,57 +124,93 @@ export const evaluatePetAge = (pet) => {
   // Check threshold with AVERAGE stats
   const meetsThreshold = checkStatsThreshold(averageStats);
   
-  // Calculate age increase
-  const yearsGained = meetsThreshold ? daysSinceLastCheck : 0;
-  const newAge = (pet.ageInYears || 0) + yearsGained;
+  // Calculate age increase (1 month per day)
+  const monthsGained = meetsThreshold ? daysSinceLastCheck : 0;
+  const newAge = (pet.ageInYears || 0) + monthsGained; // Note: ageInYears field stores months
+  
+  // Format message appropriately
+  let ageMessage;
+  if (meetsThreshold) {
+    if (monthsGained === 1) {
+      ageMessage = 'Your pet aged 1 month!';
+    } else if (monthsGained < 12) {
+      ageMessage = `Your pet aged ${monthsGained} months!`;
+    } else {
+      const years = Math.floor(monthsGained / 12);
+      const months = monthsGained % 12;
+      if (months === 0) {
+        ageMessage = `Your pet aged ${years} year${years > 1 ? 's' : ''}!`;
+      } else {
+        ageMessage = `Your pet aged ${years} year${years > 1 ? 's' : ''}, ${months} month${months > 1 ? 's' : ''}!`;
+      }
+    }
+  } else {
+    ageMessage = 'Your pet did not meet the care threshold to age.';
+  }
   
   return {
     shouldUpdate: true,
-    aged: yearsGained > 0,
+    aged: monthsGained > 0,
     decayed: decayAmount > 0,
-    yearsGained,
+    yearsGained: monthsGained, // Keep field name for compatibility
     decayAmount,
     daysSinceLastCheck,
     averageStats,
     meetsThreshold,
     newStats: statsAfterDecay,
     newAge,
-    message: meetsThreshold 
-      ? `Your pet aged ${yearsGained} year${yearsGained > 1 ? 's' : ''}!`
-      : 'Your pet did not meet the care threshold to age.'
+    message: ageMessage
   };
 };
 
 /**
- * Format age in years for display
+ * Format age for display (converts months to years/months format)
  * 
- * @param {number} ageInYears - Age in years (can be 0)
+ * @param {number} ageInMonths - Age in months (can be 0)
  * @returns {string} Formatted age string
  */
-export const formatAgeDisplay = (ageInYears) => {
-  if (!ageInYears || ageInYears === 0) {
+export const formatAgeDisplay = (ageInMonths) => {
+  if (!ageInMonths || ageInMonths === 0) {
     return "Newborn";
   }
   
-  if (ageInYears === 1) {
-    return "1 year old";
+  // Less than 1 month (shouldn't happen but handle it)
+  if (ageInMonths < 1) {
+    return "Newborn";
   }
   
-  return `${ageInYears} years old`;
+  // Less than 12 months: show in months
+  if (ageInMonths < 12) {
+    return ageInMonths === 1 ? "1 month old" : `${ageInMonths} months old`;
+  }
+  
+  // 12+ months: show in years and months
+  const years = Math.floor(ageInMonths / 12);
+  const months = ageInMonths % 12;
+  
+  if (months === 0) {
+    return years === 1 ? "1 year old" : `${years} years old`;
+  }
+  
+  const yearsPart = years === 1 ? "1 year" : `${years} years`;
+  const monthsPart = months === 1 ? "1 month" : `${months} months`;
+  
+  return `${yearsPart}, ${monthsPart} old`;
 };
 
 /**
- * Get age status message based on age
+ * Get age status message based on age in months
  * 
- * @param {number} ageInYears - Age in years
+ * @param {number} ageInMonths - Age in months
  * @returns {string} Status message
  */
-export const getAgeStatus = (ageInYears) => {
-  if (ageInYears === 0) return "Just born!";
-  if (ageInYears <= 2) return "Very young";
-  if (ageInYears <= 5) return "Young";
-  if (ageInYears <= 10) return "Mature";
-  if (ageInYears <= 15) return "Senior";
+export const getAgeStatus = (ageInMonths) => {
+  if (ageInMonths === 0) return "Just born!";
+  if (ageInMonths <= 3) return "Just born!";
+  if (ageInMonths <= 12) return "Very young";
+  if (ageInMonths <= 24) return "Young";
+  if (ageInMonths <= 84) return "Mature"; // 7 years
+  if (ageInMonths <= 180) return "Senior"; // 15 years
   return "Elder";
 };
 

@@ -7,6 +7,9 @@ import {
   getPetStatus,
   checkCooldown,
 } from "../services/petActionService";
+import { formatAgeDisplay } from "../utils/petAge";
+import { getProgressToNextStage, getStageLabelWithEmoji } from "../utils/petProgression";
+import { getStageInfo } from "../utils/petStages";
 import "./styles/PetDetailsModal.css";
 
 export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
@@ -19,6 +22,7 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [lastAction, setLastAction] = useState(null);
+  const [notifications, setNotifications] = useState([]);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
 
   // Cooldown timer
@@ -41,6 +45,9 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
   const PixelArtComponent = getPetPixelArt(currentPet.species);
   const availableActions = useMemo(() => getAvailableActions(currentPet), [currentPet]);
   const petStatus = useMemo(() => getPetStatus(currentPet), [currentPet]);
+  const progressInfo = useMemo(() => getProgressToNextStage(currentPet.xp || 0), [currentPet.xp]);
+  const stageInfo = useMemo(() => getStageInfo(currentPet.stage || 1), [currentPet.stage]);
+  const ageDisplay = formatAgeDisplay(currentPet.ageInYears || 0);
 
   const handleClose = () => {
     // Notify parent to refresh pet list when modal closes
@@ -77,8 +84,11 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
         cleanliness: updatedPet.cleanliness,
         energy: updatedPet.energy,
         xp: updatedPet.xp,
+        stage: updatedPet.stage,
+        ageInYears: updatedPet.ageInYears,
         lastActionAt: updatedPet.lastActionAt,
         lastActionType: updatedPet.lastActionType,
+        lastAgeCheck: updatedPet.lastAgeCheck,
         createdAt: updatedPet.createdAt,
         updatedAt: updatedPet.updatedAt,
       };
@@ -88,6 +98,13 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
         type: actionType,
         effects: result.effects,
       });
+
+      // Set notifications from the action result
+      if (result.notifications && result.notifications.length > 0) {
+        setNotifications(result.notifications);
+        // Clear notifications after 5 seconds
+        setTimeout(() => setNotifications([]), 5000);
+      }
 
       // Don't notify parent immediately - it will reload and overwrite our state
       // Parent will be notified when modal closes
@@ -141,13 +158,66 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
           <div className="pet-avatar-section">
             {PixelArtComponent && (
               <div className="pet-avatar">
-                <PixelArtComponent />
+                <PixelArtComponent stage={currentPet.stage || 1} />
               </div>
             )}
             <div className={`pet-status-badge ${getStatusColor(petStatus.status)}`}>
               {petStatus.message}
             </div>
           </div>
+
+          {/* Progression Section */}
+          <div className="progression-section">
+            <h3>Progression</h3>
+            <div className="progression-grid">
+              <div className="progression-item">
+                <span className="progression-label">Age</span>
+                <span className="progression-value">{ageDisplay}</span>
+              </div>
+              <div className="progression-item">
+                <span className="progression-label">Stage</span>
+                <span className="progression-value" style={{ color: stageInfo.color }}>
+                  {getStageLabelWithEmoji(currentPet.stage || 1)}
+                </span>
+              </div>
+            </div>
+            <div className="xp-progress">
+              <div className="xp-progress-header">
+                <span>⭐ {currentPet.xp || 0} XP</span>
+                {!progressInfo.isMaxStage && (
+                  <span className="xp-next-stage">{progressInfo.message}</span>
+                )}
+                {progressInfo.isMaxStage && (
+                  <span className="xp-max-stage">Max Stage!</span>
+                )}
+              </div>
+              <div className="xp-progress-bar">
+                <div 
+                  className="xp-progress-fill" 
+                  style={{ 
+                    width: `${progressInfo.percentage}%`,
+                    backgroundColor: stageInfo.color
+                  }}
+                />
+              </div>
+              {!progressInfo.isMaxStage && (
+                <div className="xp-progress-text">
+                  {progressInfo.percentage}% to {progressInfo.nextStageName}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Notifications */}
+          {notifications.length > 0 && (
+            <div className="notifications-container">
+              {notifications.map((notification, index) => (
+                <div key={index} className="notification">
+                  {notification}
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Error Message */}
           {error && <div className="error-message">{error}</div>}
@@ -276,11 +346,6 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
               {currentPet.breed && (
                 <div className="info-item">
                   <strong>Breed:</strong> {currentPet.breed}
-                </div>
-              )}
-              {currentPet.age && (
-                <div className="info-item">
-                  <strong>Age:</strong> {currentPet.age}
                 </div>
               )}
               {currentPet.color && (
