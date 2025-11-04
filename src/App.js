@@ -11,6 +11,7 @@ import { auth } from "firebase.js";
 
 import SplashScreen from "components/SplashScreen";
 import Home from "components/Home";
+import OtherPets from "components/OtherPets";
 import "./App.css";
 
 export default function App() {
@@ -65,7 +66,7 @@ export default function App() {
                 <Link to="/about" className="nav-link">About</Link>
               </li>
               <li>
-                <Link to="/users" className="nav-link">Users</Link>
+                <Link to="/users" className="nav-link">Other Clio-Pets</Link>
               </li>
             </ul>
             <div className="navbar-actions">
@@ -79,7 +80,7 @@ export default function App() {
         <main className="main-content">
           <Routes>
             <Route path="/about" element={<About />} />
-            <Route path="/users" element={<Users />} />
+            <Route path="/users" element={<OtherPets user={user} />} />
             <Route path="/" element={<Home user={user} />} />
           </Routes>
         </main>
@@ -90,8 +91,4 @@ export default function App() {
 
 function About() {
   return <h2>About</h2>;
-}
-
-function Users() {
-  return <h2>Users</h2>;
 }

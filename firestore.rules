@@ -14,8 +14,8 @@ service cloud.firestore {
     
     // Pets collection rules
     match /pets/{petId} {
-      // Allow users to read their own pets
-      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // Allow all authenticated users to read any pet
+      allow read: if isAuthenticated();
       
       // Allow users to create pets with their own userId
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;

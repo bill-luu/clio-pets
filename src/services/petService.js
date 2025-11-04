@@ -44,6 +44,31 @@ export const getUserPets = async (userId) => {
 };
 
 /**
+ * Get all pets in the system
+ * @returns {Promise<Array>} Array of all pet objects with their IDs
+ */
+export const getAllPets = async () => {
+  try {
+    const petsRef = collection(db, "pets");
+    const q = query(petsRef, orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+
+    const pets = [];
+    querySnapshot.forEach((doc) => {
+      pets.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+
+    return pets;
+  } catch (error) {
+    console.error("Error getting all pets:", error);
+    throw error;
+  }
+};
+
+/**
  * Get a single pet by ID
  * @param {string} petId - The pet's document ID
  * @returns {Promise<Object>} Pet object with ID
@@ -71,13 +96,15 @@ export const getPetById = async (petId) => {
  * Add a new pet for a user
  * @param {string} userId - The user's UID
  * @param {Object} petData - Pet information (name, species, breed, age, etc.)
+ * @param {string} ownerEmail - The user's email address
  * @returns {Promise<string>} The new pet's document ID
  */
-export const addPet = async (userId, petData) => {
+export const addPet = async (userId, petData, ownerEmail = null) => {
   try {
     const petsRef = collection(db, "pets");
     const docRef = await addDoc(petsRef, {
       userId,
+      ownerEmail,
       ...petData,
       // Initialize pet stats
       fullness: 50,
