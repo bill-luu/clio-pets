@@ -1,9 +1,12 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { subscribeToUserPets, deletePet } from "../services/petService";
 import { getPetPixelArt } from "../utils/pixelArt";
 import { getStageLabelWithEmoji, getStageInfo } from "../utils/petStages";
 import { formatAgeDisplay } from "../utils/petAge";
 import { getProgressToNextStage } from "../utils/petProgression";
+import { getStreakBonus, getStreakTierInfo } from "../utils/streakTracker";
+import { getSocialBonus, getSocialTierInfo } from "../utils/socialBonus";
+import { getInteractionCount } from "../services/sharedPetService";
 import AddPetModal from "./AddPetModal";
 import PetDetailsModal from "./PetDetailsModal";
 import ConfirmModal from "./ConfirmModal";
@@ -16,13 +19,14 @@ export default function Home({ user }) {
   const [selectedPet, setSelectedPet] = useState(null);
   const [error, setError] = useState(null);
   const [petToDelete, setPetToDelete] = useState(null);
+  const [interactionStats, setInteractionStats] = useState({});
 
   useEffect(() => {
     setLoading(true);
     setError(null);
 
     // Subscribe to real-time updates for user's pets
-    const unsubscribe = subscribeToUserPets(user.uid, (userPets, err) => {
+    const unsubscribe = subscribeToUserPets(user.uid, async (userPets, err) => {
       if (err) {
         console.error("Error loading pets:", err);
         setError("Failed to load pets. Please try again.");
@@ -30,6 +34,23 @@ export default function Home({ user }) {
         return;
       }
       setPets(userPets);
+      
+      // Load interaction stats for all pets
+      const stats = {};
+      for (const pet of userPets) {
+        if (pet.sharingEnabled) {
+          try {
+            const petStats = await getInteractionCount(pet.id);
+            stats[pet.id] = petStats;
+          } catch (err) {
+            console.error(`Error loading stats for pet ${pet.id}:`, err);
+            stats[pet.id] = { uniqueInteractors: 0 };
+          }
+        } else {
+          stats[pet.id] = { uniqueInteractors: 0 };
+        }
+      }
+      setInteractionStats(stats);
       setLoading(false);
     });
 
@@ -110,6 +131,13 @@ export default function Home({ user }) {
               const progressInfo = getProgressToNextStage(pet.xp || 0);
               const ageDisplay = formatAgeDisplay(pet.ageInYears || 0);
               
+              // Calculate tier info
+              const streakBonus = getStreakBonus(pet.currentStreak || 0);
+              const streakTierInfo = getStreakTierInfo(streakBonus.tier);
+              const uniqueInteractors = interactionStats[pet.id]?.uniqueInteractors || 0;
+              const socialBonus = getSocialBonus(uniqueInteractors);
+              const socialTierInfo = getSocialTierInfo(socialBonus.tier);
+              
               return (
                 <div key={pet.id} className="pet-card" onClick={() => handlePetClick(pet)}>
                   <div className="pet-card-header">
@@ -125,8 +153,16 @@ export default function Home({ user }) {
                       ×
                     </button>
                   </div>
-                  <div className="pet-stage-badge" style={{ backgroundColor: stageInfo.color }}>
-                    {getStageLabelWithEmoji(pet.stage)}
+                  <div className="pet-badges">
+                    <div className="pet-stage-badge" style={{ backgroundColor: stageInfo.color }}>
+                      {getStageLabelWithEmoji(pet.stage)}
+                    </div>
+                    <div className="pet-tier-badge" style={{ backgroundColor: streakTierInfo.color }}>
+                      {streakTierInfo.emoji} {streakTierInfo.name}
+                    </div>
+                    <div className="pet-tier-badge" style={{ backgroundColor: socialTierInfo.color }}>
+                      {socialTierInfo.emoji} {socialTierInfo.name}
+                    </div>
                   </div>
                   {PixelArtComponent && (
                     <div className="pet-card-pixel-art">

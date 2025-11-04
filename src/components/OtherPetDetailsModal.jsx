@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { getPetPixelArt } from "../utils/pixelArt";
-import { subscribeToPetById } from "../services/petService";
+import { subscribeToPetById, subscribeToUserPets } from "../services/petService";
 import { getPetStatus } from "../services/petActionService";
 import {
   performSharedPetAction,
@@ -8,15 +8,45 @@ import {
   getInteractorId,
   getSharedActions,
 } from "../services/sharedPetService";
+import {
+  performPlayDate,
+  checkPlayDateCooldown,
+} from "../services/playDateService";
+import PlayDateModal from "./PlayDateModal";
+import CustomSelect from "./CustomSelect";
 import "./styles/OtherPetDetailsModal.css";
 
-export default function OtherPetDetailsModal({ pet, onClose }) {
+export default function OtherPetDetailsModal({ pet, onClose, user }) {
   const [currentPet, setCurrentPet] = useState(pet);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
   const [lastAction, setLastAction] = useState(null);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
+  const [userPets, setUserPets] = useState([]);
+  const [selectedUserPet, setSelectedUserPet] = useState("");
+  const [playDateCooldown, setPlayDateCooldown] = useState(0);
+  const [playDateLoading, setPlayDateLoading] = useState(false);
+  const [playDateResult, setPlayDateResult] = useState(null);
   const interactorId = getInteractorId();
+
+  // Subscribe to user's pets for play date selection
+  useEffect(() => {
+    if (!user) return;
+
+    const unsubscribe = subscribeToUserPets(user.uid, (pets, err) => {
+      if (err) {
+        console.error("Error loading user pets:", err);
+        return;
+      }
+      setUserPets(pets);
+      // Auto-select first pet if available
+      if (pets.length > 0 && !selectedUserPet) {
+        setSelectedUserPet(pets[0].id);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [user, selectedUserPet]);
 
   // Subscribe to real-time updates for this pet
   // Only subscribe if sharing is enabled to avoid permission issues
@@ -46,7 +76,7 @@ export default function OtherPetDetailsModal({ pet, onClose }) {
     return () => unsubscribe();
   }, [pet.id, currentPet.sharingEnabled, currentPet.shareableId]);
 
-  // Cooldown timer
+  // Cooldown timer for shared actions
   useEffect(() => {
     if (!currentPet) return;
 
@@ -66,9 +96,35 @@ export default function OtherPetDetailsModal({ pet, onClose }) {
     return () => clearInterval(interval);
   }, [currentPet, interactorId, lastAction]);
 
+  // Play date cooldown timer
+  useEffect(() => {
+    if (!user) return;
+
+    const updatePlayDateCooldown = async () => {
+      const cooldownStatus = await checkPlayDateCooldown(user.uid);
+      setPlayDateCooldown(cooldownStatus.remainingSeconds);
+    };
+
+    // Update immediately
+    updatePlayDateCooldown();
+
+    // Update every second if on cooldown
+    const interval = setInterval(updatePlayDateCooldown, 1000);
+
+    return () => clearInterval(interval);
+  }, [user, playDateResult]);
+
   const PixelArtComponent = getPetPixelArt(currentPet.species);
   const petStatus = useMemo(() => getPetStatus(currentPet), [currentPet]);
   const availableActions = getSharedActions();
+
+  // Convert userPets to options format for CustomSelect
+  const petOptions = useMemo(() => {
+    return userPets.map((pet) => ({
+      value: pet.id,
+      label: `${pet.name} (${pet.species})`,
+    }));
+  }, [userPets]);
 
   const handleAction = async (actionType) => {
     if (!currentPet.sharingEnabled) {
@@ -98,6 +154,50 @@ export default function OtherPetDetailsModal({ pet, onClose }) {
       setError(err.message || "Failed to perform action. Please try again.");
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handlePlayDate = async () => {
+    if (!selectedUserPet) {
+      setError("Please select one of your pets for the play date.");
+      return;
+    }
+
+    if (!user) {
+      setError("You must be logged in to go on a play date.");
+      return;
+    }
+
+    try {
+      setPlayDateLoading(true);
+      setError(null);
+
+      const result = await performPlayDate(
+        selectedUserPet,
+        currentPet.id,
+        user.uid
+      );
+
+      setPlayDateResult(result);
+    } catch (err) {
+      console.error("Error performing play date:", err);
+      setError(err.message || "Failed to go on play date. Please try again.");
+    } finally {
+      setPlayDateLoading(false);
+    }
+  };
+
+  const formatCooldownTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${secs}s`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${secs}s`;
+    } else {
+      return `${secs}s`;
     }
   };
 
@@ -273,6 +373,55 @@ export default function OtherPetDetailsModal({ pet, onClose }) {
             </div>
           )}
 
+          {/* Play Date Section */}
+          {user && currentPet.userId !== user.uid && (
+            <div className="playdate-section">
+              <h3>Go on a Play Date! 🎉</h3>
+              <p className="playdate-description">
+                Select one of your pets to go on an adventure with {currentPet.name}!
+              </p>
+
+              {userPets.length === 0 ? (
+                <div className="no-pets-message">
+                  <p>You need to add a pet first before going on a play date.</p>
+                </div>
+              ) : (
+                <div className="playdate-controls">
+                  <div className="pet-selector">
+                    <label htmlFor="user-pet-select">Choose your pet:</label>
+                    <CustomSelect
+                      id="user-pet-select"
+                      name="selectedPet"
+                      value={selectedUserPet}
+                      onChange={(e) => setSelectedUserPet(e.target.value)}
+                      options={petOptions}
+                      placeholder="Select your pet..."
+                      disabled={playDateLoading || playDateCooldown > 0}
+                    />
+                  </div>
+
+                  <button
+                    className={`btn btn-playdate ${playDateCooldown > 0 ? "btn-cooldown" : ""}`}
+                    onClick={handlePlayDate}
+                    disabled={playDateLoading || playDateCooldown > 0 || !selectedUserPet}
+                  >
+                    {playDateLoading ? "Planning..." : "Go on Play Date! 🎈"}
+                  </button>
+
+                  {playDateCooldown > 0 && (
+                    <div className="playdate-cooldown-info">
+                      ⏱️ Next play date available in: {formatCooldownTime(playDateCooldown)}
+                    </div>
+                  )}
+
+                  <p className="playdate-cooldown-note">
+                    Play dates have a 6-hour cooldown
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Pet Info Section */}
           <div className="pet-info-section">
             <h3>Details</h3>
@@ -307,6 +456,13 @@ export default function OtherPetDetailsModal({ pet, onClose }) {
           </button>
         </div>
       </div>
+
+      {playDateResult && (
+        <PlayDateModal
+          playDateResult={playDateResult}
+          onClose={() => setPlayDateResult(null)}
+        />
+      )}
     </div>
   );
 }

@@ -12,15 +12,25 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
     
+    // Helper function to check if update is only modifying allowed stat fields
+    function isStatUpdate() {
+      let allowedFields = ['fullness', 'happiness', 'cleanliness', 'energy', 'xp', 'updatedAt', 'stage', 'ageInYears', 'lastAgeCheck'];
+      let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+      // Check that all affected keys are in the allowed list
+      return affectedKeys.hasOnly(allowedFields) && 
+             // Ensure critical fields don't change
+             request.resource.data.userId == resource.data.userId &&
+             // Check shareableId doesn't change (or doesn't exist in both)
+             (!('shareableId' in resource.data) || request.resource.data.shareableId == resource.data.shareableId);
+    }
+    
     // Pets collection rules
     match /pets/{petId} {
-      // Allow users to read their own pets
-      // Also allow anyone to read pets that have sharing enabled (for shared pet view)
-      // Note: For queries, we need to allow list access separately
-      allow get: if (isAuthenticated() && resource.data.userId == request.auth.uid) ||
-                    (resource.data.sharingEnabled == true);
+      // Allow authenticated users to read any pet (needed for play dates)
+      // Allow unauthenticated users to read pets that have sharing enabled (for shared pet view)
+      allow get: if isAuthenticated() || (resource.data.sharingEnabled == true);
       
-      // Allow queries for authenticated users on their own pets
+      // Allow queries for authenticated users (to see all pets for play dates)
       // Allow queries for anyone on shared pets
       allow list: if isAuthenticated() || 
                      request.query.limit <= 1;
@@ -28,25 +38,22 @@ service cloud.firestore {
       // Allow users to create pets with their own userId
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       
-      // Allow users to update their own pets
-      // Also allow anyone to update shared pets (for stat changes from interactions)
+      // Allow users to update their own pets (full access)
+      // Allow authenticated users to update stats only on any pet (for play dates and shared interactions)
       allow update: if (isAuthenticated() && resource.data.userId == request.auth.uid) ||
-                       (resource.data.sharingEnabled == true && 
-                        request.resource.data.userId == resource.data.userId &&
-                        request.resource.data.shareableId == resource.data.shareableId &&
-                        request.resource.data.sharingEnabled == resource.data.sharingEnabled);
+                       (isAuthenticated() && isStatUpdate());
       
       // Allow users to delete their own pets
       allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
     
-    // Pet interactions collection rules (for shared pet interactions)
+    // Pet interactions collection rules (for shared pet interactions and play dates)
     match /petInteractions/{interactionId} {
       // Allow anyone to read interactions
       allow read: if true;
       
-      // Allow anyone to create interactions (for shared pet feature)
-      allow create: if true;
+      // Allow authenticated users to create interactions (for shared pet feature and play dates)
+      allow create: if isAuthenticated();
       
       // Don't allow updates or deletes
       allow update, delete: if false;

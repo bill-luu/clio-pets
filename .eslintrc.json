@@ -1,0 +1,12 @@
+{
+  "extends": [
+    "react-app",
+    "react-app/jest"
+  ],
+  "rules": {
+    "no-unused-vars": "warn",
+    "jsx-a11y/role-supports-aria-props": "error",
+    "react-hooks/exhaustive-deps": "warn"
+  }
+}
+

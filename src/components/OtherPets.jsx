@@ -144,6 +144,7 @@ export default function OtherPets({ user }) {
       {selectedPet && (
         <OtherPetDetailsModal
           pet={selectedPet}
+          user={user}
           onClose={() => setSelectedPet(null)}
         />
       )}
