@@ -207,14 +207,15 @@ All stats are clamped between 0-100 (except XP which only increases).
 
 ## Available Functions
 
-### `performPetAction(petId, actionType)`
+### `performPetAction(petId, actionType, userId)`
 
-Performs an action on a pet, updating its stats accordingly.
+Performs an action on a pet, updating its stats accordingly and creating a notification.
 
 **Parameters:**
 
 - `petId` (string): The pet's document ID
 - `actionType` (string): Type of action ('feed', 'play', 'clean', 'rest', 'exercise', 'treat')
+- `userId` (string, optional): The user performing the action (for notifications)
 
 **Returns:**
 
@@ -225,7 +226,7 @@ Performs an action on a pet, updating its stats accordingly.
 ```javascript
 import { performPetAction } from "./services/petActionService";
 
-const result = await performPetAction("abc123", "feed");
+const result = await performPetAction("abc123", "feed", user.uid);
 console.log(result);
 // {
 //   success: true,
@@ -234,6 +235,8 @@ console.log(result);
 //   newStats: { fullness: 70, happiness: 50, cleanliness: 50, energy: 50, xp: 5 }
 // }
 ```
+
+**Note:** This function now automatically creates a notification for the pet owner when an action is performed.
 
 ---
 

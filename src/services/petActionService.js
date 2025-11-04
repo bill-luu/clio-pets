@@ -1,6 +1,7 @@
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 import { getPetById } from "./petService";
+import { createNotification } from "./notificationService";
 
 /**
  * Cooldown duration in seconds
@@ -82,9 +83,10 @@ export const checkCooldown = (pet) => {
  * Perform an action on a pet
  * @param {string} petId - The pet's document ID
  * @param {string} actionType - Type of action (feed, play, clean, rest, exercise, treat)
+ * @param {string} userId - The user performing the action (optional, for notification)
  * @returns {Promise<Object>} Updated pet stats
  */
-export const performPetAction = async (petId, actionType) => {
+export const performPetAction = async (petId, actionType, userId = null) => {
   try {
     // Validate action type
     if (!ACTION_EFFECTS[actionType]) {
@@ -101,6 +103,15 @@ export const performPetAction = async (petId, actionType) => {
         `Please wait ${cooldownStatus.remainingSeconds} seconds before performing another action.`
       );
     }
+
+    // Store old stats for notification
+    const oldStats = {
+      fullness: pet.fullness || 50,
+      happiness: pet.happiness || 50,
+      cleanliness: pet.cleanliness || 50,
+      energy: pet.energy || 50,
+      xp: pet.xp || 0,
+    };
 
     // Calculate new stats
     const effects = ACTION_EFFECTS[actionType];
@@ -128,6 +139,30 @@ export const performPetAction = async (petId, actionType) => {
       lastActionType: actionType,
       updatedAt: serverTimestamp(),
     });
+
+    // Create notification for pet owner
+    try {
+      const statChanges = {};
+      Object.keys(oldStats).forEach((stat) => {
+        statChanges[stat] = {
+          before: oldStats[stat],
+          after: newStats[stat],
+        };
+      });
+
+      await createNotification({
+        userId: pet.userId,
+        petId: pet.id,
+        petName: pet.name,
+        actionType,
+        actionPerformedBy: "owner",
+        interactorId: userId || pet.userId,
+        statChanges,
+      });
+    } catch (notificationError) {
+      // Don't fail the action if notification creation fails
+      console.error("Error creating notification:", notificationError);
+    }
 
     return {
       success: true,

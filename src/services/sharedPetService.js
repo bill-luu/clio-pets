@@ -12,6 +12,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { createNotification } from "./notificationService";
 
 /**
  * Cooldown duration in seconds for shared pet interactions
@@ -180,6 +181,15 @@ export const performSharedPetAction = async (
       );
     }
 
+    // Store old stats for notification
+    const oldStats = {
+      fullness: pet.fullness || 50,
+      happiness: pet.happiness || 50,
+      cleanliness: pet.cleanliness || 50,
+      energy: pet.energy || 50,
+      xp: pet.xp || 0,
+    };
+
     // Calculate new stats
     const effects = SHARED_ACTION_EFFECTS[actionType];
     const newStats = {
@@ -213,6 +223,30 @@ export const performSharedPetAction = async (
       actionType,
       timestamp: serverTimestamp(),
     });
+
+    // Create notification for pet owner
+    try {
+      const statChanges = {};
+      Object.keys(oldStats).forEach((stat) => {
+        statChanges[stat] = {
+          before: oldStats[stat],
+          after: newStats[stat],
+        };
+      });
+
+      await createNotification({
+        userId: pet.userId,
+        petId: pet.id,
+        petName: pet.name,
+        actionType,
+        actionPerformedBy: "visitor",
+        interactorId,
+        statChanges,
+      });
+    } catch (notificationError) {
+      // Don't fail the action if notification creation fails
+      console.error("Error creating notification:", notificationError);
+    }
 
     return {
       success: true,

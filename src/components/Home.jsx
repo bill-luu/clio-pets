@@ -187,6 +187,7 @@ export default function Home({ user }) {
       {selectedPet && (
         <PetDetailsModal
           pet={selectedPet}
+          user={user}
           onClose={() => setSelectedPet(null)}
           onPetUpdated={handlePetUpdated}
         />

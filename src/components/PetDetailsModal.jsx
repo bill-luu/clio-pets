@@ -11,7 +11,7 @@ import { getInteractionCount } from "../services/sharedPetService";
 import SharePetModal from "./SharePetModal";
 import "./styles/PetDetailsModal.css";
 
-export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
+export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
   const [currentPet, setCurrentPet] = useState(pet);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -94,7 +94,8 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
       setError(null);
       setLastAction(null);
 
-      const result = await performPetAction(currentPet.id, actionType);
+      const userId = user?.uid || null;
+      const result = await performPetAction(currentPet.id, actionType, userId);
 
       // Real-time listener will update currentPet automatically
       setLastAction({
