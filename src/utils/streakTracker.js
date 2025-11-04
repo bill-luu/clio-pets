@@ -113,6 +113,10 @@ export const getStreakBonus = (streak) => {
     reductionSeconds = 120; // 2 minutes
     tier = "common";
     nextMilestone = { days: 7, bonus: 240 };
+  } else if (streak >= 1) {
+    reductionSeconds = 0;
+    tier = "starting";
+    nextMilestone = { days: 3, bonus: 120 };
   } else {
     reductionSeconds = 0;
     tier = "none";
@@ -163,6 +167,12 @@ export const getStreakTierInfo = (tier) => {
       emoji: "🔥",
       color: "#E67E22",
       description: "2 min cooldown reduction",
+    },
+    starting: {
+      name: "Starting",
+      emoji: "🔥",
+      color: "#F39C12",
+      description: "Keep going for bonuses!",
     },
     none: {
       name: "No Streak",
