@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { getPetPixelArt } from "../utils/pixelArt";
-import { getPetById } from "../services/petService";
+import { subscribeToPetById } from "../services/petService";
 import {
   performPetAction,
   getAvailableActions,
@@ -13,17 +13,26 @@ import "./styles/PetDetailsModal.css";
 
 export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
   const [currentPet, setCurrentPet] = useState(pet);
-  
-  // Update local state if the pet prop changes from parent
-  useEffect(() => {
-    setCurrentPet(pet);
-  }, [pet]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [lastAction, setLastAction] = useState(null);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
   const [interactionStats, setInteractionStats] = useState(null);
+
+  // Subscribe to real-time updates for this pet
+  useEffect(() => {
+    const unsubscribe = subscribeToPetById(pet.id, (updatedPet, err) => {
+      if (err) {
+        console.error("Error subscribing to pet:", err);
+        return;
+      }
+      setCurrentPet(updatedPet);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [pet.id]);
 
   // Load interaction stats
   useEffect(() => {
@@ -71,13 +80,10 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
   };
 
   const handleSharingToggled = async () => {
-    // Reload pet data when sharing is toggled
-    const updatedPet = await getPetById(currentPet.id);
-    setCurrentPet(updatedPet);
-    
-    // Reload interaction stats
-    if (updatedPet.sharingEnabled) {
-      const stats = await getInteractionCount(updatedPet.id);
+    // Real-time listener will update currentPet automatically
+    // Just reload interaction stats
+    if (currentPet.sharingEnabled) {
+      const stats = await getInteractionCount(currentPet.id);
       setInteractionStats(stats);
     }
   };
@@ -90,39 +96,11 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated }) {
 
       const result = await performPetAction(currentPet.id, actionType);
 
-      // Fetch fresh pet data from database
-      const updatedPet = await getPetById(currentPet.id);
-      
-      // Create a completely new object to ensure state update
-      const newPetState = {
-        id: updatedPet.id,
-        userId: updatedPet.userId,
-        name: updatedPet.name,
-        species: updatedPet.species,
-        breed: updatedPet.breed,
-        age: updatedPet.age,
-        color: updatedPet.color,
-        pattern: updatedPet.pattern,
-        notes: updatedPet.notes,
-        fullness: updatedPet.fullness,
-        happiness: updatedPet.happiness,
-        cleanliness: updatedPet.cleanliness,
-        energy: updatedPet.energy,
-        xp: updatedPet.xp,
-        lastActionAt: updatedPet.lastActionAt,
-        lastActionType: updatedPet.lastActionType,
-        createdAt: updatedPet.createdAt,
-        updatedAt: updatedPet.updatedAt,
-      };
-      setCurrentPet(newPetState);
-
+      // Real-time listener will update currentPet automatically
       setLastAction({
         type: actionType,
         effects: result.effects,
       });
-
-      // Don't notify parent immediately - it will reload and overwrite our state
-      // Parent will be notified when modal closes
     } catch (err) {
       console.error("Error performing action:", err);
       setError(err.message || "Failed to perform action. Please try again.");

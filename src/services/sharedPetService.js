@@ -9,6 +9,7 @@ import {
   orderBy,
   limit,
   serverTimestamp,
+  onSnapshot,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -277,6 +278,56 @@ export const getSharedActions = () => {
   ];
 };
 
+/**
+ * Subscribe to real-time updates for a pet by its shareable ID
+ * @param {string} shareableId - The pet's shareable ID
+ * @param {Function} callback - Callback function that receives (pet, error)
+ * @returns {Function} Unsubscribe function to stop listening
+ */
+export const subscribeToPetByShareableId = (shareableId, callback) => {
+  try {
+    const petsRef = collection(db, "pets");
+    const q = query(petsRef, where("shareableId", "==", shareableId), limit(1));
+
+    const unsubscribe = onSnapshot(
+      q,
+      (querySnapshot) => {
+        if (querySnapshot.empty) {
+          callback(null, new Error("Pet not found or sharing is disabled"));
+          return;
+        }
+
+        const petDoc = querySnapshot.docs[0];
+        const petData = petDoc.data();
+
+        // Check if sharing is enabled
+        if (!petData.sharingEnabled) {
+          callback(null, new Error("Sharing is disabled for this pet"));
+          return;
+        }
+
+        callback(
+          {
+            id: petDoc.id,
+            ...petData,
+          },
+          null
+        );
+      },
+      (error) => {
+        console.error("Error in shared pet subscription:", error);
+        callback(null, error);
+      }
+    );
+
+    return unsubscribe;
+  } catch (error) {
+    console.error("Error setting up shared pet subscription:", error);
+    callback(null, error);
+    return () => {}; // Return no-op unsubscribe function
+  }
+};
+
 const sharedPetService = {
   generateShareableId,
   getInteractorId,
@@ -285,6 +336,7 @@ const sharedPetService = {
   checkSharedCooldown,
   getInteractionCount,
   getSharedActions,
+  subscribeToPetByShareableId,
   SHARED_ACTION_COOLDOWN_SECONDS,
 };
 
