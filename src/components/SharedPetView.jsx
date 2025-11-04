@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { getPetPixelArt } from "../utils/pixelArt";
 import { getPetStatus } from "../services/petActionService";
 import {
-  getPetByShareableId,
+  subscribeToPetByShareableId,
   performSharedPetAction,
   checkSharedCooldown,
   getInteractorId,
@@ -22,21 +22,23 @@ export default function SharedPetView() {
   const interactorId = getInteractorId();
 
   useEffect(() => {
-    const loadPet = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const petData = await getPetByShareableId(shareableId);
-        setPet(petData);
-      } catch (err) {
+    setLoading(true);
+    setError(null);
+
+    // Subscribe to real-time updates for this shared pet
+    const unsubscribe = subscribeToPetByShareableId(shareableId, (petData, err) => {
+      if (err) {
         console.error("Error loading pet:", err);
         setError(err.message || "Failed to load pet. The link may be invalid or sharing may be disabled.");
-      } finally {
         setLoading(false);
+        return;
       }
-    };
+      setPet(petData);
+      setLoading(false);
+    });
 
-    loadPet();
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, [shareableId]);
 
   // Cooldown timer
@@ -69,10 +71,7 @@ export default function SharedPetView() {
 
       const result = await performSharedPetAction(shareableId, interactorId, actionType);
 
-      // Reload pet data
-      const updatedPet = await getPetByShareableId(shareableId);
-      setPet(updatedPet);
-
+      // Real-time listener will update pet automatically
       setLastAction({
         type: actionType,
         effects: result.effects,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getAllPets } from "../services/petService";
+import { subscribeToAllPets } from "../services/petService";
 import { getPetPixelArt } from "../utils/pixelArt";
 import { getStageLabelWithEmoji, getStageInfo } from "../utils/petStages";
 import "./styles/Home.css";
@@ -10,23 +10,25 @@ export default function OtherPets({ user }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const loadAllPets = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const allPets = await getAllPets();
-        // Filter out the current user's pets
-        const otherUsersPets = allPets.filter((pet) => pet.userId !== user.uid);
-        setPets(otherUsersPets);
-      } catch (err) {
+    setLoading(true);
+    setError(null);
+
+    // Subscribe to real-time updates for all pets
+    const unsubscribe = subscribeToAllPets((allPets, err) => {
+      if (err) {
         console.error("Error loading pets:", err);
         setError("Failed to load pets. Please try again.");
-      } finally {
         setLoading(false);
+        return;
       }
-    };
+      // Filter out the current user's pets
+      const otherUsersPets = allPets.filter((pet) => pet.userId !== user.uid);
+      setPets(otherUsersPets);
+      setLoading(false);
+    });
 
-    loadAllPets();
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, [user.uid]);
 
   if (loading) {

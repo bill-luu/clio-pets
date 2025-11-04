@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { getUserPets, deletePet } from "../services/petService";
+import { subscribeToUserPets, deletePet } from "../services/petService";
 import { getPetPixelArt } from "../utils/pixelArt";
 import { getStageLabelWithEmoji, getStageInfo } from "../utils/petStages";
 import { formatAgeDisplay } from "../utils/petAge";
@@ -17,23 +17,25 @@ export default function Home({ user }) {
   const [error, setError] = useState(null);
   const [petToDelete, setPetToDelete] = useState(null);
 
-  const loadPets = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const userPets = await getUserPets(user.uid);
-      setPets(userPets);
-    } catch (err) {
-      console.error("Error loading pets:", err);
-      setError("Failed to load pets. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, [user.uid]);
-
   useEffect(() => {
-    loadPets();
-  }, [loadPets]);
+    setLoading(true);
+    setError(null);
+
+    // Subscribe to real-time updates for user's pets
+    const unsubscribe = subscribeToUserPets(user.uid, (userPets, err) => {
+      if (err) {
+        console.error("Error loading pets:", err);
+        setError("Failed to load pets. Please try again.");
+        setLoading(false);
+        return;
+      }
+      setPets(userPets);
+      setLoading(false);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [user.uid]);
 
   const handleDeletePet = async () => {
     if (!petToDelete) return;
@@ -51,7 +53,7 @@ export default function Home({ user }) {
 
   const handlePetAdded = () => {
     setShowAddModal(false);
-    loadPets();
+    // No need to manually reload - real-time listener will update automatically
   };
 
   const handlePetClick = (pet) => {
@@ -59,7 +61,7 @@ export default function Home({ user }) {
   };
 
   const handlePetUpdated = () => {
-    loadPets();
+    // No need to manually reload - real-time listener will update automatically
   };
 
   if (loading) {
@@ -211,6 +213,7 @@ export default function Home({ user }) {
       {selectedPet && (
         <PetDetailsModal
           pet={selectedPet}
+          user={user}
           onClose={() => setSelectedPet(null)}
           onPetUpdated={handlePetUpdated}
         />
