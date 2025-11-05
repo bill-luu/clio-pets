@@ -80,7 +80,7 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
   const progressInfo = useMemo(() => getProgressToNextStage(currentPet.xp || 0), [currentPet.xp]);
   const stageInfo = useMemo(() => getStageInfo(currentPet.stage || 1), [currentPet.stage]);
   const ageDisplay = formatAgeDisplay(currentPet.ageInYears || 0);
-  
+
   // Streak and bonus information
   const streakBonus = useMemo(() => getStreakBonus(currentPet.currentStreak || 0), [currentPet.currentStreak]);
   const streakTierInfo = useMemo(() => getStreakTierInfo(streakBonus.tier), [streakBonus.tier]);
@@ -190,7 +190,7 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
           <div className="pet-avatar-section">
             {PixelArtComponent && (
               <div className="pet-avatar">
-                <PixelArtComponent stage={currentPet.stage || 1} />
+                <PixelArtComponent stage={currentPet.stage || 1} color={currentPet.color} />
               </div>
             )}
             <div className={`pet-status-badge ${getStatusColor(petStatus.status)}`}>
@@ -254,9 +254,9 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
                 )}
               </div>
               <div className="xp-progress-bar">
-                <div 
-                  className="xp-progress-fill" 
-                  style={{ 
+                <div
+                  className="xp-progress-fill"
+                  style={{
                     width: `${progressInfo.percentage}%`,
                     backgroundColor: stageInfo.color
                   }}
@@ -440,7 +440,7 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
                   <div className="info-tooltip info-tooltip-large">
                     <strong>⏱️ Cooldown Reduction System:</strong>
                     <p>Reduce the 10-minute cooldown between actions by building streaks and sharing your pet!</p>
-                    
+
                     <strong style={{ marginTop: '1rem' }}>🔥 Streak Tier Bonuses:</strong>
                     <ul style={{ fontSize: '0.8rem' }}>
                       <li>1-2 days: Starting (0 min)</li>
@@ -450,7 +450,7 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
                       <li>30-59 days: Epic (-8 min)</li>
                       <li>60+ days: Legendary (-10 min)</li>
                     </ul>
-                    
+
                     <strong>👥 Social Tier Bonuses:</strong>
                     <ul style={{ fontSize: '0.8rem' }}>
                       <li>0-4 people: Private (0 min)</li>
@@ -460,7 +460,7 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
                       <li>50-99 people: Popular (-4 min)</li>
                       <li>100+ people: Viral (-5 min)</li>
                     </ul>
-                    
+
                     <p style={{ marginTop: '0.75rem', fontSize: '0.8rem', fontStyle: 'italic' }}>
                       💡 Bonuses stack! Max reduction: 15 min = instant interactions!
                     </p>

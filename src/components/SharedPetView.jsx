@@ -143,7 +143,7 @@ export default function SharedPetView() {
           <div className="pet-avatar-section">
             {PixelArtComponent && (
               <div className="pet-avatar">
-                <PixelArtComponent stage={pet.stage || 1} />
+                <PixelArtComponent stage={pet.stage || 1} color={pet.color} />
               </div>
             )}
             {petStatus && (
