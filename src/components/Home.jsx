@@ -20,7 +20,7 @@ export default function Home({ user }) {
   const [error, setError] = useState(null);
   const [petToDelete, setPetToDelete] = useState(null);
   const [interactionStats, setInteractionStats] = useState({});
-  
+
   // Filter states
   const [filterSpecies, setFilterSpecies] = useState("all");
   const [filterStage, setFilterStage] = useState("all");
@@ -243,7 +243,7 @@ export default function Home({ user }) {
                 </button>
               )}
             </div>
-            
+
             <div className="filter-results">
               Showing {filteredPets.length} of {pets.length} pets
             </div>
@@ -265,14 +265,14 @@ export default function Home({ user }) {
                 const stageInfo = getStageInfo(pet.stage);
                 const progressInfo = getProgressToNextStage(pet.xp || 0);
                 const ageDisplay = formatAgeDisplay(pet.ageInYears || 0);
-                
+
                 // Calculate tier info
                 const streakBonus = getStreakBonus(pet.currentStreak || 0);
                 const streakTierInfo = getStreakTierInfo(streakBonus.tier);
                 const uniqueInteractors = interactionStats[pet.id]?.uniqueInteractors || 0;
                 const socialBonus = getSocialBonus(uniqueInteractors);
                 const socialTierInfo = getSocialTierInfo(socialBonus.tier);
-                
+
                 return (
                 <div key={pet.id} className="pet-card" onClick={() => handlePetClick(pet)}>
                   <div className="pet-card-header">
