@@ -26,7 +26,7 @@ export const PixelArt = ({ pixels, size = 16 }) => (
 const getDogColorFilter = (colorName) => {
   switch ((colorName || "brown").toLowerCase()) {
     case "yellow":
-      return "hue-rotate(22deg) saturate(180%) brightness(110%)";
+      return "hue-rotate(30deg) saturate(230%) brightness(145%) contrast(105%)";
     case "green":
       return "hue-rotate(110deg) saturate(140%)";
     case "purple":
@@ -36,6 +36,26 @@ const getDogColorFilter = (colorName) => {
     case "orange":
       return "hue-rotate(10deg) saturate(170%)";
     case "brown":
+    default:
+      return "none";
+  }
+};
+
+// Similar color filters for birds (default visual target is yellow)
+const getBirdColorFilter = (colorName) => {
+  switch ((colorName || "yellow").toLowerCase()) {
+    case "yellow":
+      return "none";
+    case "green":
+      return "hue-rotate(60deg) saturate(165%) brightness(105%)";
+    case "purple":
+      return "hue-rotate(230deg) saturate(180%) brightness(70%)";
+    case "white":
+      return "saturate(0%) brightness(175%)";
+    case "orange":
+      return "hue-rotate(300deg) saturate(400%)";
+    case "brown":
+      return "hue-rotate(300deg) saturate(90%) brightness(40%)"
     default:
       return "none";
   }
@@ -131,26 +151,26 @@ export const PixelLizard = ({ stage = 1 }) => (
       : <AnimatedBabyLizard />
 );
 
-const AnimatedAdultBird = () => (
+const AnimatedAdultBird = ({ color }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
-    <div className="pixelart-bird-adult" aria-label="Adult Bird" />
+    <div className="pixelart-bird-adult" aria-label="Adult Bird" style={{ filter: getBirdColorFilter(color) }} />
   </div>
 );
 
-const AnimatedTeenBird = () => (
+const AnimatedTeenBird = ({ color }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
-    <div className="pixelart-bird-teen" aria-label="Teen Bird" />
+    <div className="pixelart-bird-teen" aria-label="Teen Bird" style={{ filter: getBirdColorFilter(color) }} />
   </div>
 );
 
-const AnimatedBabyBird = () => (
+const AnimatedBabyBird = ({ color }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
-    <div className="pixelart-bird-baby" aria-label="Baby Bird" />
+    <div className="pixelart-bird-baby" aria-label="Baby Bird" style={{ filter: getBirdColorFilter(color) }} />
   </div>
 );
 
-export const PixelBird = ({ stage = 1 }) => (
-  stage === 3 ? <AnimatedAdultBird /> : stage === 2 ? <AnimatedTeenBird /> : <AnimatedBabyBird />
+export const PixelBird = ({ stage = 1, color = "yellow" }) => (
+  stage === 3 ? <AnimatedAdultBird color={color} /> : stage === 2 ? <AnimatedTeenBird color={color} /> : <AnimatedBabyBird color={color} />
 );
 
 const AnimatedBabyBunny = () => (

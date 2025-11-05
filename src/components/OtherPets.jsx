@@ -64,9 +64,9 @@ export default function OtherPets({ user }) {
               const PixelArtComponent = getPetPixelArt(pet.species);
               const stageInfo = getStageInfo(pet.stage);
               return (
-                <div 
-                  key={pet.id} 
-                  className="pet-card clickable-pet-card" 
+                <div
+                  key={pet.id}
+                  className="pet-card clickable-pet-card"
                   onClick={() => setSelectedPet(pet)}
                   style={{ cursor: 'pointer' }}
                 >
@@ -83,7 +83,7 @@ export default function OtherPets({ user }) {
                   </div>
                   {PixelArtComponent && (
                     <div className="pet-card-pixel-art">
-                      <PixelArtComponent stage={pet.stage || 1} />
+                      <PixelArtComponent stage={pet.stage || 1} color={pet.color} />
                     </div>
                   )}
                   <div className="pet-card-body">

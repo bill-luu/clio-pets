@@ -40,7 +40,7 @@ export default function Home({ user }) {
         return;
       }
       setPets(userPets);
-      
+
       // Load interaction stats for all pets
       const stats = {};
       for (const pet of userPets) {
@@ -301,7 +301,7 @@ export default function Home({ user }) {
                   </div>
                   {PixelArtComponent && (
                     <div className="pet-card-pixel-art">
-                      <PixelArtComponent stage={pet.stage || 1} />
+                      <PixelArtComponent stage={pet.stage || 1} color={pet.color} />
                     </div>
                   )}
                   <div className="pet-card-body">
@@ -356,11 +356,11 @@ export default function Home({ user }) {
                       )}
                     </div>
                     <div className="progress-bar">
-                      <div 
-                        className="progress-bar-fill" 
-                        style={{ 
+                      <div
+                        className="progress-bar-fill"
+                        style={{
                           width: `${progressInfo.percentage}%`,
-                          backgroundColor: stageInfo.color 
+                          backgroundColor: stageInfo.color
                         }}
                       />
                     </div>

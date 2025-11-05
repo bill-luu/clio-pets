@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { addPet } from "../services/petService";
 import { PET_SPECIES, getPetPixelArt } from "../utils/pixelArt";
 import CustomSelect from "./CustomSelect";
@@ -24,9 +24,47 @@ export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) 
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [userChangedColor, setUserChangedColor] = useState(false);
+  const prevSpeciesRef = useRef(formData.species);
+
+  // Ensure Bird never uses brown; coerce to yellow if selected
+  useEffect(() => {
+    if (formData.species === "Bird" && formData.color === "brown") {
+      setFormData((prev) => ({ ...prev, color: "yellow" }));
+    }
+  }, [formData.species, formData.color]);
+
+  // Default colors on species change without overriding user's explicit choice
+  useEffect(() => {
+    const prev = prevSpeciesRef.current;
+    // If switching to Bird and color hasn't been explicitly chosen, default to yellow from brown
+    if (
+      formData.species === "Bird" &&
+      prev !== "Bird" &&
+      !userChangedColor &&
+      formData.color === "brown"
+    ) {
+      setFormData((prevState) => ({ ...prevState, color: "yellow" }));
+    }
+
+    // If switching from Bird (default yellow) to Dog, and user hasn't explicitly chosen color, default to brown
+    if (
+      formData.species === "Dog" &&
+      prev === "Bird" &&
+      !userChangedColor &&
+      formData.color === "yellow"
+    ) {
+      setFormData((prevState) => ({ ...prevState, color: "brown" }));
+    }
+
+    prevSpeciesRef.current = formData.species;
+  }, [formData.species, formData.color, userChangedColor]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === "color") {
+      setUserChangedColor(true);
+    }
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -73,6 +111,9 @@ export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) 
   };
 
   const PixelArtComponent = formData.species ? getPetPixelArt(formData.species) : null;
+  const colorOptions = formData.species === "Bird"
+    ? COLOR_OPTIONS.filter((opt) => opt.value !== "brown")
+    : COLOR_OPTIONS;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -145,7 +186,7 @@ export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) 
               name="color"
               value={formData.color}
               onChange={handleChange}
-              options={COLOR_OPTIONS}
+            options={colorOptions}
               placeholder="Select a color..."
               disabled={loading}
             />

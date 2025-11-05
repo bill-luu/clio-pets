@@ -246,7 +246,7 @@ export default function OtherPetDetailsModal({ pet, onClose, user }) {
           <div className="pet-avatar-section">
             {PixelArtComponent && (
               <div className="pet-avatar">
-                <PixelArtComponent stage={currentPet.stage || 1} />
+                <PixelArtComponent stage={currentPet.stage || 1} color={currentPet.color} />
               </div>
             )}
             <div className={`pet-status-badge ${getStatusColor(petStatus.status)}`}>
