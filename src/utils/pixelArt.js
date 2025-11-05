@@ -22,30 +22,61 @@ export const PixelArt = ({ pixels, size = 16 }) => (
 
 // (Lizard stages now use animated CSS versions; pixel data no longer used)
 
-const AnimatedAdultDog = () => (
+// Quick-and-cheerful color filters to approximate body color changes
+const getDogColorFilter = (colorName) => {
+  switch ((colorName || "brown").toLowerCase()) {
+    case "yellow":
+      return "hue-rotate(22deg) saturate(180%) brightness(110%)";
+    case "green":
+      return "hue-rotate(110deg) saturate(140%)";
+    case "purple":
+      return "hue-rotate(270deg) saturate(130%)";
+    case "white":
+      return "saturate(0%) brightness(175%)";
+    case "orange":
+      return "hue-rotate(10deg) saturate(170%)";
+    case "brown":
+    default:
+      return "none";
+  }
+};
+
+const AnimatedAdultDog = ({ color }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
-    <div className="pixelart-dog-adult" aria-label="Adult Dog" />
+    <div
+      className="pixelart-dog-adult"
+      aria-label="Adult Dog"
+      style={{ filter: getDogColorFilter(color) }}
+    />
   </div>
 );
 
-const AnimatedTeenDog = () => (
+const AnimatedTeenDog = ({ color }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
-    <div className="pixelart-dog-teen" aria-label="Teen Dog" />
+    <div
+      className="pixelart-dog-teen"
+      aria-label="Teen Dog"
+      style={{ filter: getDogColorFilter(color) }}
+    />
   </div>
 );
 
-const AnimatedBabyDog = () => (
+const AnimatedBabyDog = ({ color }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
-    <div className="pixelart-dog-baby" aria-label="Baby Dog" />
+    <div
+      className="pixelart-dog-baby"
+      aria-label="Baby Dog"
+      style={{ filter: getDogColorFilter(color) }}
+    />
   </div>
 );
 
-export const PixelDog = ({ stage = 1 }) => (
+export const PixelDog = ({ stage = 1, color = "brown" }) => (
   stage === 3
-    ? <AnimatedAdultDog />
+    ? <AnimatedAdultDog color={color} />
     : stage === 2
-      ? <AnimatedTeenDog />
-      : <AnimatedBabyDog />
+      ? <AnimatedTeenDog color={color} />
+      : <AnimatedBabyDog color={color} />
 );
 
 const AnimatedAdultCat = () => (
