@@ -8,6 +8,7 @@ import SplashScreen from "components/SplashScreen";
 import Home from "components/Home";
 import SharedPetView from "components/SharedPetView";
 import OtherPets from "components/OtherPets";
+import Leaderboard from "components/Leaderboard";
 import TestPage from "components/TestPage";
 
 import {
@@ -98,6 +99,11 @@ function AuthenticatedApp({ user, handleLogout }) {
                 Other Clio-Pets
               </Link>
             </li>
+            <li>
+              <Link to="/leaderboard" className="nav-link">
+                Leaderboard
+              </Link>
+            </li>
             {process.env.NODE_ENV === "development" && (
               <li>
                 <Link
@@ -122,6 +128,7 @@ function AuthenticatedApp({ user, handleLogout }) {
         <Routes>
           <Route path="/about" element={<About />} />
           <Route path="/other-pets" element={<OtherPets user={user} />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
           {process.env.NODE_ENV === "development" && (
             <Route path="/test" element={<TestPage />} />
           )}
