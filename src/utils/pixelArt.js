@@ -96,139 +96,310 @@ const getLizardColorFilter = (colorName) => {
   }
 };
 
-const AnimatedAdultDog = ({ color }) => (
+const AnimatedAdultDog = ({ color, isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div
       className="pixelart-dog-adult"
       aria-label="Adult Dog"
       style={{ filter: getDogColorFilter(color) }}
     />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
   </div>
 );
 
-const AnimatedTeenDog = ({ color }) => (
+const AnimatedTeenDog = ({ color, isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div
       className="pixelart-dog-teen"
       aria-label="Teen Dog"
       style={{ filter: getDogColorFilter(color) }}
     />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
   </div>
 );
 
-const AnimatedBabyDog = ({ color }) => (
+const AnimatedBabyDog = ({ color, isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div
       className="pixelart-dog-baby"
       aria-label="Baby Dog"
       style={{ filter: getDogColorFilter(color) }}
     />
+    {isSad && (
+      <div
+        aria-hidden="true"
+        className="attention-emoji"
+        style={{
+          position: "absolute",
+          top: -8,
+          right: -8,
+          fontSize: 42,
+          pointerEvents: "none",
+        }}
+      >
+        😢
+      </div>
+    )}
+    {isExhausted && (
+      <div
+        aria-hidden="true"
+        className="attention-emoji"
+        style={{
+          position: "absolute",
+          top: -8,
+          left: -8,
+          fontSize: 40,
+          pointerEvents: "none",
+        }}
+      >
+        💤
+      </div>
+    )}
+    {isDirty && (
+      <div
+        aria-hidden="true"
+        className="attention-emoji"
+        style={{
+          position: "absolute",
+          bottom: -8,
+          left: -8,
+          fontSize: 38,
+          pointerEvents: "none",
+        }}
+      >
+        💩
+      </div>
+    )}
   </div>
 );
 
-export const PixelDog = ({ stage = 1, color = "brown" }) => (
+export const PixelDog = ({ stage = 1, color = "brown", isSad = false, isDirty = false, isExhausted = false }) => (
   stage === 3
-    ? <AnimatedAdultDog color={color} />
+    ? <AnimatedAdultDog color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
     : stage === 2
-      ? <AnimatedTeenDog color={color} />
-      : <AnimatedBabyDog color={color} />
+      ? <AnimatedTeenDog color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+      : <AnimatedBabyDog color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
 );
 
-const AnimatedAdultCat = () => (
+const AnimatedAdultCat = ({ isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div className="pixelart-to-css" aria-label="Adult Cat" />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
   </div>
 );
 
-const AnimatedTeenCat = () => (
+const AnimatedTeenCat = ({ isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div className="pixelart-teen-cat" aria-label="Teen Cat" />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
   </div>
 );
 
-const AnimatedBabyCat = () => (
+const AnimatedBabyCat = ({ isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div className="pixelart-baby-cat" aria-label="Baby Cat" />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
   </div>
 );
 
-export const PixelCat = ({ stage = 1 }) => (
+export const PixelCat = ({ stage = 1, isSad = false, isDirty = false, isExhausted = false }) => (
   stage === 3
-    ? <AnimatedAdultCat />
+    ? <AnimatedAdultCat isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
     : stage === 2
-      ? <AnimatedTeenCat />
-      : <AnimatedBabyCat />
+      ? <AnimatedTeenCat isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+      : <AnimatedBabyCat isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
 );
 
-const AnimatedAdultLizard = ({ color }) => (
+const AnimatedAdultLizard = ({ color, isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div className="pixelart-lizard-adult" aria-label="Adult Lizard" style={{ filter: getLizardColorFilter(color) }} />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
   </div>
 );
 
-const AnimatedTeenLizard = ({ color }) => (
+const AnimatedTeenLizard = ({ color, isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div className="pixelart-lizard-teen" aria-label="Teen Lizard" style={{ filter: getLizardColorFilter(color) }} />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
   </div>
 );
 
-const AnimatedBabyLizard = ({ color }) => (
+const AnimatedBabyLizard = ({ color, isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div className="pixelart-lizard-baby" aria-label="Baby Lizard" style={{ filter: getLizardColorFilter(color) }} />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
   </div>
 );
 
-export const PixelLizard = ({ stage = 1, color = "green" }) => (
+export const PixelLizard = ({ stage = 1, color = "green", isSad = false, isDirty = false, isExhausted = false }) => (
   stage === 3
-    ? <AnimatedAdultLizard color={color} />
+    ? <AnimatedAdultLizard color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
     : stage === 2
-      ? <AnimatedTeenLizard color={color} />
-      : <AnimatedBabyLizard color={color} />
+      ? <AnimatedTeenLizard color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+      : <AnimatedBabyLizard color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
 );
 
-const AnimatedAdultBird = ({ color }) => (
+const AnimatedAdultBird = ({ color, isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div className="pixelart-bird-adult" aria-label="Adult Bird" style={{ filter: getBirdColorFilter(color) }} />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
   </div>
 );
 
-const AnimatedTeenBird = ({ color }) => (
+const AnimatedTeenBird = ({ color, isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div className="pixelart-bird-teen" aria-label="Teen Bird" style={{ filter: getBirdColorFilter(color) }} />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
   </div>
 );
 
-const AnimatedBabyBird = ({ color }) => (
+const AnimatedBabyBird = ({ color, isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div className="pixelart-bird-baby" aria-label="Baby Bird" style={{ filter: getBirdColorFilter(color) }} />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
   </div>
 );
 
-export const PixelBird = ({ stage = 1, color = "yellow" }) => (
-  stage === 3 ? <AnimatedAdultBird color={color} /> : stage === 2 ? <AnimatedTeenBird color={color} /> : <AnimatedBabyBird color={color} />
+export const PixelBird = ({ stage = 1, color = "yellow", isSad = false, isDirty = false, isExhausted = false }) => (
+  stage === 3 ? <AnimatedAdultBird color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} /> : stage === 2 ? <AnimatedTeenBird color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} /> : <AnimatedBabyBird color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
 );
 
-const AnimatedBabyBunny = ({ color }) => (
+const AnimatedBabyBunny = ({ color, isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div className="pixelart-bunny-baby" aria-label="Baby Bunny" style={{ filter: getBunnyColorFilter(color) }} />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
   </div>
 );
 
-const AnimatedTeenBunny = ({ color }) => (
+const AnimatedTeenBunny = ({ color, isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div className="pixelart-bunny-teen" aria-label="Teen Bunny" style={{ filter: getBunnyColorFilter(color) }} />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
   </div>
 );
 
-const AnimatedAdultBunny = ({ color }) => (
+const AnimatedAdultBunny = ({ color, isSad, isDirty, isExhausted }) => (
 
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div className="pixelart-bunny-adult" aria-label="Adult Bunny" style={{ filter: getBunnyColorFilter(color) }} />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
   </div>
 );
 
-export const PixelBunny = ({ stage = 1, color = "pink" }) => (
-  stage === 3 ? <AnimatedAdultBunny color={color} /> : stage === 2 ? <AnimatedTeenBunny color={color} /> : <AnimatedBabyBunny color={color} />
+export const PixelBunny = ({ stage = 1, color = "pink", isSad = false, isDirty = false, isExhausted = false }) => (
+  stage === 3 ? <AnimatedAdultBunny color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} /> : stage === 2 ? <AnimatedTeenBunny color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} /> : <AnimatedBabyBunny color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
 );
 
 // Available pet species with their pixel art components

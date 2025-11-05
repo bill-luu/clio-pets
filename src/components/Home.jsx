@@ -265,6 +265,9 @@ export default function Home({ user }) {
                 const stageInfo = getStageInfo(pet.stage);
                 const progressInfo = getProgressToNextStage(pet.xp || 0);
                 const ageDisplay = formatAgeDisplay(pet.ageInYears || 0);
+                const isSad = (pet.happiness || 50) < 40;
+                const isDirty = (pet.cleanliness || 50) < 40;
+                const isExhausted = (pet.energy || 50) < 40;
 
                 // Calculate tier info
                 const streakBonus = getStreakBonus(pet.currentStreak || 0);
@@ -301,7 +304,7 @@ export default function Home({ user }) {
                   </div>
                   {PixelArtComponent && (
                     <div className="pet-card-pixel-art">
-                      <PixelArtComponent stage={pet.stage || 1} color={pet.color} />
+                      <PixelArtComponent stage={pet.stage || 1} color={pet.color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
                     </div>
                   )}
                   <div className="pet-card-body">
