@@ -4,12 +4,21 @@ import { PET_SPECIES, getPetPixelArt } from "../utils/pixelArt";
 import CustomSelect from "./CustomSelect";
 import "./styles/AddPetModal.css";
 
+const COLOR_OPTIONS = [
+  { value: "brown", label: "Brown" },
+  { value: "yellow", label: "Yellow" },
+  { value: "green", label: "Green" },
+  { value: "purple", label: "Purple" },
+  { value: "white", label: "White" },
+  { value: "orange", label: "Orange" },
+];
+
 export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) {
   const [formData, setFormData] = useState({
     name: "",
     species: "",
     breed: "",
-    color: "",
+    color: "brown",
     notes: "",
     stage: 1, // Default to baby stage
   });
@@ -26,7 +35,7 @@ export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim()) {
       setError("Pet name is required");
       return;
@@ -40,7 +49,7 @@ export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) 
     try {
       setLoading(true);
       setError(null);
-      
+
       // Only include non-empty fields
       const petData = {};
       Object.keys(formData).forEach((key) => {
@@ -80,7 +89,7 @@ export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) 
 
           {PixelArtComponent && (
             <div className="pixel-art-preview">
-              <PixelArtComponent stage={formData.stage} />
+              <PixelArtComponent stage={formData.stage} color={formData.color} />
             </div>
           )}
 
@@ -131,13 +140,13 @@ export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) 
 
           <div className="form-group">
             <label htmlFor="color">Color</label>
-            <input
-              type="text"
+            <CustomSelect
               id="color"
               name="color"
               value={formData.color}
               onChange={handleChange}
-              placeholder="e.g., Brown and white"
+              options={COLOR_OPTIONS}
+              placeholder="Select a color..."
               disabled={loading}
             />
           </div>
