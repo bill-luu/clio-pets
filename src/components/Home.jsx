@@ -34,7 +34,7 @@ export default function Home({ user }) {
         return;
       }
       setPets(userPets);
-      
+
       // Load interaction stats for all pets
       const stats = {};
       for (const pet of userPets) {
@@ -130,14 +130,14 @@ export default function Home({ user }) {
               const stageInfo = getStageInfo(pet.stage);
               const progressInfo = getProgressToNextStage(pet.xp || 0);
               const ageDisplay = formatAgeDisplay(pet.ageInYears || 0);
-              
+
               // Calculate tier info
               const streakBonus = getStreakBonus(pet.currentStreak || 0);
               const streakTierInfo = getStreakTierInfo(streakBonus.tier);
               const uniqueInteractors = interactionStats[pet.id]?.uniqueInteractors || 0;
               const socialBonus = getSocialBonus(uniqueInteractors);
               const socialTierInfo = getSocialTierInfo(socialBonus.tier);
-              
+
               return (
                 <div key={pet.id} className="pet-card" onClick={() => handlePetClick(pet)}>
                   <div className="pet-card-header">
@@ -166,7 +166,7 @@ export default function Home({ user }) {
                   </div>
                   {PixelArtComponent && (
                     <div className="pet-card-pixel-art">
-                      <PixelArtComponent stage={pet.stage || 1} />
+                      <PixelArtComponent stage={pet.stage || 1} color={pet.color} />
                     </div>
                   )}
                   <div className="pet-card-body">
@@ -221,11 +221,11 @@ export default function Home({ user }) {
                       )}
                     </div>
                     <div className="progress-bar">
-                      <div 
-                        className="progress-bar-fill" 
-                        style={{ 
+                      <div
+                        className="progress-bar-fill"
+                        style={{
                           width: `${progressInfo.percentage}%`,
-                          backgroundColor: stageInfo.color 
+                          backgroundColor: stageInfo.color
                         }}
                       />
                     </div>
