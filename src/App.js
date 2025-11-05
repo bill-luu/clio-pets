@@ -94,7 +94,7 @@ function AuthenticatedApp({ user, handleLogout }) {
               </Link>
             </li>
             <li>
-              <Link to="/users" className="nav-link">
+              <Link to="/other-pets" className="nav-link">
                 Other Clio-Pets
               </Link>
             </li>
@@ -121,7 +121,7 @@ function AuthenticatedApp({ user, handleLogout }) {
       <main className="main-content">
         <Routes>
           <Route path="/about" element={<About />} />
-          <Route path="/users" element={<OtherPets user={user} />} />
+          <Route path="/other-pets" element={<OtherPets user={user} />} />
           {process.env.NODE_ENV === "development" && (
             <Route path="/test" element={<TestPage />} />
           )}
