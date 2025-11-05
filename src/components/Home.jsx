@@ -20,6 +20,12 @@ export default function Home({ user }) {
   const [error, setError] = useState(null);
   const [petToDelete, setPetToDelete] = useState(null);
   const [interactionStats, setInteractionStats] = useState({});
+  
+  // Filter states
+  const [filterSpecies, setFilterSpecies] = useState("all");
+  const [filterStage, setFilterStage] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -85,6 +91,51 @@ export default function Home({ user }) {
     // No need to manually reload - real-time listener will update automatically
   };
 
+  // Calculate average stat for a pet
+  const calculateAveStat = (pet) => {
+    const fullness = pet.fullness || 50;
+    const happiness = pet.happiness || 50;
+    const cleanliness = pet.cleanliness || 50;
+    const energy = pet.energy || 50;
+    return (fullness + happiness + cleanliness + energy) / 4;
+  };
+
+  // Filter pets based on selected filters
+  const filteredPets = pets.filter((pet) => {
+    // Filter by species
+    if (filterSpecies !== "all" && pet.species !== filterSpecies) {
+      return false;
+    }
+
+    // Filter by stage
+    if (filterStage !== "all" && pet.stage !== parseInt(filterStage)) {
+      return false;
+    }
+
+    // Filter by status (needs attention if aveStat < 40)
+    if (filterStatus !== "all") {
+      const aveStat = calculateAveStat(pet);
+      if (filterStatus === "needs-attention" && aveStat >= 40) {
+        return false;
+      }
+      if (filterStatus === "doing-okay" && aveStat < 40) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  // Reset filters
+  const resetFilters = () => {
+    setFilterSpecies("all");
+    setFilterStage("all");
+    setFilterStatus("all");
+  };
+
+  // Check if any filters are active
+  const hasActiveFilters = filterSpecies !== "all" || filterStage !== "all" || filterStatus !== "all";
+
   if (loading) {
     return (
       <div className="home-container">
@@ -117,28 +168,112 @@ export default function Home({ user }) {
         </div>
       ) : (
         <div className="pets-section">
-          <button
-            className="btn btn-primary add-pet-btn"
-            onClick={() => setShowAddModal(true)}
-          >
-            + Add Pet
-          </button>
+          <div className="action-buttons">
+            <button
+              className="btn btn-primary"
+              onClick={() => setShowAddModal(true)}
+            >
+              + Add Pet
+            </button>
+            <button
+              className={`btn ${showFilters ? 'btn-secondary' : 'btn-primary'}`}
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              {showFilters ? "Hide Filters" : "Show Filters"}
+            </button>
+          </div>
 
-          <div className="pets-grid">
-            {pets.map((pet) => {
-              const PixelArtComponent = getPetPixelArt(pet.species);
-              const stageInfo = getStageInfo(pet.stage);
-              const progressInfo = getProgressToNextStage(pet.xp || 0);
-              const ageDisplay = formatAgeDisplay(pet.ageInYears || 0);
-              
-              // Calculate tier info
-              const streakBonus = getStreakBonus(pet.currentStreak || 0);
-              const streakTierInfo = getStreakTierInfo(streakBonus.tier);
-              const uniqueInteractors = interactionStats[pet.id]?.uniqueInteractors || 0;
-              const socialBonus = getSocialBonus(uniqueInteractors);
-              const socialTierInfo = getSocialTierInfo(socialBonus.tier);
-              
-              return (
+          {/* Filter Section */}
+          {showFilters && (
+          <div className="filter-section">
+            <h3 className="filter-title">Filter Pets</h3>
+            <div className="filter-controls">
+              <div className="filter-group">
+                <label htmlFor="filter-species">Species:</label>
+                <select
+                  id="filter-species"
+                  value={filterSpecies}
+                  onChange={(e) => setFilterSpecies(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="all">All Species</option>
+                  <option value="Dog">Dog</option>
+                  <option value="Cat">Cat</option>
+                  <option value="Bird">Bird</option>
+                  <option value="Bunny">Bunny</option>
+                  <option value="Lizard">Lizard</option>
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <label htmlFor="filter-stage">Stage:</label>
+                <select
+                  id="filter-stage"
+                  value={filterStage}
+                  onChange={(e) => setFilterStage(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="all">All Stages</option>
+                  <option value="1">🍼 Baby</option>
+                  <option value="2">🐾 Teen</option>
+                  <option value="3">👑 Adult</option>
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <label htmlFor="filter-status">Status:</label>
+                <select
+                  id="filter-status"
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="all">All Statuses</option>
+                  <option value="doing-okay">😊 Doing Okay</option>
+                  <option value="needs-attention">⚠️ Needs Attention</option>
+                </select>
+              </div>
+
+              {hasActiveFilters && (
+                <button
+                  className="btn btn-secondary reset-filters-btn"
+                  onClick={resetFilters}
+                >
+                  Reset Filters
+                </button>
+              )}
+            </div>
+            
+            <div className="filter-results">
+              Showing {filteredPets.length} of {pets.length} pets
+            </div>
+          </div>
+          )}
+
+          {/* No Results Message */}
+          {filteredPets.length === 0 ? (
+            <div className="no-results">
+              <p>No pets match the selected filters.</p>
+              <button className="btn btn-secondary" onClick={resetFilters}>
+                Clear Filters
+              </button>
+            </div>
+          ) : (
+            <div className="pets-grid">
+              {filteredPets.map((pet) => {
+                const PixelArtComponent = getPetPixelArt(pet.species);
+                const stageInfo = getStageInfo(pet.stage);
+                const progressInfo = getProgressToNextStage(pet.xp || 0);
+                const ageDisplay = formatAgeDisplay(pet.ageInYears || 0);
+                
+                // Calculate tier info
+                const streakBonus = getStreakBonus(pet.currentStreak || 0);
+                const streakTierInfo = getStreakTierInfo(streakBonus.tier);
+                const uniqueInteractors = interactionStats[pet.id]?.uniqueInteractors || 0;
+                const socialBonus = getSocialBonus(uniqueInteractors);
+                const socialTierInfo = getSocialTierInfo(socialBonus.tier);
+                
+                return (
                 <div key={pet.id} className="pet-card" onClick={() => handlePetClick(pet)}>
                   <div className="pet-card-header">
                     <h3>{pet.name}</h3>
@@ -231,9 +366,10 @@ export default function Home({ user }) {
                     </div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
