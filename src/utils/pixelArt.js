@@ -61,6 +61,30 @@ const getBirdColorFilter = (colorName) => {
   }
 };
 
+// Color filters for bunnies (base sprite is pink)
+const getBunnyColorFilter = (colorName) => {
+  switch ((colorName || "pink").toLowerCase()) {
+    case "pink":
+      return "none";
+    case "yellow":
+      return "hue-rotate(60deg) saturate(330%)";
+    case "green":
+      return "hue-rotate(140deg) saturate(250%) brightness(115%) contrast(105%);"
+    case "purple":
+      return "hue-rotate(260deg) saturate(140%)";
+    case "white":
+      return "saturate(0%) brightness(175%)";
+    case "orange":
+      return "hue-rotate(30deg) saturate(500%)";
+    case "blue":
+      return "hue-rotate(220deg) saturate(330%)";
+    case "brown":
+      return "hue-rotate(320deg) saturate(80%) brightness(60%)";
+    default:
+      return "none";
+  }
+};
+
 const AnimatedAdultDog = ({ color }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div
@@ -132,13 +156,13 @@ const AnimatedAdultLizard = () => (
 );
 
 const AnimatedTeenLizard = () => (
-  <div style={{ position: "relative", width: 85, height: 85 }}>
+  <div style={{ position: "relative", width: 170, height: 170 }}>
     <div className="pixelart-lizard-teen" aria-label="Teen Lizard" />
   </div>
 );
 
 const AnimatedBabyLizard = () => (
-  <div style={{ position: "relative", width: 85, height: 85 }}>
+  <div style={{ position: "relative", width: 170, height: 170 }}>
     <div className="pixelart-lizard-baby" aria-label="Baby Lizard" />
   </div>
 );
@@ -173,27 +197,27 @@ export const PixelBird = ({ stage = 1, color = "yellow" }) => (
   stage === 3 ? <AnimatedAdultBird color={color} /> : stage === 2 ? <AnimatedTeenBird color={color} /> : <AnimatedBabyBird color={color} />
 );
 
-const AnimatedBabyBunny = () => (
+const AnimatedBabyBunny = ({ color }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
-    <div className="pixelart-bunny-baby" aria-label="Baby Bunny" />
+    <div className="pixelart-bunny-baby" aria-label="Baby Bunny" style={{ filter: getBunnyColorFilter(color) }} />
   </div>
 );
 
-const AnimatedTeenBunny = () => (
+const AnimatedTeenBunny = ({ color }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
-    <div className="pixelart-bunny-teen" aria-label="Teen Bunny" />
+    <div className="pixelart-bunny-teen" aria-label="Teen Bunny" style={{ filter: getBunnyColorFilter(color) }} />
   </div>
 );
 
-const AnimatedAdultBunny = () => (
+const AnimatedAdultBunny = ({ color }) => (
 
   <div style={{ position: "relative", width: 170, height: 170 }}>
-    <div className="pixelart-bunny-adult" aria-label="Adult Bunny" />
+    <div className="pixelart-bunny-adult" aria-label="Adult Bunny" style={{ filter: getBunnyColorFilter(color) }} />
   </div>
 );
 
-export const PixelBunny = ({ stage = 1 }) => (
-  stage === 3 ? <AnimatedAdultBunny /> : stage === 2 ? <AnimatedTeenBunny /> : <AnimatedBabyBunny />
+export const PixelBunny = ({ stage = 1, color = "pink" }) => (
+  stage === 3 ? <AnimatedAdultBunny color={color} /> : stage === 2 ? <AnimatedTeenBunny color={color} /> : <AnimatedBabyBunny color={color} />
 );
 
 // Available pet species with their pixel art components

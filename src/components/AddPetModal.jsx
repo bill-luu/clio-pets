@@ -32,6 +32,9 @@ export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) 
     if (formData.species === "Bird" && formData.color === "brown") {
       setFormData((prev) => ({ ...prev, color: "yellow" }));
     }
+    if (formData.species === "Bunny" && (formData.color === "brown" || formData.color === "green")) {
+      setFormData((prev) => ({ ...prev, color: "pink" }));
+    }
   }, [formData.species, formData.color]);
 
   // Default colors on species change without overriding user's explicit choice
@@ -45,6 +48,15 @@ export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) 
       formData.color === "brown"
     ) {
       setFormData((prevState) => ({ ...prevState, color: "yellow" }));
+    }
+
+    // If switching to Bunny and user hasn't explicitly chosen color, default to pink
+    if (
+      formData.species === "Bunny" &&
+      prev !== "Bunny" &&
+      !userChangedColor
+    ) {
+      setFormData((prevState) => ({ ...prevState, color: "pink" }));
     }
 
     // If switching from Bird (default yellow) to Dog, and user hasn't explicitly chosen color, default to brown
@@ -113,7 +125,13 @@ export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) 
   const PixelArtComponent = formData.species ? getPetPixelArt(formData.species) : null;
   const colorOptions = formData.species === "Bird"
     ? COLOR_OPTIONS.filter((opt) => opt.value !== "brown")
-    : COLOR_OPTIONS;
+    : formData.species === "Bunny"
+      ? [
+          { value: "pink", label: "Pink" },
+          { value: "blue", label: "Blue" },
+          ...COLOR_OPTIONS.filter((opt) => opt.value !== "brown" && opt.value !== "green"),
+        ]
+      : COLOR_OPTIONS;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
