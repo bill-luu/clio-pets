@@ -1,6 +1,5 @@
 import React from "react";
 
-// Tiny pixel-art helper
 export const PixelArt = ({ pixels, size = 16 }) => (
   <svg
     className="pixel-art"
@@ -14,15 +13,6 @@ export const PixelArt = ({ pixels, size = 16 }) => (
   </svg>
 );
 
-// Legacy SVG pixel data removed; all stages use CSS box-shadow animations now.
-
-// (Dog stages now use animated CSS versions; pixel data no longer used)
-
-// (Cat stages now use animated CSS versions; pixel data no longer used)
-
-// (Lizard stages now use animated CSS versions; pixel data no longer used)
-
-// Quick-and-cheerful color filters to approximate body color changes
 const getDogColorFilter = (colorName) => {
   switch ((colorName || "brown").toLowerCase()) {
     case "yellow":
@@ -80,6 +70,27 @@ const getBunnyColorFilter = (colorName) => {
       return "hue-rotate(220deg) saturate(330%)";
     case "brown":
       return "hue-rotate(320deg) saturate(80%) brightness(60%)";
+    default:
+      return "none";
+  }
+};
+
+const getLizardColorFilter = (colorName) => {
+  switch ((colorName || "green").toLowerCase()) {
+    case "green":
+      return "none";
+    case "yellow":
+    case "blue":
+      return "hue-rotate(110deg) saturate(160%)";
+    case "pink":
+    case "purple":
+      return "hue-rotate(210deg) saturate(160%)";
+    case "white":
+      return "saturate(0%) brightness(175%)";
+    case "orange":
+      return "hue-rotate(260deg) saturate(160%)";
+    case "brown":
+      return "hue-rotate(330deg) saturate(70%) brightness(70%)";
     default:
       return "none";
   }
@@ -149,30 +160,30 @@ export const PixelCat = ({ stage = 1 }) => (
       : <AnimatedBabyCat />
 );
 
-const AnimatedAdultLizard = () => (
+const AnimatedAdultLizard = ({ color }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
-    <div className="pixelart-lizard-adult" aria-label="Adult Lizard" />
+    <div className="pixelart-lizard-adult" aria-label="Adult Lizard" style={{ filter: getLizardColorFilter(color) }} />
   </div>
 );
 
-const AnimatedTeenLizard = () => (
+const AnimatedTeenLizard = ({ color }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
-    <div className="pixelart-lizard-teen" aria-label="Teen Lizard" />
+    <div className="pixelart-lizard-teen" aria-label="Teen Lizard" style={{ filter: getLizardColorFilter(color) }} />
   </div>
 );
 
-const AnimatedBabyLizard = () => (
+const AnimatedBabyLizard = ({ color }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
-    <div className="pixelart-lizard-baby" aria-label="Baby Lizard" />
+    <div className="pixelart-lizard-baby" aria-label="Baby Lizard" style={{ filter: getLizardColorFilter(color) }} />
   </div>
 );
 
-export const PixelLizard = ({ stage = 1 }) => (
+export const PixelLizard = ({ stage = 1, color = "green" }) => (
   stage === 3
-    ? <AnimatedAdultLizard />
+    ? <AnimatedAdultLizard color={color} />
     : stage === 2
-      ? <AnimatedTeenLizard />
-      : <AnimatedBabyLizard />
+      ? <AnimatedTeenLizard color={color} />
+      : <AnimatedBabyLizard color={color} />
 );
 
 const AnimatedAdultBird = ({ color }) => (
