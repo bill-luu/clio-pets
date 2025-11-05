@@ -434,3 +434,18 @@
   }
 }
 
+/* Attention emoji animation for baby dogs needing care */
+.attention-emoji {
+  animation: sadEmojiBob 1.2s ease-in-out infinite;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
+}
+
+@keyframes sadEmojiBob {
+  0%, 100% {
+    transform: translateY(0) rotate(-10deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(-10deg) scale(1.05);
+  }
+}
+
