@@ -10,6 +10,12 @@ export default function OtherPets({ user }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPet, setSelectedPet] = useState(null);
+  
+  // Filter states
+  const [filterSpecies, setFilterSpecies] = useState("all");
+  const [filterStage, setFilterStage] = useState("all");
+  const [filterOwner, setFilterOwner] = useState("all");
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -32,6 +38,39 @@ export default function OtherPets({ user }) {
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, [user.uid]);
+
+  // Get unique owners for filter dropdown
+  const uniqueOwners = [...new Set(pets.map(pet => pet.ownerEmail).filter(Boolean))].sort();
+
+  // Filter pets based on selected filters
+  const filteredPets = pets.filter((pet) => {
+    // Filter by species
+    if (filterSpecies !== "all" && pet.species !== filterSpecies) {
+      return false;
+    }
+
+    // Filter by stage
+    if (filterStage !== "all" && pet.stage !== parseInt(filterStage)) {
+      return false;
+    }
+
+    // Filter by owner
+    if (filterOwner !== "all" && pet.ownerEmail !== filterOwner) {
+      return false;
+    }
+
+    return true;
+  });
+
+  // Reset filters
+  const resetFilters = () => {
+    setFilterSpecies("all");
+    setFilterStage("all");
+    setFilterOwner("all");
+  };
+
+  // Check if any filters are active
+  const hasActiveFilters = filterSpecies !== "all" || filterStage !== "all" || filterOwner !== "all";
 
   if (loading) {
     return (
@@ -59,11 +98,100 @@ export default function OtherPets({ user }) {
         </div>
       ) : (
         <div className="pets-section">
-          <div className="pets-grid">
-            {pets.map((pet) => {
-              const PixelArtComponent = getPetPixelArt(pet.species);
-              const stageInfo = getStageInfo(pet.stage);
-              return (
+          <div className="action-buttons">
+            <div></div>
+            <button
+              className={`btn ${showFilters ? 'btn-secondary' : 'btn-primary'}`}
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              {showFilters ? "Hide Filters" : "Show Filters"}
+            </button>
+          </div>
+
+          {/* Filter Section */}
+          {showFilters && (
+          <div className="filter-section">
+            <h3 className="filter-title">Filter Pets</h3>
+            <div className="filter-controls">
+              <div className="filter-group">
+                <label htmlFor="filter-species">Species:</label>
+                <select
+                  id="filter-species"
+                  value={filterSpecies}
+                  onChange={(e) => setFilterSpecies(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="all">All Species</option>
+                  <option value="Dog">Dog</option>
+                  <option value="Cat">Cat</option>
+                  <option value="Bird">Bird</option>
+                  <option value="Bunny">Bunny</option>
+                  <option value="Lizard">Lizard</option>
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <label htmlFor="filter-stage">Stage:</label>
+                <select
+                  id="filter-stage"
+                  value={filterStage}
+                  onChange={(e) => setFilterStage(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="all">All Stages</option>
+                  <option value="1">🍼 Baby</option>
+                  <option value="2">🐾 Teen</option>
+                  <option value="3">👑 Adult</option>
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <label htmlFor="filter-owner">Owner:</label>
+                <select
+                  id="filter-owner"
+                  value={filterOwner}
+                  onChange={(e) => setFilterOwner(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="all">All Owners</option>
+                  {uniqueOwners.map((owner) => (
+                    <option key={owner} value={owner}>
+                      {owner}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {hasActiveFilters && (
+                <button
+                  className="btn btn-secondary reset-filters-btn"
+                  onClick={resetFilters}
+                >
+                  Reset Filters
+                </button>
+              )}
+            </div>
+            
+            <div className="filter-results">
+              Showing {filteredPets.length} of {pets.length} pets
+            </div>
+          </div>
+          )}
+
+          {/* No Results Message */}
+          {filteredPets.length === 0 ? (
+            <div className="no-results">
+              <p>No pets match the selected filters.</p>
+              <button className="btn btn-secondary" onClick={resetFilters}>
+                Clear Filters
+              </button>
+            </div>
+          ) : (
+            <div className="pets-grid">
+              {filteredPets.map((pet) => {
+                const PixelArtComponent = getPetPixelArt(pet.species);
+                const stageInfo = getStageInfo(pet.stage);
+                return (
                 <div
                   key={pet.id}
                   className="pet-card clickable-pet-card"
@@ -135,9 +263,10 @@ export default function OtherPets({ user }) {
                     </div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
