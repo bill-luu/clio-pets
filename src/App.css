@@ -30,6 +30,7 @@
 .navbar-brand {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .brand-link {
@@ -53,6 +54,7 @@
   gap: 0.5rem;
   flex: 1;
   justify-content: center;
+  align-items: center;
 }
 
 .navbar-menu li {
@@ -67,6 +69,7 @@
   font-weight: 500;
   border-radius: 6px;
   transition: background-color 0.2s, color 0.2s;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -79,11 +82,12 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-shrink: 0;
 }
 
 .user-email {
   color: #6b7280;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   display: none;
 }
 
