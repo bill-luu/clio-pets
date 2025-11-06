@@ -59,16 +59,18 @@
   padding: 1rem 1.5rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-  gap: 2rem;
+  gap: 1rem;
   flex-shrink: 0;
+  flex-wrap: nowrap;
 }
 
 .pet-header-left {
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
+  max-width: 100%;
 }
 
 .pet-header-avatar {
@@ -102,6 +104,7 @@
   flex-direction: column;
   gap: 0.5rem;
   min-width: 0;
+  overflow: hidden;
 }
 
 .pet-header-name {
@@ -110,6 +113,9 @@
   color: white;
   margin: 0;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .pet-header-species {
@@ -117,6 +123,8 @@
   color: rgba(255, 255, 255, 0.9);
   text-transform: capitalize;
   margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .pet-header-status {
@@ -128,6 +136,9 @@
   color: #2c3e50;
   display: inline-block;
   width: fit-content;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .pet-header-right {
@@ -137,6 +148,8 @@
   min-width: 160px;
   max-width: 100%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .pet-header-stats {
@@ -152,6 +165,7 @@
   gap: 0.5rem;
   font-size: 0.85rem;
   line-height: 1.2;
+  flex-wrap: wrap;
 }
 
 .pet-header-stat-label {
@@ -161,6 +175,7 @@
   color: #2c3e50;
   font-weight: 600;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .pet-header-stat-icon {
@@ -1260,6 +1275,27 @@
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .pet-header-section {
+    flex-wrap: wrap;
+  }
+
+  .pet-header-left {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .pet-header-right {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .pet-header-coins-display {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
 @media (max-width: 768px) {
   .pet-details-page {
     padding: 0;
@@ -1292,15 +1328,26 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
+    width: 100%;
   }
 
   .pet-header-right {
     min-width: auto;
     max-width: 100%;
+    width: 100%;
+  }
+
+  .pet-header-coins-display {
+    width: 100%;
   }
 
   .pet-header-name {
     font-size: clamp(1.25rem, 5vw, 1.5rem);
+    max-width: 100%;
+  }
+
+  .pet-header-species {
+    font-size: clamp(0.85rem, 3vw, 1rem);
   }
 
   .pet-tabs-navigation {
