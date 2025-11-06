@@ -35,6 +35,7 @@ export default function PetDetailsPage({ user }) {
   const [sharingEnabled, setSharingEnabled] = useState(false);
   const [copied, setCopied] = useState(false);
   const [shareError, setShareError] = useState(null);
+  const [activeTooltip, setActiveTooltip] = useState(null); // For mobile tap-to-toggle tooltips
 
   // Subscribe to real-time updates for this pet
   useEffect(() => {
@@ -287,6 +288,25 @@ export default function PetDetailsPage({ user }) {
     }
   };
 
+  // Toggle tooltip on mobile (tap-to-toggle)
+  const handleTooltipToggle = (tooltipId) => {
+    setActiveTooltip(activeTooltip === tooltipId ? null : tooltipId);
+  };
+
+  // Close tooltip when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (activeTooltip && !e.target.closest('.info-icon-wrapper')) {
+        setActiveTooltip(null);
+      }
+    };
+
+    if (activeTooltip) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [activeTooltip]);
+
   if (loading) {
     return (
       <div className="pet-details-page">
@@ -444,9 +464,9 @@ export default function PetDetailsPage({ user }) {
               <div className="progression-section">
                 <div className="section-header-with-info">
                   <h3>Progression</h3>
-                  <div className="info-icon-wrapper">
+                  <div className="info-icon-wrapper" onClick={() => handleTooltipToggle('progression')}>
                     <span className="info-icon">ℹ️</span>
-                    <div className="info-tooltip">
+                    <div className={`info-tooltip ${activeTooltip === 'progression' ? 'tooltip-visible' : ''}`}>
                       <strong>📊 Progression Info:</strong>
                       <p><strong>Age:</strong> 1 real day = 1 pet month (if well cared for)</p>
                       <p><strong>Stage:</strong> Baby (0-199 XP) → Teen (200-599 XP) → Adult (600+ XP)</p>
@@ -517,9 +537,9 @@ export default function PetDetailsPage({ user }) {
                 <div className="bonuses-section">
                   <div className="section-header-with-info">
                     <h3>Cooldown Bonuses</h3>
-                    <div className="info-icon-wrapper">
+                    <div className="info-icon-wrapper" onClick={() => handleTooltipToggle('bonuses')}>
                       <span className="info-icon">ℹ️</span>
-                      <div className="info-tooltip">
+                      <div className={`info-tooltip ${activeTooltip === 'bonuses' ? 'tooltip-visible' : ''}`}>
                         <strong>🔥 Streak Tiers:</strong>
                         <ul>
                           <li>1-2 days: Starting (0 min)</li>
@@ -579,9 +599,9 @@ export default function PetDetailsPage({ user }) {
                 <div className="actions-header">
                   <div className="section-header-with-info">
                     <h3>Actions</h3>
-                    <div className="info-icon-wrapper tooltip-right">
+                    <div className="info-icon-wrapper tooltip-right" onClick={() => handleTooltipToggle('actions')}>
                       <span className="info-icon">ℹ️</span>
-                      <div className="info-tooltip info-tooltip-large">
+                      <div className={`info-tooltip info-tooltip-large ${activeTooltip === 'actions' ? 'tooltip-visible' : ''}`}>
                         <strong>⏱️ Cooldown Reduction System:</strong>
                         <p>Reduce the 10-minute cooldown between actions by building streaks and sharing your pet!</p>
 

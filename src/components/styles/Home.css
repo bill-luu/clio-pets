@@ -2,6 +2,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 .home-header {
@@ -9,14 +10,14 @@
 }
 
 .home-header h2 {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 5vw, 2rem);
   margin-bottom: 0.5rem;
   color: #333;
 }
 
 .welcome-text {
   color: #666;
-  font-size: 1rem;
+  font-size: clamp(0.875rem, 3vw, 1rem);
 }
 
 .loading {
@@ -124,14 +125,22 @@
 }
 
 .filter-select {
-  padding: 0.6rem;
+  padding: 0.75rem;
+  min-height: 48px; /* Touch target minimum */
   border: 1px solid #d0d0d0;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: clamp(0.875rem, 3vw, 1rem);
   font-family: inherit;
   background-color: white;
   cursor: pointer;
   transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.5rem;
 }
 
 .filter-select:hover {
@@ -270,22 +279,28 @@
 .btn-delete {
   background: none;
   border: none;
-  font-size: 2rem;
+  font-size: 1.75rem;
   color: #999;
   cursor: pointer;
-  padding: 0;
-  width: 30px;
-  height: 30px;
+  padding: 0.5rem;
+  min-width: 44px; /* Touch target minimum */
+  min-height: 44px; /* Touch target minimum */
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 4px;
   transition: background-color 0.2s, color 0.2s;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  user-select: none;
 }
 
 .btn-delete:hover {
   background-color: #fee;
   color: #c33;
+}
+
+.btn-delete:active {
+  transform: scale(0.95);
 }
 
 .pet-card-body p {
@@ -376,14 +391,20 @@
 
 /* Buttons */
 .btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.875rem 1.5rem;
+  min-height: 48px; /* Touch target minimum */
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: clamp(0.875rem, 3vw, 1rem);
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.1s;
   font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  user-select: none;
 }
 
 .btn:active {
@@ -417,6 +438,7 @@
 @media (max-width: 1024px) {
   .pets-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
   }
 }
 
@@ -427,10 +449,57 @@
 
   .pets-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .home-header h2 {
     font-size: 1.5rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .action-buttons .btn {
+    width: 100%;
+  }
+
+  .filter-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-group {
+    min-width: 100%;
+  }
+
+  .reset-filters-btn {
+    width: 100%;
+  }
+
+  .pet-badges {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .pet-tier-badge {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.65rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-container {
+    padding: 0.75rem;
+  }
+
+  .pet-card {
+    padding: 1rem;
+  }
+
+  .pet-card-header h3 {
+    font-size: 1.25rem;
   }
 }
 

@@ -78,15 +78,21 @@
 
 /* Button Styles */
 .btn {
-  padding: 0.625rem 1.25rem;
+  padding: 0.75rem 1.25rem;
+  min-height: 48px; /* Touch target minimum */
   border: none;
   border-radius: 6px;
-  font-size: 0.875rem;
+  font-size: clamp(0.875rem, 3vw, 1rem);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
   font-family: inherit;
   min-width: 80px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  user-select: none;
 }
 
 .btn:active {
@@ -119,13 +125,38 @@
 }
 
 /* Responsive */
-@media (max-width: 480px) {
+@media (max-width: 576px) {
+  .confirm-modal-overlay {
+    padding: 0.5rem;
+  }
+
+  .confirm-modal-content {
+    max-width: 95vw;
+  }
+
+  .confirm-modal-header h3 {
+    font-size: 1.125rem;
+  }
+
   .confirm-modal-footer {
     flex-direction: column-reverse;
+    gap: 0.65rem;
   }
 
   .confirm-modal-footer .btn {
     width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .confirm-modal-header,
+  .confirm-modal-body,
+  .confirm-modal-footer {
+    padding: 1rem;
+  }
+
+  .confirm-modal-body p {
+    font-size: 0.9rem;
   }
 }
 
