@@ -6,11 +6,11 @@ import "./styles/AddPetModal.css";
 
 const COLOR_OPTIONS = [
   { value: "brown", label: "Brown" },
-  { value: "yellow", label: "Yellow" },
+  { value: "yellow", label: "Pink" },
   { value: "green", label: "Green" },
   { value: "purple", label: "Purple" },
   { value: "white", label: "White" },
-  { value: "orange", label: "Orange" },
+  { value: "orange", label: "Red" },
 ];
 
 export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) {
@@ -67,6 +67,15 @@ export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) 
       formData.color === "brown"
     ) {
       setFormData((prevState) => ({ ...prevState, color: "green" }));
+    }
+
+    // If switching to Owl and user hasn't explicitly chosen color, default to blue
+    if (
+      formData.species === "Owl" &&
+      prev !== "Owl" &&
+      !userChangedColor
+    ) {
+      setFormData((prevState) => ({ ...prevState, color: "blue" }));
     }
 
     // If switching from Bird (default yellow) to Dog, and user hasn't explicitly chosen color, default to brown
@@ -147,6 +156,11 @@ export default function AddPetModal({ userId, userEmail, onClose, onPetAdded }) 
             { value: "blue", label: "Blue" },
             ...COLOR_OPTIONS.filter((opt) => opt.value !== "purple" && opt.value !== "yellow"),
           ]
+        : formData.species === "Owl"
+          ? [
+              { value: "blue", label: "Blue" },
+              ...COLOR_OPTIONS,
+            ]
         : COLOR_OPTIONS;
 
   return (
