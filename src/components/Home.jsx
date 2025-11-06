@@ -10,6 +10,7 @@ import { getInteractionCount } from "../services/sharedPetService";
 import AddPetModal from "./AddPetModal";
 import PetDetailsModal from "./PetDetailsModal";
 import ConfirmModal from "./ConfirmModal";
+import Pagination from "./Pagination";
 import "./styles/Home.css";
 
 export default function Home({ user }) {
@@ -26,6 +27,10 @@ export default function Home({ user }) {
   const [filterStage, setFilterStage] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9; // Show 9 pets per page (3x3 grid)
 
   useEffect(() => {
     setLoading(true);
@@ -125,6 +130,19 @@ export default function Home({ user }) {
 
     return true;
   });
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredPets.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedPets = filteredPets.slice(startIndex, endIndex);
+  const showingStart = filteredPets.length > 0 ? startIndex + 1 : 0;
+  const showingEnd = Math.min(endIndex, filteredPets.length);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterSpecies, filterStage, filterStatus]);
 
   // Reset filters
   const resetFilters = () => {
@@ -259,8 +277,9 @@ export default function Home({ user }) {
               </button>
             </div>
           ) : (
-            <div className="pets-grid">
-              {filteredPets.map((pet) => {
+            <>
+              <div className="pets-grid">
+                {paginatedPets.map((pet) => {
                 const PixelArtComponent = getPetPixelArt(pet.species);
                 const stageInfo = getStageInfo(pet.stage);
                 const progressInfo = getProgressToNextStage(pet.xp || 0);
@@ -371,7 +390,19 @@ export default function Home({ user }) {
                 </div>
                 );
               })}
-            </div>
+              </div>
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  itemsPerPage={itemsPerPage}
+                  totalItems={filteredPets.length}
+                  showingStart={showingStart}
+                  showingEnd={showingEnd}
+                />
+              )}
+            </>
           )}
         </div>
       )}

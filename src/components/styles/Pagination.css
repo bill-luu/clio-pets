@@ -1,0 +1,124 @@
+.pagination-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.pagination-info {
+  color: #666;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pagination-btn {
+  padding: 0.6rem 1.2rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  background-color: white;
+  color: #333;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #f8f9fa;
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pagination-page-btn {
+  min-width: 40px;
+  height: 40px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  background-color: white;
+  color: #333;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.pagination-page-btn:hover {
+  background-color: #f8f9fa;
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.pagination-page-btn.active {
+  background-color: #667eea;
+  border-color: #667eea;
+  color: white;
+  font-weight: 600;
+}
+
+.pagination-page-btn.active:hover {
+  background-color: #5568d3;
+  border-color: #5568d3;
+}
+
+.pagination-ellipsis {
+  padding: 0 0.5rem;
+  color: #999;
+  font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pagination-container {
+    padding: 1rem;
+  }
+
+  .pagination-controls {
+    gap: 0.25rem;
+  }
+
+  .pagination-btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .pagination-page-btn {
+    min-width: 36px;
+    height: 36px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .pagination-info {
+    font-size: 0.85rem;
+    text-align: center;
+  }
+}
+
