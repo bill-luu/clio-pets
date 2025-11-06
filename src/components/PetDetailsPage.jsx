@@ -735,17 +735,6 @@ export default function PetDetailsPage({ user }) {
                 <h3>Items</h3>
               </div>
               <div className="store-items">
-                {/* Pet House at top */}
-                <div className="store-item">
-                  <div className="store-item-info">
-                    <span className="store-item-icon">🏠</span>
-                    <div className="store-item-text">
-                      <div className="store-item-name">House</div>
-                      <div className="store-item-desc">Your pet's house</div>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Pet's actual items */}
                 {Array.isArray(currentPet.items) && currentPet.items.length > 0 ? (
                   currentPet.items.map((item, idx) => {
@@ -862,7 +851,7 @@ export default function PetDetailsPage({ user }) {
                   </div>
 
                   <div className="print-qr-section">
-                    <a 
+                    <a
                       href={`/pet/${currentPet.id}/print-qr`}
                       target="_blank"
                       rel="noopener noreferrer"

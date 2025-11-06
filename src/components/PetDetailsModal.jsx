@@ -616,17 +616,6 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
                   <h3>Items</h3>
                 </div>
                 <div className="store-items">
-                  {/* Pet House at top */}
-                  <div className="store-item">
-                    <div className="store-item-info">
-                      <span className="store-item-icon">🏠</span>
-                      <div className="store-item-text">
-                        <div className="store-item-name">House</div>
-                        <div className="store-item-desc">Your pet's house</div>
-                      </div>
-                    </div>
-                  </div>
-
                   {/* Pet's actual items */}
                   {Array.isArray(currentPet.items) && currentPet.items.length > 0 ? (
                     currentPet.items.map((item, idx) => {

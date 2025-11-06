@@ -65,7 +65,11 @@ export default function Leaderboard({ user }) {
         <div className="pet-info">
           {PixelArtComponent && (
             <div className="pet-pixel-art">
-              <PixelArtComponent stage={pet.stage || 1} color={pet.color} />
+              <PixelArtComponent
+                stage={pet.stage || 1}
+                color={pet.color}
+                equippedAccessories={pet.equippedAccessories || []}
+              />
             </div>
           )}
           <div className="pet-details">
