@@ -91,8 +91,10 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  min-width: 0; /* allow text to wrap instead of pushing CTA out */
-  flex: 1 1 auto; /* take remaining width and wrap before CTA */
+  min-width: 0;
+  /* allow text to wrap instead of pushing CTA out */
+  flex: 1 1 auto;
+  /* take remaining width and wrap before CTA */
 }
 
 .store-item-icon {
@@ -123,8 +125,10 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  flex-shrink: 0; /* keep price + button from shrinking into overflow */
-  white-space: nowrap; /* avoid wrapping during state changes */
+  flex-shrink: 0;
+  /* keep price + button from shrinking into overflow */
+  white-space: nowrap;
+  /* avoid wrapping during state changes */
 }
 
 .store-item-price {
@@ -142,7 +146,8 @@
   padding: 0.4rem 0.8rem;
   font-size: 0.9rem;
   border-radius: 10px;
-  min-width: 64px; /* keep button width stable */
+  min-width: 64px;
+  /* keep button width stable */
 }
 
 /* Section Header with Info Icon */
@@ -348,6 +353,17 @@
   border-radius: 12px;
   padding: 1rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.pet-avatar>div {
+  width: 100% !important;
+  height: 100% !important;
+  transform: translate(-30%, -30%) scale(0.6);
+  transform-origin: center;
 }
 
 .pet-avatar .pixel-art {
@@ -388,9 +404,12 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.8;
   }
@@ -620,6 +639,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -776,7 +796,7 @@
   font-weight: 600;
 }
 
-.xp-progress-header > span:first-child {
+.xp-progress-header>span:first-child {
   color: #333;
 }
 
@@ -835,6 +855,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -994,7 +1015,7 @@
   white-space: normal;
   word-break: break-word;
   overflow-wrap: anywhere;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.15s ease, visibility 0.15s ease;
@@ -1005,4 +1026,3 @@
   opacity: 1;
   visibility: visible;
 }
-
