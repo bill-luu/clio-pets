@@ -31,10 +31,10 @@ export default function TestPage() {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" 
-        ? checked 
-        : (name === "stage" || name === "ageInMonths" || name === "currentStreak" || name === "longestStreak" || name === "fakeInteractions") 
-          ? parseInt(value) 
+      [name]: type === "checkbox"
+        ? checked
+        : (name === "stage" || name === "ageInMonths" || name === "currentStreak" || name === "longestStreak" || name === "fakeInteractions")
+          ? parseInt(value)
           : value,
     }));
   };
@@ -94,16 +94,16 @@ export default function TestPage() {
       };
 
       const petId = await addPet(user.uid, petData);
-      
+
       // Create fake interactions if requested
       if (formData.fakeInteractions > 0 && formData.sharingEnabled) {
         const interactionsRef = collection(db, "petInteractions");
         const interactionPromises = [];
-        
+
         for (let i = 0; i < formData.fakeInteractions; i++) {
           // Create unique fake interactor IDs
           const fakeInteractorId = `test_interactor_${Date.now()}_${i}_${Math.random().toString(36).substr(2, 9)}`;
-          
+
           interactionPromises.push(
             addDoc(interactionsRef, {
               petId: petId,
@@ -113,14 +113,14 @@ export default function TestPage() {
             })
           );
         }
-        
+
         // Wait for all interactions to be created
         await Promise.all(interactionPromises);
-        
+
         // Give Firestore a moment to index the new interactions
         await new Promise(resolve => setTimeout(resolve, 500));
       }
-      
+
       navigate("/"); // Navigate back to home after creation
     } catch (err) {
       console.error("Error creating test pet:", err);
@@ -171,6 +171,7 @@ export default function TestPage() {
                 <option value="Bird">Bird</option>
                 <option value="Bunny">Bunny</option>
                 <option value="Lizard">Lizard</option>
+                <option value="Owl">Owl</option>
               </select>
             </div>
 
@@ -261,7 +262,7 @@ export default function TestPage() {
 
           <div className="form-section">
             <h3>Cooldown Reduction Settings</h3>
-            
+
             <div className="info-box">
               <strong>🔥 Streak Tiers:</strong>
               <ul>
@@ -392,7 +393,7 @@ export default function TestPage() {
               Cancel
             </button>
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading 
+              {loading
                 ? formData.fakeInteractions > 0 && formData.sharingEnabled
                   ? `Creating pet and ${formData.fakeInteractions} interactions...`
                   : "Creating..."

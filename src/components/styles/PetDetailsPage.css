@@ -1594,6 +1594,28 @@
   white-space: nowrap;
 }
 
+.print-qr-section {
+  padding: 1.5rem;
+  background: #fff3e0;
+  border: 2px solid #ff9800;
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.print-qr-btn {
+  display: inline-block;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+}
+
+.print-qr-btn:hover {
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 .interaction-stats {
   padding: 1.5rem;
   background: #e7f5ff;

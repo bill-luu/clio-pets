@@ -3,7 +3,12 @@ import ReactDOM from 'react-dom/client';
 import 'nes.css/css/nes.min.css';
 import './index.css';
 import './pixel-owl.css';
+import './pixel-owl-hat.css';
 import './pixel-dog-hat.css';
+import './pixel-bunny-hat.css';
+import './pixel-cat-hat.css';
+import './pixel-lizard-hat.css';
+import './pixel-bird-hat.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
