@@ -842,6 +842,17 @@ export default function PetDetailsPage({ user }) {
                     </div>
                   </div>
 
+                  <div className="print-qr-section">
+                    <a 
+                      href={`/pet/${currentPet.id}/print-qr`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-secondary print-qr-btn"
+                    >
+                      🖨️ Print QR Code Poster
+                    </a>
+                  </div>
+
                   {interactionStats && (
                     <div className="interaction-stats">
                       <h3>Interaction Stats</h3>
