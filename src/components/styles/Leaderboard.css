@@ -3,6 +3,7 @@
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 .leaderboard-header {
@@ -11,13 +12,13 @@
 }
 
 .leaderboard-header h1 {
-    font-size: 2.5rem;
+    font-size: clamp(1.75rem, 6vw, 2.5rem);
     color: #333;
     margin-bottom: 0.5rem;
 }
 
 .header-subtitle {
-    font-size: 1.1rem;
+    font-size: clamp(0.9rem, 3vw, 1.1rem);
     color: #666;
     margin: 0;
 }
@@ -52,12 +53,12 @@
 }
 
 .category-header h2 {
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 5vw, 2rem);
     margin: 0 0 0.5rem 0;
 }
 
 .category-description {
-    font-size: 1rem;
+    font-size: clamp(0.875rem, 3vw, 1rem);
     margin: 0;
     opacity: 0.95;
 }
@@ -80,7 +81,7 @@
 .leaderboard-pet-card {
     display: grid;
     grid-template-columns: 80px 120px 1fr;
-    gap: 2rem;
+    gap: 1.5rem;
     align-items: center;
     padding: 1.5rem;
     background-color: #fff;
@@ -88,11 +89,16 @@
     border-radius: 12px;
     transition: transform 0.2s, box-shadow 0.2s;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Prevent content overflow */
 }
 
 .leaderboard-pet-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.leaderboard-pet-card:active {
+    transform: scale(0.98);
 }
 
 /* Podium Styling for Top 3 */
@@ -207,22 +213,30 @@
         padding: 1rem;
     }
 
+    .leaderboard-header {
+        margin-bottom: 2rem;
+    }
+
     .leaderboard-header h1 {
-        font-size: 2rem;
+        font-size: 1.75rem;
+    }
+
+    .category-header {
+        padding: 0.875rem;
     }
 
     .category-header h2 {
-        font-size: 1.5rem;
+        font-size: 1.35rem;
     }
 
     .leaderboard-pet-card {
         grid-template-columns: 50px 80px 1fr;
         padding: 1rem;
-        gap: 1rem;
+        gap: 0.875rem;
     }
 
     .pet-rank {
-        font-size: 2rem;
+        font-size: 1.75rem;
         min-width: auto;
     }
 
@@ -231,8 +245,91 @@
         height: 80px;
     }
 
+    .pet-details {
+        margin-left: 0;
+        min-width: 0;
+    }
+
     .pet-name {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
+        word-break: break-word;
+    }
+
+    .pet-species,
+    .pet-age,
+    .pet-owner,
+    .pet-stat {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .leaderboard-container {
+        padding: 0.75rem;
+    }
+
+    .leaderboard-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .category-header {
+        padding: 0.75rem;
+    }
+
+    .leaderboard-pet-card {
+        grid-template-columns: 40px 70px 1fr;
+        padding: 0.875rem;
+        gap: 0.65rem;
+    }
+
+    .pet-rank {
+        font-size: 1.5rem;
+    }
+
+    .pet-pixel-art {
+        width: 70px;
+        height: 70px;
+    }
+
+    .pet-name {
+        font-size: 1rem;
+    }
+
+    .pet-species,
+    .pet-age,
+    .pet-owner {
+        font-size: 0.8rem;
+    }
+
+    .pet-stat {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .leaderboard-pet-card {
+        grid-template-columns: 35px 60px 1fr;
+        padding: 0.75rem;
+        gap: 0.5rem;
+    }
+
+    .pet-rank {
+        font-size: 1.35rem;
+    }
+
+    .pet-pixel-art {
+        width: 60px;
+        height: 60px;
+    }
+
+    .pet-name {
+        font-size: 0.95rem;
+    }
+
+    .pet-species,
+    .pet-age,
+    .pet-owner {
+        font-size: 0.75rem;
     }
 }
 

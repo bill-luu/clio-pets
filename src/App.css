@@ -4,6 +4,12 @@
   display: flex;
   flex-direction: column;
   background-color: #f5f7fa;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Global responsive typography */
+html {
+  font-size: clamp(14px, 2.5vw, 16px);
 }
 
 /* Navbar */
@@ -34,11 +40,15 @@
 }
 
 .brand-link {
-  font-size: 1.5rem;
+  font-size: clamp(1.125rem, 4vw, 1.5rem);
   font-weight: 700;
   color: #1f2937;
   text-decoration: none;
   transition: color 0.2s;
+  /* Minimum touch target */
+  min-height: 44px;
+  display: flex;
+  align-items: center;
 }
 
 .brand-link:hover {
@@ -62,8 +72,11 @@
 }
 
 .nav-link {
-  display: block;
-  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  min-height: 44px; /* Touch target minimum */
   color: #6b7280;
   text-decoration: none;
   font-weight: 500;
@@ -77,17 +90,22 @@
   color: #1f2937;
 }
 
+.nav-link:active {
+  background-color: #e5e7eb;
+  transform: scale(0.98);
+}
+
 /* Hamburger Menu Button */
 .hamburger-menu {
   display: none;
   flex-direction: column;
   justify-content: space-around;
-  width: 2rem;
-  height: 2rem;
+  width: 44px; /* Touch target minimum */
+  height: 44px; /* Touch target minimum */
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 0.5rem;
   z-index: 200;
 }
 
@@ -127,7 +145,8 @@
 }
 
 .logout-btn {
-  padding: 0.5rem 1.25rem;
+  padding: 0.75rem 1.25rem;
+  min-height: 44px; /* Touch target minimum */
   background-color: #ef4444;
   color: white;
   border: none;
@@ -137,6 +156,9 @@
   cursor: pointer;
   transition: background-color 0.2s, transform 0.1s;
   font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .logout-btn:hover {
@@ -169,17 +191,21 @@
 }
 
 .logout-btn-mobile {
-  padding: 0.75rem 1.25rem;
+  padding: 0.875rem 1.25rem;
+  min-height: 48px; /* Slightly larger for mobile */
   background-color: #ef4444;
   color: white;
   border: none;
   border-radius: 6px;
   font-weight: 500;
-  font-size: 0.875rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.1s;
   font-family: inherit;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .logout-btn-mobile:hover {
@@ -267,14 +293,25 @@
   }
 
   .nav-link {
-    padding: 0.875rem 1.5rem;
-    display: block;
+    padding: 1rem 1.5rem;
+    min-height: 48px; /* Larger touch target on mobile */
+    display: flex;
+    align-items: center;
     border-radius: 0;
   }
 
   .nav-link:hover {
     background-color: #f3f4f6;
   }
+}
+
+/* Prevent text selection on interactive elements */
+.nav-link,
+.btn,
+.logout-btn,
+.hamburger-menu {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  user-select: none;
 }
 
 @media (max-width: 480px) {
