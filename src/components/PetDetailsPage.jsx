@@ -70,7 +70,7 @@ export default function PetDetailsPage({ user }) {
     if (currentPet) {
       loadStats();
     }
-  }, [currentPet?.id, currentPet?.sharingEnabled]);
+  }, [currentPet]);
 
   // Cooldown timer
   useEffect(() => {
@@ -94,12 +94,12 @@ export default function PetDetailsPage({ user }) {
   const PixelArtComponent = currentPet ? getPetPixelArt(currentPet.species) : null;
   const availableActions = useMemo(() => currentPet ? getAvailableActions(currentPet) : [], [currentPet]);
   const petStatus = useMemo(() => currentPet ? getPetStatus(currentPet) : { status: 'okay', message: 'Loading...' }, [currentPet]);
-  const progressInfo = useMemo(() => currentPet ? getProgressToNextStage(currentPet.xp || 0) : { percentage: 0, isMaxStage: false }, [currentPet?.xp]);
-  const stageInfo = useMemo(() => currentPet ? getStageInfo(currentPet.stage || 1) : { color: '#667eea' }, [currentPet?.stage]);
+  const progressInfo = useMemo(() => currentPet ? getProgressToNextStage(currentPet.xp || 0) : { percentage: 0, isMaxStage: false }, [currentPet]);
+  const stageInfo = useMemo(() => currentPet ? getStageInfo(currentPet.stage || 1) : { color: '#667eea' }, [currentPet]);
   const ageDisplay = currentPet ? formatAgeDisplay(currentPet.ageInYears || 0) : '0 months';
 
   // Streak and bonus information
-  const streakBonus = useMemo(() => currentPet ? getStreakBonus(currentPet.currentStreak || 0) : { reductionSeconds: 0, reductionMinutes: 0, tier: 0 }, [currentPet?.currentStreak]);
+  const streakBonus = useMemo(() => currentPet ? getStreakBonus(currentPet.currentStreak || 0) : { reductionSeconds: 0, reductionMinutes: 0, tier: 0 }, [currentPet]);
   const streakTierInfo = useMemo(() => getStreakTierInfo(streakBonus.tier), [streakBonus.tier]);
   const socialBonus = useMemo(() => getSocialBonus(interactionStats?.uniqueInteractors || 0), [interactionStats?.uniqueInteractors]);
   const socialTierInfo = useMemo(() => getSocialTierInfo(socialBonus.tier), [socialBonus.tier]);

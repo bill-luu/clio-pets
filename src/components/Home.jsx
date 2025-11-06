@@ -92,10 +92,6 @@ export default function Home({ user }) {
     navigate(`/pet/${pet.id}`);
   };
 
-  const handlePetUpdated = () => {
-    // No need to manually reload - real-time listener will update automatically
-  };
-
   // Calculate average stat for a pet
   const calculateAveStat = (pet) => {
     const fullness = pet.fullness || 50;
