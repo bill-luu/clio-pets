@@ -45,16 +45,6 @@
           "order": "DESCENDING"
         }
       ]
-    },
-    {
-      "collectionGroup": "pets",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "xp",
-          "order": "DESCENDING"
-        }
-      ]
     }
   ],
   "fieldOverrides": []
