@@ -2,15 +2,46 @@ import React, { useState, useEffect, useRef } from "react";
 import "./styles/BackgroundMusic.css";
 
 export default function BackgroundMusic() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.3); // Default to 30% volume
+  // Load saved preferences from localStorage
+  const [isPlaying, setIsPlaying] = useState(() => {
+    const savedIsPlaying = localStorage.getItem('backgroundMusicIsPlaying');
+    return savedIsPlaying === 'true';
+  });
+  
+  const [volume, setVolume] = useState(() => {
+    const savedVolume = localStorage.getItem('backgroundMusicVolume');
+    return savedVolume !== null ? parseFloat(savedVolume) : 0.3;
+  });
+  
   const audioRef = useRef(null);
 
+  // Initialize audio element and restore playing state
   useEffect(() => {
-    // Initialize audio element
     if (audioRef.current) {
       audioRef.current.volume = volume;
       audioRef.current.loop = true;
+      
+      // If music was playing before, resume it
+      if (isPlaying) {
+        audioRef.current.play().catch(error => {
+          console.log("Audio play failed:", error);
+          // If autoplay fails (browser restriction), update state
+          setIsPlaying(false);
+        });
+      }
+    }
+  }, [isPlaying, volume]); // Include dependencies used in effect
+
+  // Save isPlaying to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('backgroundMusicIsPlaying', isPlaying.toString());
+  }, [isPlaying]);
+
+  // Save volume to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('backgroundMusicVolume', volume.toString());
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
     }
   }, [volume]);
 

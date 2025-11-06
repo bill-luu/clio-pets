@@ -3,6 +3,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "fire
 
 import { auth } from "firebase.js";
 import { PixelCat, PixelDog, PixelLizard } from "../utils/pixelArt";
+import BackgroundMusic from "./BackgroundMusic";
 
 import './styles/SplashScreen.css';
 
@@ -86,6 +87,9 @@ const SplashScreen = () => {
           {mode === "signup" ? "Already have an account? Login" : "New user? Sign Up"}
         </p>
       </div>
+
+      {/* Background Music Controls */}
+      <BackgroundMusic />
     </div>
   );
 };
