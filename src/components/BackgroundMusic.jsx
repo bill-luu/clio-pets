@@ -30,7 +30,7 @@ export default function BackgroundMusic() {
         });
       }
     }
-  }, []); // Only run once on mount
+  }, [isPlaying, volume]); // Include dependencies used in effect
 
   // Save isPlaying to localStorage whenever it changes
   useEffect(() => {
