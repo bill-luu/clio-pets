@@ -12,7 +12,7 @@ export default function Community({ user }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPet, setSelectedPet] = useState(null);
-  
+
   // Filter states
   const [filterSpecies, setFilterSpecies] = useState("all");
   const [filterStage, setFilterStage] = useState("all");
@@ -219,7 +219,7 @@ export default function Community({ user }) {
                 </button>
               )}
             </div>
-            
+
             <div className="filter-results">
               Showing {filteredPets.length} of {pets.length} pets
             </div>
@@ -260,7 +260,11 @@ export default function Community({ user }) {
                   </div>
                   {PixelArtComponent && (
                     <div className="pet-card-pixel-art">
-                      <PixelArtComponent stage={pet.stage || 1} color={pet.color} />
+                      <PixelArtComponent
+                        stage={pet.stage || 1}
+                        color={pet.color}
+                        equippedAccessories={pet.equippedAccessories || []}
+                      />
                     </div>
                   )}
                   <div className="pet-card-body">
