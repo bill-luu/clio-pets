@@ -2,26 +2,34 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     font-family: 'Press Start 2P', cursive; /* retro pixel font */
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
     min-height: 100vh;
-    padding: 2rem;
+    padding: 2rem 1rem;
     box-sizing: border-box;
+    overflow-x: hidden;
+    width: 100%;
   }
 
   .title {
-    font-size: 1.5rem;
+    font-size: clamp(1rem, 4vw, 1.5rem);
     margin-bottom: 2rem;
     text-align: center;
     color: #ff69b4;
+    line-height: 1.4;
+    padding: 0 1rem;
   }
 
   .pets-container {
     display: flex;
     gap: 1.25rem;
     margin-bottom: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 100%;
   }
 
   .pet {
@@ -29,6 +37,13 @@
     flex-direction: column;
     align-items: center;
     gap: 0.4rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .pet:active {
+    transform: scale(0.95);
   }
 
   .pet-art {
@@ -77,30 +92,187 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
+    max-width: 400px;
+    padding: 0 1rem;
   }
 
   .auth-form form {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.75rem;
+    width: 100%;
   }
 
   .auth-form input {
-    padding: 0.5rem;
+    padding: 0.75rem;
+    min-height: 48px; /* Touch target minimum */
     font-family: 'Press Start 2P', cursive;
-    font-size: 0.75rem;
+    font-size: clamp(0.65rem, 2vw, 0.75rem);
+    border: 2px solid #333;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    background: white;
+  }
+
+  .auth-form input:focus {
+    outline: none;
+    border-color: #ff69b4;
+    box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.2);
   }
 
   .auth-form button {
-    padding: 0.5rem;
+    padding: 0.75rem;
+    min-height: 48px; /* Touch target minimum */
     background-color: #ff69b4;
     color: white;
     border: none;
+    border-radius: 4px;
     font-family: 'Press Start 2P', cursive;
+    font-size: clamp(0.65rem, 2vw, 0.75rem);
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    width: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    user-select: none;
+  }
+
+  .auth-form button:hover {
+    background-color: #ff4da0;
+  }
+
+  .auth-form button:active {
+    transform: scale(0.98);
   }
 
   .auth-form p {
-    margin-top: 0.5rem;
-    font-size: 0.6rem;
+    margin-top: 0.75rem;
+    font-size: clamp(0.55rem, 1.8vw, 0.6rem);
     color: #555;
+    cursor: pointer;
+    text-align: center;
+    padding: 0.5rem;
+    transition: color 0.2s;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    user-select: none;
+  }
+
+  .auth-form p:hover {
+    color: #ff69b4;
+  }
+
+  .auth-form p:active {
+    transform: scale(0.98);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .splash-container {
+      padding: 1.5rem 1rem;
+    }
+
+    .title {
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .pets-container {
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .pet-art {
+      width: 100px;
+      height: 100px;
+    }
+
+    .pet-name {
+      font-size: 0.6rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .splash-container {
+      padding: 1rem 0.75rem;
+    }
+
+    .title {
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      padding: 0 0.5rem;
+    }
+
+    .pets-container {
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .pet-art {
+      width: 80px;
+      height: 80px;
+    }
+
+    .pet-name {
+      font-size: 0.55rem;
+    }
+
+    .auth-form {
+      padding: 0 0.5rem;
+    }
+
+    .auth-form input,
+    .auth-form button {
+      font-size: 0.65rem;
+    }
+
+    .auth-form p {
+      font-size: 0.55rem;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .title {
+      font-size: 0.75rem;
+    }
+
+    .pets-container {
+      gap: 0.5rem;
+    }
+
+    .pet-art {
+      width: 70px;
+      height: 70px;
+    }
+
+    .pet-name {
+      font-size: 0.5rem;
+    }
+
+    .auth-form input,
+    .auth-form button {
+      padding: 0.65rem;
+      font-size: 0.6rem;
+    }
+  }
+
+  @media (max-height: 700px) {
+    .splash-container {
+      padding: 1rem 0.75rem;
+      justify-content: flex-start;
+    }
+
+    .title {
+      margin-bottom: 1rem;
+      margin-top: 1rem;
+    }
+
+    .pets-container {
+      margin-bottom: 1rem;
+    }
+
+    .pet-art {
+      width: 80px;
+      height: 80px;
+    }
   }
