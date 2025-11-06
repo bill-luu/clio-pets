@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { getPetPixelArt } from "../utils/pixelArt";
-import { subscribeToPetById, purchaseItem, useItem as consumeInventoryItem } from "../services/petService";
+import { subscribeToPetById, purchaseItem, useItem as consumeInventoryItem, toggleAccessoryEquip } from "../services/petService";
 import {
   performPetAction,
   getAvailableActions,
@@ -28,6 +28,7 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
   const [interactionStats, setInteractionStats] = useState(null);
   const [storeLoadingItem, setStoreLoadingItem] = useState(null);
   const [usingItemName, setUsingItemName] = useState(null);
+  const [equippingAccessory, setEquippingAccessory] = useState(null);
   const [activeStoreTab, setActiveStoreTab] = useState('supplies'); // 'supplies' | 'accessories'
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'items' | 'share' | 'store'
 
@@ -203,6 +204,18 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
     }
   };
 
+  const handleToggleAccessory = async (accessoryName) => {
+    try {
+      setEquippingAccessory(accessoryName);
+      await toggleAccessoryEquip(currentPet.id, accessoryName);
+    } catch (err) {
+      console.error("Error toggling accessory:", err);
+      setError(err.message || "Failed to toggle accessory. Please try again.");
+    } finally {
+      setEquippingAccessory(null);
+    }
+  };
+
   const getStatColor = (value) => {
     if (value >= 70) return "stat-good";
     if (value >= 40) return "stat-okay";
@@ -243,7 +256,11 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
             <div className="pet-header-left">
               {PixelArtComponent && (
                 <div className="pet-header-avatar">
-                  <PixelArtComponent stage={currentPet.stage || 1} color={currentPet.color} />
+                  <PixelArtComponent
+                    stage={currentPet.stage || 1}
+                    color={currentPet.color}
+                    equippedAccessories={currentPet.equippedAccessories || []}
+                  />
                 </div>
               )}
               <div className="pet-header-info">
@@ -633,6 +650,32 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
                               {itemDesc && <div className="store-item-desc">{itemDesc}</div>}
                             </div>
                           </div>
+                          {/* Equip/Unequip on owned accessories (Items tab) */}
+                          {itemName === 'Hat' && (
+                            <div className="store-item-cta">
+                              {(() => {
+                                const isEquipped = Array.isArray(currentPet.equippedAccessories) && currentPet.equippedAccessories.includes(itemName);
+                                const locked = (currentPet.stage || 1) < 3;
+                                const disabled = locked || equippingAccessory === itemName;
+                                const title = locked
+                                  ? 'Locked until Adult stage'
+                                  : isEquipped
+                                    ? 'Unequip accessory'
+                                    : 'Equip accessory';
+                                return (
+                                  <button
+                                    className="btn btn-secondary"
+                                    disabled={disabled}
+                                    onClick={() => handleToggleAccessory(itemName)}
+                                    title={title}
+                                    style={{ marginLeft: 8 }}
+                                  >
+                                    {isEquipped ? 'Unequip' : 'Equip'}
+                                  </button>
+                                );
+                              })()}
+                            </div>
+                          )}
                         </div>
                       );
                     })

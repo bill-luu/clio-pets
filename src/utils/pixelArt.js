@@ -139,6 +139,26 @@ const AnimatedAdultDog = ({ color, isSad, isDirty, isExhausted }) => (
   </div>
 );
 
+// Placeholder adult dog with hat variant (loads a blank placeholder class for now)
+const AnimatedAdultDogWithHat = ({ color, isSad, isDirty, isExhausted }) => (
+  <div style={{ position: "relative", width: 170, height: 170 }}>
+    <div
+      className="pixelart-dog-with-hat"
+      aria-label="Adult Dog With Hat"
+      style={{ filter: getDogColorFilter(color) }}
+    />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
+  </div>
+);
+
 const AnimatedTeenDog = ({ color, isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div
@@ -213,13 +233,18 @@ const AnimatedBabyDog = ({ color, isSad, isDirty, isExhausted }) => (
   </div>
 );
 
-export const PixelDog = ({ stage = 1, color = "brown", isSad = false, isDirty = false, isExhausted = false }) => (
-  stage === 3
-    ? <AnimatedAdultDog color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
-    : stage === 2
-      ? <AnimatedTeenDog color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
-      : <AnimatedBabyDog color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
-);
+export const PixelDog = ({ stage = 1, color = "brown", isSad = false, isDirty = false, isExhausted = false, equippedAccessories = [] }) => {
+  const hasHatEquipped = Array.isArray(equippedAccessories) && equippedAccessories.includes("Hat");
+  if (stage === 3) {
+    return hasHatEquipped
+      ? <AnimatedAdultDogWithHat color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+      : <AnimatedAdultDog color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+  }
+  if (stage === 2) {
+    return <AnimatedTeenDog color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+  }
+  return <AnimatedBabyDog color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+};
 
 const AnimatedAdultCat = ({ isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>

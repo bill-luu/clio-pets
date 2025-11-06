@@ -48,6 +48,33 @@ export const getUserPets = async (userId) => {
 };
 
 /**
+ * Toggle equip/unequip of a cosmetic accessory for a pet.
+ * Stores names in an 'equippedAccessories' array field on the pet.
+ * @param {string} petId
+ * @param {string} accessoryName
+ */
+export const toggleAccessoryEquip = async (petId, accessoryName) => {
+  if (!petId || !accessoryName) {
+    throw new Error("Invalid petId or accessoryName");
+  }
+  const petRef = doc(db, "pets", petId);
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(petRef);
+    if (!snap.exists()) {
+      throw new Error("Pet not found");
+    }
+    const data = snap.data();
+    const current = Array.isArray(data.equippedAccessories) ? data.equippedAccessories : [];
+    const exists = current.includes(accessoryName);
+    const updated = exists ? current.filter((n) => n !== accessoryName) : [...current, accessoryName];
+    transaction.update(petRef, {
+      equippedAccessories: updated,
+      updatedAt: serverTimestamp(),
+    });
+  });
+};
+
+/**
  * Get all pets in the system
  * @returns {Promise<Array>} Array of all pet objects with their IDs
  */

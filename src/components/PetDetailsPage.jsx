@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
 import { getPetPixelArt } from "../utils/pixelArt";
-import { subscribeToPetById, purchaseItem, useItem as consumeInventoryItem, togglePetSharing } from "../services/petService";
+import { subscribeToPetById, purchaseItem, useItem as consumeInventoryItem, togglePetSharing, toggleAccessoryEquip } from "../services/petService";
 import {
   performPetAction,
   getAvailableActions,
@@ -30,6 +30,7 @@ export default function PetDetailsPage({ user }) {
   const [interactionStats, setInteractionStats] = useState(null);
   const [storeLoadingItem, setStoreLoadingItem] = useState(null);
   const [usingItemName, setUsingItemName] = useState(null);
+  const [equippingAccessory, setEquippingAccessory] = useState(null);
   const [activeStoreTab, setActiveStoreTab] = useState('supplies'); // 'supplies' | 'accessories'
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'items' | 'share' | 'store'
   const [sharingEnabled, setSharingEnabled] = useState(false);
@@ -161,7 +162,7 @@ export default function PetDetailsPage({ user }) {
       const newState = !sharingEnabled;
       await togglePetSharing(currentPet.id, newState);
       setSharingEnabled(newState);
-      
+
       // Reload interaction stats
       if (newState) {
         const stats = await getInteractionCount(currentPet.id);
@@ -178,7 +179,7 @@ export default function PetDetailsPage({ user }) {
   const handleCopyLink = async () => {
     if (!currentPet) return;
     const shareUrl = `${window.location.origin}/shared-pet/${currentPet.shareableId}`;
-    
+
     try {
       // Try modern clipboard API first
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -195,7 +196,7 @@ export default function PetDetailsPage({ user }) {
         document.body.appendChild(textArea);
         textArea.focus();
         textArea.select();
-        
+
         try {
           document.execCommand('copy');
           setCopied(true);
@@ -240,6 +241,18 @@ export default function PetDetailsPage({ user }) {
       setError(err.message || "Failed to perform action. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+  const handleToggleAccessory = async (accessoryName) => {
+    if (!currentPet) return;
+    try {
+      setEquippingAccessory(accessoryName);
+      await toggleAccessoryEquip(currentPet.id, accessoryName);
+    } catch (err) {
+      console.error("Error toggling accessory:", err);
+      setError(err.message || "Failed to toggle accessory. Please try again.");
+    } finally {
+      setEquippingAccessory(null);
     }
   };
 
@@ -323,7 +336,11 @@ export default function PetDetailsPage({ user }) {
           <div className="pet-header-left">
             {PixelArtComponent && (
               <div className="pet-header-avatar">
-                <PixelArtComponent stage={currentPet.stage || 1} color={currentPet.color} />
+                <PixelArtComponent
+                  stage={currentPet.stage || 1}
+                  color={currentPet.color}
+                  equippedAccessories={currentPet.equippedAccessories || []}
+                />
               </div>
             )}
             <div className="pet-header-info">
@@ -712,7 +729,31 @@ export default function PetDetailsPage({ user }) {
                             <div className="store-item-name">{itemName}{quantity > 1 ? ` x ${quantity}` : ''}</div>
                             {itemDesc && <div className="store-item-desc">{itemDesc}</div>}
                           </div>
-                        </div>
+                    </div>
+                    {/* Equip/Unequip on owned items (Items tab) */}
+                    <div className="store-item-cta">
+                      {itemName === 'Hat' && (() => {
+                        const isEquipped = Array.isArray(currentPet.equippedAccessories) && currentPet.equippedAccessories.includes(itemName);
+                        const locked = (currentPet.stage || 1) < 3;
+                        const disabled = locked || equippingAccessory === itemName;
+                        const title = locked
+                          ? 'Locked until Adult stage'
+                          : isEquipped
+                            ? 'Unequip accessory'
+                            : 'Equip accessory';
+                        return (
+                          <button
+                            className="btn btn-secondary"
+                            disabled={disabled}
+                            onClick={() => handleToggleAccessory(itemName)}
+                            title={title}
+                            style={{ marginLeft: 8 }}
+                          >
+                            {isEquipped ? 'Unequip' : 'Equip'}
+                          </button>
+                        );
+                      })()}
+                    </div>
                       </div>
                     );
                   })
@@ -872,6 +913,7 @@ export default function PetDetailsPage({ user }) {
                       >
                         Buy
                       </button>
+
                     </div>
                   </div>
                 ))}
