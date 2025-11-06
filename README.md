@@ -1,4 +1,18 @@
-# Getting Started with Create React App
+# Clio Pets
+
+A virtual pet game built with React and Firebase where you can raise and care for your digital companions!
+
+## Access the App
+
+Scan the QR code below to access the live website:
+
+<div align="center">
+  <img src="clio-pets-qr-code.png" alt="Clio Pets QR Code" width="200"/>
+</div>
+
+---
+
+## Getting Started with Development
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
