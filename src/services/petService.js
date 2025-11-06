@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { generateShareableId } from "./sharedPetService";
+import { clamp } from "../utils/mathUtils";
 
 /**
  * Get all pets for a specific user
@@ -226,6 +227,91 @@ export const purchaseItem = async (petId, item) => {
       updatedAt: serverTimestamp(),
     });
   });
+};
+
+/**
+ * Use an item from a pet's inventory and apply its effects (atomic transaction)
+ * - Decrements quantity or removes the item when it reaches zero
+ * - Applies stat effects and clamps to 0..100
+ *
+ * Supported items and effects:
+ *  - Food: fullness +20
+ *  - Toy: happiness +20
+ *  - Soap: cleanliness +25
+ *  - Energy Drink: energy +30
+ *
+ * @param {string} petId
+ * @param {string} itemName
+ * @returns {Promise<{effects: {fullness?: number, happiness?: number, cleanliness?: number, energy?: number}}>} Applied effects
+ */
+export const useItem = async (petId, itemName) => {
+  if (!itemName || typeof itemName !== "string") {
+    throw new Error("Invalid item name");
+  }
+
+  // Define item effects
+  const ITEM_EFFECTS = {
+    Food: { fullness: 20 },
+    Toy: { happiness: 20 },
+    Soap: { cleanliness: 25 },
+    "Energy Drink": { energy: 30 },
+  };
+
+  const effects = ITEM_EFFECTS[itemName];
+  if (!effects) {
+    throw new Error(`Item not usable: ${itemName}`);
+  }
+
+  const petRef = doc(db, "pets", petId);
+
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(petRef);
+    if (!snap.exists()) {
+      throw new Error("Pet not found");
+    }
+
+    const data = snap.data();
+    const currentItems = Array.isArray(data.items) ? data.items : [];
+
+    // Find item index by name (handling legacy string entries)
+    const index = currentItems.findIndex((it) => {
+      if (typeof it === "string") return it === itemName;
+      return (it && it.name) === itemName;
+    });
+
+    if (index < 0) {
+      throw new Error(`${itemName} not found in inventory`);
+    }
+
+    // Prepare updated items array (decrement or remove)
+    const newItems = [...currentItems];
+    const existing = currentItems[index];
+    const existingObj =
+      typeof existing === "string"
+        ? { name: existing, quantity: 1 }
+        : existing;
+
+    const newQuantity = (existingObj.quantity || 1) - 1;
+    if (newQuantity <= 0) {
+      newItems.splice(index, 1);
+    } else {
+      newItems[index] = { ...existingObj, quantity: newQuantity };
+    }
+
+    // Apply effects and clamp
+    const updateData = {
+      fullness: clamp((data.fullness || 50) + (effects.fullness || 0), 0, 100),
+      happiness: clamp((data.happiness || 50) + (effects.happiness || 0), 0, 100),
+      cleanliness: clamp((data.cleanliness || 50) + (effects.cleanliness || 0), 0, 100),
+      energy: clamp((data.energy || 50) + (effects.energy || 0), 0, 100),
+      items: newItems,
+      updatedAt: serverTimestamp(),
+    };
+
+    transaction.update(petRef, updateData);
+  });
+
+  return { effects };
 };
 
 /**
