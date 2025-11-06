@@ -306,6 +306,52 @@
   font-style: italic;
 }
 
+.cta-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  border: 3px solid #212529;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.cta-section h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.4rem;
+  color: white;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.cta-section p {
+  margin: 0 0 1.5rem 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1rem;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background: white;
+  color: #212529;
+  text-decoration: none;
+  border: 3px solid #212529;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.3);
+}
+
+.cta-button:active {
+  transform: translateY(0);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
 .loading,
 .error-state {
   text-align: center;
