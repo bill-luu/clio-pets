@@ -1,5 +1,6 @@
 import React from "react";
 import { PixelCat } from "../utils/pixelArt";
+import JaguarJack from "./JaguarJack";
 import "./styles/TutorialPage.css";
 
 export default function TutorialPage() {
@@ -10,7 +11,7 @@ export default function TutorialPage() {
         <section className="tutorial-section welcome-section">
           <div className="jack-intro">
             <div className="jack-character">
-              <PixelCat stage={3} />
+              <JaguarJack />
             </div>
             <div className="speech-bubble">
               <h1>Hey there! I'm Jack the Jaguar! 🐾</h1>
@@ -28,7 +29,7 @@ export default function TutorialPage() {
           <div className="section-header">
             <h2>🌟 Getting Started</h2>
             <div className="jack-small">
-              <PixelCat stage={3} />
+              <JaguarJack />
             </div>
           </div>
           <div className="section-content">
@@ -63,7 +64,7 @@ export default function TutorialPage() {
           <div className="section-header">
             <h2>📊 Understanding Your Pet's Stats</h2>
             <div className="jack-small">
-              <PixelCat stage={3} />
+              <JaguarJack />
             </div>
           </div>
           <div className="section-content">
@@ -112,7 +113,7 @@ export default function TutorialPage() {
           <div className="section-header">
             <h2>🎯 Taking Care of Your Pet</h2>
             <div className="jack-small">
-              <PixelCat stage={3} />
+              <JaguarJack />
             </div>
           </div>
           <div className="section-content">
@@ -186,7 +187,7 @@ export default function TutorialPage() {
           <div className="section-header">
             <h2>⭐ Growing Up: XP & Evolution</h2>
             <div className="jack-small">
-              <PixelCat stage={3} />
+              <JaguarJack />
             </div>
           </div>
           <div className="section-content">
@@ -241,7 +242,7 @@ export default function TutorialPage() {
           <div className="section-header">
             <h2>🎂 The Age System</h2>
             <div className="jack-small">
-              <PixelCat stage={3} />
+              <JaguarJack />
             </div>
           </div>
           <div className="section-content">
@@ -276,7 +277,7 @@ export default function TutorialPage() {
           <div className="section-header">
             <h2>🔥 Daily Streaks & Cooldown Reduction</h2>
             <div className="jack-small">
-              <PixelCat stage={3} />
+              <JaguarJack />
             </div>
           </div>
           <div className="section-content">
@@ -331,7 +332,7 @@ export default function TutorialPage() {
           <div className="section-header">
             <h2>🌍 Sharing & Community</h2>
             <div className="jack-small">
-              <PixelCat stage={3} />
+              <JaguarJack />
             </div>
           </div>
           <div className="section-content">
@@ -380,7 +381,7 @@ export default function TutorialPage() {
           <div className="section-header">
             <h2>🎉 Play Dates</h2>
             <div className="jack-small">
-              <PixelCat stage={3} />
+              <JaguarJack />
             </div>
           </div>
           <div className="section-content">
@@ -418,7 +419,7 @@ export default function TutorialPage() {
           <div className="section-header">
             <h2>🏆 The Leaderboard</h2>
             <div className="jack-small">
-              <PixelCat stage={3} />
+              <JaguarJack />
             </div>
           </div>
           <div className="section-content">
@@ -458,7 +459,7 @@ export default function TutorialPage() {
           <div className="section-header">
             <h2>💰 Earning Coins</h2>
             <div className="jack-small">
-              <PixelCat stage={3} />
+              <JaguarJack />
             </div>
           </div>
           <div className="section-content">
@@ -488,7 +489,7 @@ export default function TutorialPage() {
           <div className="section-header">
             <h2>💡 Jack's Pro Tips</h2>
             <div className="jack-small">
-              <PixelCat stage={3} />
+              <JaguarJack />
             </div>
           </div>
           <div className="section-content">
@@ -549,7 +550,7 @@ export default function TutorialPage() {
         <section className="tutorial-section closing-section">
           <div className="jack-intro">
             <div className="jack-character">
-              <PixelCat stage={3} />
+              <JaguarJack />
             </div>
             <div className="speech-bubble">
               <h2>You're Ready! 🎉</h2>

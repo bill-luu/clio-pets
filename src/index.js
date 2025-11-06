@@ -9,6 +9,7 @@ import './pixel-bunny-hat.css';
 import './pixel-cat-hat.css';
 import './pixel-lizard-hat.css';
 import './pixel-bird-hat.css';
+import './pixel-jaguar-jack.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
