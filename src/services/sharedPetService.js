@@ -33,6 +33,10 @@ const SHARED_ACTION_EFFECTS = {
     fullness: 10,
     xp: 5,
   },
+  tip: {
+    coins: 5,
+    xp: 5,
+  },
 };
 
 /**
@@ -182,6 +186,7 @@ export const performSharedPetAction = async (
       cleanliness: pet.cleanliness || 50,
       energy: pet.energy || 50,
       xp: pet.xp || 0,
+      coins: pet.coins || 0,
     };
 
     // Calculate new stats
@@ -200,6 +205,7 @@ export const performSharedPetAction = async (
       ),
       energy: clamp((pet.energy || 50) + (effects.energy || 0), 0, 100),
       xp: (pet.xp || 0) + (effects.xp || 0),
+      coins: (pet.coins || 0) + (effects.coins || 0),
     };
 
     // Update pet in database
@@ -303,6 +309,12 @@ export const getSharedActions = () => {
       description: "Give the pet a tasty treat",
       icon: "🦴",
     },
+    {
+      type: "tip",
+      name: "Tip",
+      description: "Give the pet some coins",
+      icon: "💰",
+    },
   ];
 };
 
@@ -352,7 +364,7 @@ export const subscribeToPetByShareableId = (shareableId, callback) => {
   } catch (error) {
     console.error("Error setting up shared pet subscription:", error);
     callback(null, error);
-    return () => {}; // Return no-op unsubscribe function
+    return () => { }; // Return no-op unsubscribe function
   }
 };
 
