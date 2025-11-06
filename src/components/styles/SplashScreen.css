@@ -149,17 +149,17 @@
   .auth-form p {
     margin-top: 0.75rem;
     font-size: clamp(0.55rem, 1.8vw, 0.6rem);
-    color: #555;
+    color: #000000; /* Changed from lighter color to black for better contrast */
     cursor: pointer;
     text-align: center;
     padding: 0.5rem;
-    transition: color 0.2s;
+    transition: color 0.2s ease-in-out;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
     user-select: none;
   }
 
   .auth-form p:hover {
-    color: #ff69b4;
+    color: #333; /* Slightly lighter on hover */
   }
 
   .auth-form p:active {
