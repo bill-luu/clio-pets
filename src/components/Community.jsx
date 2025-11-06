@@ -6,7 +6,7 @@ import OtherPetDetailsModal from "./OtherPetDetailsModal";
 import Pagination from "./Pagination";
 import "./styles/Home.css";
 
-export default function OtherPets({ user }) {
+export default function Community({ user }) {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -93,7 +93,7 @@ export default function OtherPets({ user }) {
   if (loading) {
     return (
       <div className="home-container">
-        <div className="loading">Loading other pets...</div>
+        <div className="loading">Loading community...</div>
       </div>
     );
   }
@@ -101,7 +101,7 @@ export default function OtherPets({ user }) {
   return (
     <div className="home-container">
       <div className="home-header">
-        <h2>Other Clio-Pets</h2>
+        <h2>Community</h2>
         <p className="welcome-text">Explore pets from the Clio community!</p>
       </div>
 
@@ -110,7 +110,7 @@ export default function OtherPets({ user }) {
       {pets.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-content">
-            <h3>No other pets yet!</h3>
+            <h3>No pets in the community yet!</h3>
             <p>Be the first to add a pet to the community.</p>
           </div>
         </div>

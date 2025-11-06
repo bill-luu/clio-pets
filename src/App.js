@@ -7,7 +7,7 @@ import { auth } from "firebase.js";
 import SplashScreen from "components/SplashScreen";
 import Home from "components/Home";
 import SharedPetView from "components/SharedPetView";
-import OtherPets from "components/OtherPets";
+import Community from "components/Community";
 import Leaderboard from "components/Leaderboard";
 import TestPage from "components/TestPage";
 import BackgroundMusic from "components/BackgroundMusic";
@@ -93,19 +93,25 @@ function AuthenticatedApp({ user, handleLogout }) {
               🐾 Clio Pets
             </Link>
           </div>
-          
-          <button 
-            className="hamburger-menu" 
+
+          <button
+            className="hamburger-menu"
             onClick={toggleMenu}
             aria-label="Toggle menu"
             aria-expanded={isMenuOpen}
           >
-            <span className={`hamburger-line ${isMenuOpen ? 'open' : ''}`}></span>
-            <span className={`hamburger-line ${isMenuOpen ? 'open' : ''}`}></span>
-            <span className={`hamburger-line ${isMenuOpen ? 'open' : ''}`}></span>
+            <span
+              className={`hamburger-line ${isMenuOpen ? "open" : ""}`}
+            ></span>
+            <span
+              className={`hamburger-line ${isMenuOpen ? "open" : ""}`}
+            ></span>
+            <span
+              className={`hamburger-line ${isMenuOpen ? "open" : ""}`}
+            ></span>
           </button>
 
-          <ul className={`navbar-menu ${isMenuOpen ? 'open' : ''}`}>
+          <ul className={`navbar-menu ${isMenuOpen ? "open" : ""}`}>
             <li>
               <Link to="/" className="nav-link" onClick={closeMenu}>
                 Home
@@ -117,8 +123,8 @@ function AuthenticatedApp({ user, handleLogout }) {
               </Link>
             </li>
             <li>
-              <Link to="/other-pets" className="nav-link" onClick={closeMenu}>
-                Other Clio-Pets
+              <Link to="/community" className="nav-link" onClick={closeMenu}>
+                Community
               </Link>
             </li>
             <li>
@@ -141,13 +147,19 @@ function AuthenticatedApp({ user, handleLogout }) {
             <li className="mobile-only">
               <div className="mobile-user-info">
                 <span className="user-email-mobile">{user.email}</span>
-                <button className="logout-btn-mobile" onClick={() => { handleLogout(); closeMenu(); }}>
+                <button
+                  className="logout-btn-mobile"
+                  onClick={() => {
+                    handleLogout();
+                    closeMenu();
+                  }}
+                >
                   Logout
                 </button>
               </div>
             </li>
           </ul>
-          
+
           <div className="navbar-actions">
             <span className="user-email">{user.email}</span>
             <button className="logout-btn" onClick={handleLogout}>
@@ -159,7 +171,7 @@ function AuthenticatedApp({ user, handleLogout }) {
       <main className="main-content">
         <Routes>
           <Route path="/about" element={<About />} />
-          <Route path="/other-pets" element={<OtherPets user={user} />} />
+          <Route path="/community" element={<Community user={user} />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           {process.env.NODE_ENV === "development" && (
             <Route path="/test" element={<TestPage />} />
