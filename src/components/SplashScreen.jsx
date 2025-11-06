@@ -37,7 +37,7 @@ const SplashScreen = () => {
   };
 
   return (
-    <div className="splash-container">
+    <div className="splash-container" style={{ backgroundImage: `url(${process.env.PUBLIC_URL + '/background.png'})` }}>
       <h1 className="title">Welcome to Clio Pets!</h1>
 
       <div className="pets-container">
