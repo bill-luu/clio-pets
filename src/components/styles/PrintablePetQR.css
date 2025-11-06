@@ -1,0 +1,654 @@
+/* Printable Pet QR Code - Wanted Poster Style */
+
+/* Hide background music player and navbar on printable page */
+body:has(.printable-page) .background-music-control,
+body:has(.printable-page) .navbar {
+  display: none !important;
+}
+
+.printable-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f5f0 0%, #e8e8d8 100%);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Action buttons (hidden during print) */
+.print-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.style-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.style-selector label {
+  font-weight: bold;
+  color: #333;
+}
+
+.style-select {
+  padding: 8px 12px;
+  border: 2px solid #333;
+  border-radius: 4px;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.style-select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Loading and Error States */
+.printable-loading,
+.printable-error {
+  text-align: center;
+  padding: 40px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.printable-error h2 {
+  color: #dc3545;
+  margin-bottom: 15px;
+}
+
+/* Base Poster Container */
+.poster {
+  width: 8.5in;
+  min-height: 11in;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  padding: 0.5in;
+  position: relative;
+}
+
+/* Hello Poster Style - Friendly/Welcoming */
+.poster-style-hello {
+  background: #fef9e7;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(255, 183, 197, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(174, 214, 241, 0.1) 0%, transparent 50%);
+}
+
+.poster-style-hello .poster-border {
+  border: 6px solid #5dade2;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.poster-style-hello .poster-border::before,
+.poster-style-hello .poster-border::after {
+  content: '❤️';
+  color: #e74c3c;
+}
+
+.poster-style-hello .poster-title {
+  color: #5dade2;
+  font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+}
+
+.poster-style-hello .poster-subtitle {
+  color: #e67e22;
+}
+
+.poster-style-hello .poster-name {
+  color: #5dade2;
+}
+
+.poster-style-hello .poster-details {
+  border-color: #5dade2;
+  background: rgba(174, 214, 241, 0.1);
+}
+
+.poster-style-hello .detail-label {
+  color: #2980b9;
+}
+
+.poster-style-hello .poster-qr-section {
+  border-color: #5dade2;
+  background: rgba(174, 214, 241, 0.15);
+}
+
+.poster-style-hello .qr-label {
+  color: #2980b9;
+}
+
+.poster-style-hello .poster-header {
+  border-bottom-color: #5dade2;
+}
+
+.poster-style-hello .poster-footer {
+  border-top-color: #5dade2;
+}
+
+.poster-style-hello .poster-reward {
+  color: #e74c3c;
+}
+
+.poster-style-hello .poster-warning {
+  color: #f39c12;
+}
+
+/* Wanted Poster Style - Western Theme */
+.poster-style-wanted {
+  background: #f5ead6;
+  background-image: 
+    linear-gradient(90deg, rgba(139, 69, 19, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(139, 69, 19, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.poster-style-wanted .poster-border {
+  border: 8px double #8b4513;
+  background: rgba(255, 248, 230, 0.6);
+}
+
+.poster-style-wanted .poster-border::before,
+.poster-style-wanted .poster-border::after {
+  content: '★';
+  color: #8b4513;
+}
+
+.poster-style-wanted .poster-title {
+  color: #8b4513;
+  font-family: 'Impact', 'Arial Black', sans-serif;
+}
+
+.poster-style-wanted .poster-subtitle {
+  color: #654321;
+}
+
+.poster-style-wanted .poster-name {
+  color: #8b4513;
+}
+
+.poster-style-wanted .poster-details {
+  border-color: #8b4513;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.poster-style-wanted .detail-label {
+  color: #654321;
+}
+
+.poster-style-wanted .poster-qr-section {
+  border-color: #8b4513;
+  background: white;
+}
+
+.poster-style-wanted .qr-label {
+  color: #8b4513;
+}
+
+.poster-style-wanted .poster-header {
+  border-bottom-color: #8b4513;
+}
+
+.poster-style-wanted .poster-footer {
+  border-top-color: #8b4513;
+}
+
+.poster-style-wanted .poster-reward {
+  color: #8b4513;
+}
+
+.poster-style-wanted .poster-warning {
+  color: #654321;
+}
+
+/* Missing Poster Style - Urgent/Attention-grabbing */
+.poster-style-missing {
+  background: #fff5e6;
+  background-image: 
+    repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255, 87, 34, 0.05) 35px, rgba(255, 87, 34, 0.05) 70px);
+}
+
+.poster-style-missing .poster-border {
+  border: 8px solid #ff5722;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.poster-style-missing .poster-border::before,
+.poster-style-missing .poster-border::after {
+  content: '⚠️';
+  color: #ff5722;
+}
+
+.poster-style-missing .poster-title {
+  color: #ff5722;
+  font-family: 'Arial Black', 'Impact', sans-serif;
+}
+
+.poster-style-missing .poster-subtitle {
+  color: #f57c00;
+}
+
+.poster-style-missing .poster-name {
+  color: #e64a19;
+}
+
+.poster-style-missing .poster-details {
+  border-color: #ff5722;
+  background: rgba(255, 235, 59, 0.1);
+}
+
+.poster-style-missing .detail-label {
+  color: #d84315;
+}
+
+.poster-style-missing .poster-qr-section {
+  border-color: #ff5722;
+  background: rgba(255, 152, 0, 0.1);
+}
+
+.poster-style-missing .qr-label {
+  color: #d84315;
+}
+
+.poster-style-missing .poster-header {
+  border-bottom-color: #ff5722;
+}
+
+.poster-style-missing .poster-footer {
+  border-top-color: #ff5722;
+}
+
+.poster-style-missing .poster-reward {
+  color: #ff5722;
+}
+
+.poster-style-missing .poster-warning {
+  color: #f57c00;
+}
+
+/* Border with decorative elements */
+.poster-border {
+  border: 8px double #8b4513;
+  padding: 30px;
+  height: 100%;
+  position: relative;
+  background: rgba(255, 248, 230, 0.6);
+}
+
+.poster-border::before,
+.poster-border::after {
+  content: '★';
+  position: absolute;
+  font-size: 32px;
+  color: #8b4513;
+  top: 15px;
+}
+
+.poster-border::before {
+  left: 20px;
+}
+
+.poster-border::after {
+  right: 20px;
+}
+
+/* Header */
+.poster-header {
+  text-align: center;
+  margin-bottom: 25px;
+  border-bottom: 4px solid #8b4513;
+  padding-bottom: 15px;
+}
+
+.poster-title {
+  font-family: 'Impact', 'Arial Black', sans-serif;
+  font-size: 72px;
+  font-weight: bold;
+  color: #8b4513;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 8px;
+  text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+}
+
+.poster-subtitle {
+  font-family: 'Georgia', serif;
+  font-size: 24px;
+  font-style: italic;
+  color: #654321;
+  margin-top: 5px;
+}
+
+/* Image Section */
+.poster-image-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 30px 0;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 4px solid #8b4513;
+  border-radius: 8px;
+  min-height: 200px;
+}
+
+.poster-pixel-art {
+  transform: scale(1.5);
+}
+
+/* Pet Info */
+.poster-info {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.poster-name {
+  font-family: 'Georgia', serif;
+  font-size: 48px;
+  font-weight: bold;
+  color: #8b4513;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+.poster-details {
+  background: rgba(255, 255, 255, 0.8);
+  border: 3px solid #8b4513;
+  padding: 20px;
+  display: inline-block;
+  min-width: 60%;
+  margin: 0 auto;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  border-bottom: 1px dashed #8b4513;
+  font-size: 20px;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-family: 'Georgia', serif;
+  font-weight: bold;
+  color: #654321;
+  margin-right: 20px;
+}
+
+.detail-value {
+  font-family: 'Courier New', monospace;
+  color: #333;
+}
+
+/* QR Code Section */
+.poster-qr-section {
+  text-align: center;
+  margin: 30px 0;
+  padding: 25px;
+  background: white;
+  border: 4px solid #8b4513;
+  border-radius: 8px;
+}
+
+.qr-label {
+  font-family: 'Georgia', serif;
+  font-size: 24px;
+  font-weight: bold;
+  color: #8b4513;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.poster-qr-code {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
+
+/* Footer */
+.poster-footer {
+  text-align: center;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 4px solid #8b4513;
+}
+
+.poster-reward {
+  font-family: 'Impact', 'Arial Black', sans-serif;
+  font-size: 28px;
+  color: #8b4513;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.poster-warning {
+  font-family: 'Georgia', serif;
+  font-size: 16px;
+  color: #654321;
+  font-style: italic;
+}
+
+/* Print Styles */
+@media print {
+  .printable-page {
+    background: white;
+    padding: 0;
+    margin: 0;
+    min-height: 0;
+    height: 100%;
+  }
+
+  .poster {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    box-shadow: none;
+    margin: 0;
+    padding: 0.15in;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+
+  .poster-border {
+    border-width: 4px;
+    padding: 12px;
+    page-break-inside: avoid;
+  }
+
+  .poster-border::before,
+  .poster-border::after {
+    font-size: 20px;
+    top: 8px;
+  }
+
+  .poster-border::before {
+    left: 15px;
+  }
+
+  .poster-border::after {
+    right: 15px;
+  }
+
+  .poster-header {
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom-width: 3px;
+  }
+
+  .poster-title {
+    font-size: 42px;
+    letter-spacing: 4px;
+  }
+
+  .poster-subtitle {
+    font-size: 16px;
+    margin-top: 3px;
+  }
+
+  .poster-image-section {
+    margin: 10px 0;
+    padding: 12px;
+    min-height: 130px;
+  }
+
+  .poster-pixel-art {
+    transform: scale(1.0);
+  }
+
+  .poster-info {
+    margin: 10px 0;
+  }
+
+  .poster-name {
+    font-size: 30px;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+  }
+
+  .poster-details {
+    padding: 12px;
+    border-width: 2px;
+  }
+
+  .detail-row {
+    padding: 5px 12px;
+    font-size: 14px;
+  }
+
+  .poster-qr-section {
+    margin: 10px 0;
+    padding: 12px;
+    border-width: 3px;
+  }
+
+  .qr-label {
+    font-size: 16px;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+
+  .poster-qr-code {
+    padding: 5px;
+  }
+
+  .poster-qr-code svg {
+    width: 140px !important;
+    height: 140px !important;
+  }
+
+  .poster-footer {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top-width: 3px;
+  }
+
+  .poster-reward {
+    font-size: 20px;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+
+  .poster-warning {
+    font-size: 12px;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  /* Ensure everything fits on one page */
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  @page {
+    size: letter;
+    margin: 0.35in;
+  }
+}
+
+/* Responsive adjustments for screen view */
+@media screen and (max-width: 900px) {
+  .poster {
+    width: 100%;
+    max-width: 600px;
+    min-height: auto;
+  }
+
+  .poster-title {
+    font-size: 48px;
+    letter-spacing: 4px;
+  }
+
+  .poster-subtitle {
+    font-size: 18px;
+  }
+
+  .poster-name {
+    font-size: 36px;
+  }
+
+  .detail-row {
+    font-size: 16px;
+  }
+
+  .poster-reward {
+    font-size: 22px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .printable-page {
+    padding: 10px;
+  }
+
+  .poster {
+    padding: 0.3in;
+  }
+
+  .poster-border {
+    padding: 15px;
+  }
+
+  .poster-title {
+    font-size: 36px;
+    letter-spacing: 2px;
+  }
+
+  .poster-subtitle {
+    font-size: 14px;
+  }
+
+  .poster-name {
+    font-size: 28px;
+  }
+
+  .qr-label {
+    font-size: 18px;
+  }
+
+  .detail-row {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+}
+
