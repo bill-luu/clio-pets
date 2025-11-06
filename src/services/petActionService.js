@@ -50,6 +50,11 @@ const ACTION_EFFECTS = {
     happiness: 15,
     xp: 5,
   },
+  work: {
+    energy: -10,
+    xp: 15,
+    coins: 0, // Actual coins earned will be random (5-20) calculated at action time
+  },
 };
 
 /**
@@ -89,7 +94,7 @@ export const checkCooldown = async (pet, uniqueInteractors = null) => {
 /**
  * Perform an action on a pet
  * @param {string} petId - The pet's document ID
- * @param {string} actionType - Type of action (feed, play, clean, rest, exercise, treat)
+ * @param {string} actionType - Type of action (feed, play, clean, rest, exercise, treat, work)
  * @param {string} userId - The user performing the action (optional, for notification)
  * @returns {Promise<Object>} Updated pet stats, evolution, and age info
  */
@@ -142,10 +147,20 @@ export const performPetAction = async (petId, actionType, userId = null) => {
       cleanliness: pet.cleanliness || 50,
       energy: pet.energy || 50,
       xp: pet.xp || 0,
+      coins: pet.coins || 0,
     };
 
     // Calculate new stats
-    const effects = ACTION_EFFECTS[actionType];
+    let effects = ACTION_EFFECTS[actionType];
+
+    // For work action, calculate random coins (5-20)
+    if (actionType === 'work') {
+      effects = {
+        ...effects,
+        coins: Math.floor(Math.random() * 16) + 5, // Random between 5 and 20
+      };
+    }
+
     const newStats = {
       fullness: clamp((pet.fullness || 50) + (effects.fullness || 0), 0, 100),
       happiness: clamp(
@@ -160,6 +175,7 @@ export const performPetAction = async (petId, actionType, userId = null) => {
       ),
       energy: clamp((pet.energy || 50) + (effects.energy || 0), 0, 100),
       xp: (pet.xp || 0) + (effects.xp || 0),
+      coins: (pet.coins || 0) + (effects.coins || 0),
     };
 
     // Check for stage evolution based on new XP
@@ -250,13 +266,16 @@ export const performPetAction = async (petId, actionType, userId = null) => {
         ...(ageEvaluation.aged ? [ageEvaluation.message] : []),
         ...(ageEvaluation.decayed && ageEvaluation.decayAmount > 0
           ? [
-              `Stats decayed by ${ageEvaluation.decayAmount} due to time passing.`,
-            ]
+            `Stats decayed by ${ageEvaluation.decayAmount} due to time passing.`,
+          ]
           : []),
         ...(streakResult.message && streakResult.isNewDay
           ? [streakResult.message]
           : []),
         ...(milestone ? [milestone.message] : []),
+        ...(effects.coins && effects.coins > 0
+          ? [`Earned ${effects.coins} coins!`]
+          : []),
       ],
     };
   } catch (error) {
@@ -319,6 +338,14 @@ export const getAvailableActions = (pet) => {
       icon: "🦴",
       urgent: false,
       disabled: pet.fullness >= 95,
+    },
+    {
+      type: "work",
+      name: "Work",
+      description: "Put your pet to work to earn coins",
+      icon: "💻",
+      urgent: false,
+      disabled: pet.energy < 15 || (pet.stage || 1) < 2, // Only teens and adults can work
     },
   ];
 
