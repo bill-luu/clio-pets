@@ -423,7 +423,7 @@ export default function PetDetailsPage({ user }) {
             className={`pet-tab-button ${activeTab === 'share' ? 'active' : ''}`}
             onClick={() => setActiveTab('share')}
           >
-            Share Pet
+            Social
           </button>
         </div>
 
@@ -743,7 +743,7 @@ export default function PetDetailsPage({ user }) {
             </>
           )}
 
-          {/* Share Pet Tab */}
+          {/* Social Tab */}
           {activeTab === 'share' && (
             <div className="share-pet-content">
               {shareError && <div className="error-message">{shareError}</div>}

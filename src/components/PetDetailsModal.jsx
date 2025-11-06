@@ -323,7 +323,7 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
               className={`pet-tab-button ${activeTab === 'share' ? 'active' : ''}`}
               onClick={() => setActiveTab('share')}
             >
-              Share Pet
+              Social
             </button>
           </div>
 
@@ -643,14 +643,14 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
               </>
             )}
 
-            {/* Share Pet Tab */}
+            {/* Social Tab */}
             {activeTab === 'share' && (
               <div className="sharing-section">
                 <button
                   className="btn btn-primary share-btn"
                   onClick={() => setShowShareModal(true)}
                 >
-                  🔗 Share Pet
+                  🔗 Social
                 </button>
                 {interactionStats && interactionStats.uniqueInteractors > 0 && (
                   <p className="interaction-count">

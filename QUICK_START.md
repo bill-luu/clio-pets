@@ -36,7 +36,7 @@ While waiting, check the Firebase Console:
 
 **Test Visitor Actions:**
 
-1. Click "Share Pet" button
+1. Click "Social" button
 2. Copy the shareable link
 3. Open the link in an incognito window
 4. Click "Pet" or "Treat" button

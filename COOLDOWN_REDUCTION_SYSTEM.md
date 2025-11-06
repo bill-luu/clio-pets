@@ -215,12 +215,12 @@ Streak and social bonuses **stack**! Maximum possible reduction:
 2. First interaction creates 1-day streak
 3. Come back tomorrow to reach 2-day streak
 4. At 3 days, unlock first bonus (-2 minutes)
-5. Share pet to start earning social bonuses
+5. Use social features to start earning social bonuses
 
 ### For Active Users
 
 1. Maintain daily streak for increasing bonuses
-2. Share pet link with friends for social bonuses
+2. Share link with friends for social bonuses
 3. Watch cooldown decrease as bonuses stack
 4. Aim for 30+ day streak for major reduction
 5. Reach 60 days + 100 friends for instant interactions!
