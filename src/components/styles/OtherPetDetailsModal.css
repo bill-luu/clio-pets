@@ -6,6 +6,11 @@
   max-width: 600px;
 }
 
+/* Override the zero padding from PetDetailsModal.css for this modal */
+.other-pet-details-modal .pet-details-body {
+  padding: 1.5rem;
+}
+
 .pet-owner {
   color: #666;
   font-size: 0.85rem;
