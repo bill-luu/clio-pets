@@ -120,8 +120,8 @@ function AuthenticatedApp({ user, handleLogout }) {
               </Link>
             </li>
             <li>
-              <Link to="/about" className="nav-link" onClick={closeMenu}>
-                About
+              <Link to="/tutorial" className="nav-link" onClick={closeMenu}>
+                Tutorial
               </Link>
             </li>
             <li>
@@ -172,7 +172,7 @@ function AuthenticatedApp({ user, handleLogout }) {
       </nav>
       <main className="main-content">
         <Routes>
-          <Route path="/about" element={<TutorialPage />} />
+          <Route path="/tutorial" element={<TutorialPage />} />
           <Route path="/community" element={<Community user={user} />} />
           <Route path="/leaderboard" element={<Leaderboard user={user} />} />
           <Route path="/pet/:petId" element={<PetDetailsPage user={user} />} />
