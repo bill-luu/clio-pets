@@ -12,6 +12,7 @@ import Leaderboard from "components/Leaderboard";
 import TestPage from "components/TestPage";
 import BackgroundMusic from "components/BackgroundMusic";
 import PetDetailsPage from "components/PetDetailsPage";
+import PrintablePetQR from "components/PrintablePetQR";
 
 import {
   NotificationProvider,
@@ -175,6 +176,7 @@ function AuthenticatedApp({ user, handleLogout }) {
           <Route path="/community" element={<Community user={user} />} />
           <Route path="/leaderboard" element={<Leaderboard user={user} />} />
           <Route path="/pet/:petId" element={<PetDetailsPage user={user} />} />
+          <Route path="/pet/:petId/print-qr" element={<PrintablePetQR />} />
           {process.env.NODE_ENV === "development" && (
             <Route path="/test" element={<TestPage />} />
           )}
