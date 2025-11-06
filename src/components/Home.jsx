@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { subscribeToUserPets, deletePet } from "../services/petService";
 import { getPetPixelArt } from "../utils/pixelArt";
 import { getStageLabelWithEmoji, getStageInfo } from "../utils/petStages";
@@ -8,16 +9,15 @@ import { getStreakBonus, getStreakTierInfo } from "../utils/streakTracker";
 import { getSocialBonus, getSocialTierInfo } from "../utils/socialBonus";
 import { getInteractionCount } from "../services/sharedPetService";
 import AddPetModal from "./AddPetModal";
-import PetDetailsModal from "./PetDetailsModal";
 import ConfirmModal from "./ConfirmModal";
 import Pagination from "./Pagination";
 import "./styles/Home.css";
 
 export default function Home({ user }) {
+  const navigate = useNavigate();
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedPet, setSelectedPet] = useState(null);
   const [error, setError] = useState(null);
   const [petToDelete, setPetToDelete] = useState(null);
   const [interactionStats, setInteractionStats] = useState({});
@@ -89,7 +89,7 @@ export default function Home({ user }) {
   };
 
   const handlePetClick = (pet) => {
-    setSelectedPet(pet);
+    navigate(`/pet/${pet.id}`);
   };
 
   const handlePetUpdated = () => {
@@ -416,14 +416,6 @@ export default function Home({ user }) {
         />
       )}
 
-      {selectedPet && (
-        <PetDetailsModal
-          pet={selectedPet}
-          user={user}
-          onClose={() => setSelectedPet(null)}
-          onPetUpdated={handlePetUpdated}
-        />
-      )}
       <ConfirmModal
         isOpen={!!petToDelete}
         title="Delete Pet"
