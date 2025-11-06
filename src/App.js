@@ -11,6 +11,7 @@ import Community from "components/Community";
 import Leaderboard from "components/Leaderboard";
 import TestPage from "components/TestPage";
 import BackgroundMusic from "components/BackgroundMusic";
+import PetDetailsPage from "components/PetDetailsPage";
 
 import {
   NotificationProvider,
@@ -173,6 +174,7 @@ function AuthenticatedApp({ user, handleLogout }) {
           <Route path="/about" element={<About />} />
           <Route path="/community" element={<Community user={user} />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/pet/:petId" element={<PetDetailsPage user={user} />} />
           {process.env.NODE_ENV === "development" && (
             <Route path="/test" element={<TestPage />} />
           )}
