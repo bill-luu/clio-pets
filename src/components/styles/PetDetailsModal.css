@@ -933,3 +933,76 @@
   font-style: italic;
 }
 
+/* Store tabs */
+.store-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0.75rem 0;
+}
+
+.store-tab {
+  box-sizing: border-box;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  flex: 1 1 0;
+  max-width: 100%;
+  text-align: center;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.store-tab.active {
+  background: #e0e7ff;
+  border-color: #c7d2fe;
+}
+
+.store-tab.locked {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.store-locked-note {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+/* Locked tab tooltip */
+.store-tab-with-tooltip {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+}
+
+.tab-tooltip {
+  position: absolute;
+  right: 0;
+  left: auto;
+  top: calc(100% + 6px);
+  background: #111827;
+  color: #fff;
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.75rem;
+  max-width: 200px;
+  width: max-content;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+  z-index: 5;
+}
+
+.store-tab-with-tooltip:hover .tab-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+

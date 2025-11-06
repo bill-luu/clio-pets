@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { getPetPixelArt } from "../utils/pixelArt";
-import { subscribeToPetById, purchaseItem } from "../services/petService";
+import { subscribeToPetById, purchaseItem, useItem as consumeInventoryItem } from "../services/petService";
 import {
   performPetAction,
   getAvailableActions,
@@ -27,6 +27,8 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
   const [showShareModal, setShowShareModal] = useState(false);
   const [interactionStats, setInteractionStats] = useState(null);
   const [storeLoadingItem, setStoreLoadingItem] = useState(null);
+  const [usingItemName, setUsingItemName] = useState(null);
+  const [activeStoreTab, setActiveStoreTab] = useState('supplies'); // 'supplies' | 'accessories'
 
   // Subscribe to real-time updates for this pet
   useEffect(() => {
@@ -108,6 +110,15 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
     { name: "Energy Drink", price: 20, icon: "⚡", desc: "Restores energy" },
   ];
 
+  // Accessories (locked unless Adult stage)
+  const ACCESSORY_ITEMS = [
+    { name: "Hat", price: 50, icon: "🎩", desc: "Stylish hat for your pet" },
+    { name: "Umbrella", price: 40, icon: "⛱️", desc: "Keep dry in style" },
+  ];
+
+  // Items that can be consumed/used from inventory
+  const USABLE_ITEM_NAMES = new Set(STORE_ITEMS.map((i) => i.name));
+
   const handleBuy = async (item) => {
     try {
       setStoreLoadingItem(item.name);
@@ -169,6 +180,25 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
       setError(err.message || "Failed to perform action. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUseItem = async (itemName) => {
+    try {
+      setUsingItemName(itemName);
+      setError(null);
+      const result = await consumeInventoryItem(currentPet.id, itemName);
+      const effectParts = Object.entries(result.effects)
+        .filter(([_, delta]) => delta !== 0 && delta !== undefined)
+        .map(([stat, delta]) => `${stat} ${delta > 0 ? "+" : ""}${delta}`);
+      const details = effectParts.length ? ` (${effectParts.join(", ")})` : "";
+      setNotifications([`Used ${itemName}!${details}`]);
+      setTimeout(() => setNotifications([]), 3000);
+    } catch (err) {
+      console.error("Error using item:", err);
+      setError(err.message || "Failed to use item. Please try again.");
+    } finally {
+      setUsingItemName(null);
     }
   };
 
@@ -234,8 +264,15 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
                   const itemIcon = typeof item === 'object' && item?.icon ? item.icon : '🎁';
                   const itemDesc = typeof item === 'object' && item?.desc ? item.desc : '';
                   const quantity = typeof item === 'object' && item?.quantity ? item.quantity : 1;
+                  const isUsable = USABLE_ITEM_NAMES.has(itemName);
                   return (
-                    <div key={`${itemName}-${idx}`} className="store-item">
+                    <div
+                      key={`${itemName}-${idx}`}
+                      className="store-item"
+                      onClick={isUsable && !usingItemName ? () => handleUseItem(itemName) : undefined}
+                      title={isUsable ? (usingItemName === itemName ? "Using..." : `Use ${itemName}`) : "Accessory"}
+                      style={{ cursor: isUsable && !usingItemName ? 'pointer' : 'default', opacity: usingItemName === itemName ? 0.6 : 1 }}
+                    >
                       <div className="store-item-info">
                         <span className="store-item-icon">{itemIcon}</span>
                         <div className="store-item-text">
@@ -619,8 +656,33 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
               <h3>Pet Store</h3>
               <div className="store-balance">💰 {currentPet.coins ?? 0} coins</div>
             </div>
+            <div className="store-tabs">
+              <button
+                className={`store-tab ${activeStoreTab === 'supplies' ? 'active' : ''}`}
+                onClick={() => setActiveStoreTab('supplies')}
+              >
+                Pet Supplies
+              </button>
+              <div className="store-tab-with-tooltip">
+                <button
+                  className={`store-tab ${activeStoreTab === 'accessories' ? 'active' : ''} ${(currentPet.stage || 1) < 3 ? 'locked' : ''}`}
+                  onClick={() => {
+                    if ((currentPet.stage || 1) >= 3) setActiveStoreTab('accessories');
+                  }}
+                  title={(currentPet.stage || 1) < 3 ? 'Locked until Adult stage' : 'Pet Accessories'}
+                >
+                  Pet Accessories {(currentPet.stage || 1) < 3 ? '🔒' : ''}
+                </button>
+                {(currentPet.stage || 1) < 3 && (
+                  <div className="tab-tooltip">Accessories are locked until your pet becomes an Adult.</div>
+                )}
+              </div>
+            </div>
+            {activeStoreTab === 'accessories' && (currentPet.stage || 1) < 3 && (
+              <div className="store-locked-note">Reach Adult stage to unlock accessories.</div>
+            )}
             <div className="store-items">
-              {STORE_ITEMS.map((item) => (
+              {(activeStoreTab === 'supplies' ? STORE_ITEMS : ACCESSORY_ITEMS).map((item) => (
                 <div key={item.name} className="store-item">
                   <div className="store-item-info">
                     <span className="store-item-icon">{item.icon}</span>
@@ -633,9 +695,19 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
                     <span className="store-item-price">{item.price}c</span>
                     <button
                       className="btn btn-secondary buy-btn"
-                      disabled={storeLoadingItem === item.name || (currentPet.coins ?? 0) < item.price}
+                      disabled={
+                        storeLoadingItem === item.name ||
+                        (currentPet.coins ?? 0) < item.price ||
+                        (activeStoreTab === 'accessories' && (currentPet.stage || 1) < 3)
+                      }
                       onClick={() => handleBuy(item)}
-                      title={(currentPet.coins ?? 0) < item.price ? "Not enough coins" : "Buy item"}
+                      title={
+                        (activeStoreTab === 'accessories' && (currentPet.stage || 1) < 3)
+                          ? 'Locked until Adult stage'
+                          : (currentPet.coins ?? 0) < item.price
+                          ? 'Not enough coins'
+                          : 'Buy item'
+                      }
                     >
                       Buy
                     </button>
