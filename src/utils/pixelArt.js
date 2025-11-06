@@ -96,6 +96,30 @@ const getLizardColorFilter = (colorName) => {
   }
 };
 
+// Color filters for owls (base sprite is blue)
+const getOwlColorFilter = (colorName) => {
+  switch ((colorName || "blue").toLowerCase()) {
+    case "blue":
+      return "none";
+    case "green":
+      return "hue-rotate(240deg) saturate(150%) brightness(105%)";
+    case "yellow":
+      return "hue-rotate(140deg) saturate(220%) brightness(115%) contrast(105%)";
+    case "purple":
+      return "hue-rotate(60deg) saturate(170%)";
+    case "white":
+      return "saturate(0%) brightness(175%)";
+    case "orange":
+      return "hue-rotate(150deg) saturate(300%)";
+    case "brown":
+      return "hue-rotate(150deg) saturate(80%) brightness(60%)";
+    case "pink":
+      return "hue-rotate(320deg) saturate(180%)";
+    default:
+      return "none";
+  }
+};
+
 const AnimatedAdultDog = ({ color, isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div
@@ -402,6 +426,60 @@ export const PixelBunny = ({ stage = 1, color = "pink", isSad = false, isDirty =
   stage === 3 ? <AnimatedAdultBunny color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} /> : stage === 2 ? <AnimatedTeenBunny color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} /> : <AnimatedBabyBunny color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
 );
 
+// Owl (placeholder) - simple components referencing CSS classes you can animate later
+const AnimatedAdultOwl = ({ color, isSad, isDirty, isExhausted }) => (
+  <div style={{ position: "relative", width: 170, height: 170 }}>
+    <div className="pixelart-owl-adult" aria-label="Adult Owl" style={{ filter: getOwlColorFilter(color) }} />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
+  </div>
+);
+
+const AnimatedTeenOwl = ({ color, isSad, isDirty, isExhausted }) => (
+  <div style={{ position: "relative", width: 170, height: 170 }}>
+    <div className="pixelart-owl-teen" aria-label="Teen Owl" style={{ filter: getOwlColorFilter(color) }} />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
+  </div>
+);
+
+const AnimatedBabyOwl = ({ color, isSad, isDirty, isExhausted }) => (
+  <div style={{ position: "relative", width: 170, height: 170 }}>
+    <div className="pixelart-owl-baby" aria-label="Baby Owl" style={{ filter: getOwlColorFilter(color) }} />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
+  </div>
+);
+
+export const PixelOwl = ({ stage = 1, color = "blue", isSad = false, isDirty = false, isExhausted = false }) => (
+  stage === 3
+    ? <AnimatedAdultOwl color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+    : stage === 2
+      ? <AnimatedTeenOwl color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+      : <AnimatedBabyOwl color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+);
+
 // Available pet species with their pixel art components
 export const PET_SPECIES = [
   { value: "Dog", label: "Dog", Component: PixelDog },
@@ -409,6 +487,7 @@ export const PET_SPECIES = [
   { value: "Bird", label: "Bird", Component: PixelBird },
   { value: "Bunny", label: "Bunny", Component: PixelBunny },
   { value: "Lizard", label: "Lizard", Component: PixelLizard },
+  { value: "Owl", label: "(Draw the) Owl", Component: PixelOwl },
 ];
 
 // Get pixel art component for a species
