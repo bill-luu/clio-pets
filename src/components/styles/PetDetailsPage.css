@@ -189,23 +189,28 @@
   display: flex;
   background: #f8f9fa;
   border-bottom: 2px solid #e0e0e0;
-  padding: 0 0.5rem;
-  gap: 0.25rem;
+  padding: 0;
+  gap: 0;
   flex-shrink: 0;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.pet-tabs-navigation::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .pet-tab-button {
-  flex: 1 0 auto;
-  padding: 0.875rem 1rem;
+  flex: 1 1 0;
+  padding: 0.875rem 0.5rem;
   min-height: 48px; /* Touch target minimum */
-  min-width: 100px;
   background: transparent;
   border: none;
   border-bottom: 3px solid transparent;
   cursor: pointer;
-  font-size: clamp(0.875rem, 3vw, 1rem);
+  font-size: clamp(0.75rem, 2.5vw, 1rem);
   font-weight: 600;
   color: #6c757d;
   transition: all 0.2s ease;
@@ -213,6 +218,8 @@
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
   user-select: none;
   white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .pet-tab-button:hover {
@@ -1293,14 +1300,14 @@
   }
 
   .pet-tabs-navigation {
-    padding: 0 0.25rem;
-    gap: 0.25rem;
+    padding: 0;
+    gap: 0;
   }
 
   .pet-tab-button {
-    padding: 0.875rem 0.75rem;
-    font-size: 0.875rem;
-    min-width: 90px;
+    padding: 0.875rem 0.5rem;
+    font-size: 0.8rem;
+    flex: 1 1 0;
   }
 
   .pet-tab-content {
@@ -1347,20 +1354,14 @@
 
   .pet-tabs-navigation {
     flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .pet-tabs-navigation::-webkit-scrollbar {
-    display: none;
+    padding: 0;
+    gap: 0;
   }
 
   .pet-tab-button {
-    flex: 0 0 auto;
-    min-width: 100px;
-    padding: 0.875rem 0.75rem;
-    font-size: 0.8rem;
+    flex: 1 1 0;
+    padding: 0.875rem 0.35rem;
+    font-size: 0.7rem;
   }
 
   .actions-grid {
