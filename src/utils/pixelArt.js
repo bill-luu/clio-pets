@@ -291,13 +291,34 @@ const AnimatedBabyCat = ({ isSad, isDirty, isExhausted }) => (
   </div>
 );
 
-export const PixelCat = ({ stage = 1, isSad = false, isDirty = false, isExhausted = false }) => (
-  stage === 3
-    ? <AnimatedAdultCat isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
-    : stage === 2
-      ? <AnimatedTeenCat isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
-      : <AnimatedBabyCat isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+// Adult cat with hat (placeholder variant)
+const AnimatedAdultCatWithHat = ({ isSad, isDirty, isExhausted }) => (
+  <div style={{ position: "relative", width: 170, height: 170 }}>
+    <div className="pixelart-cat-with-hat" aria-label="Adult Cat With Hat" />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
+  </div>
 );
+
+export const PixelCat = ({ stage = 1, isSad = false, isDirty = false, isExhausted = false, equippedAccessories = [] }) => {
+  const hasHatEquipped = Array.isArray(equippedAccessories) && equippedAccessories.includes("Hat");
+  if (stage === 3) {
+    return hasHatEquipped
+      ? <AnimatedAdultCatWithHat isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+      : <AnimatedAdultCat isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+  }
+  if (stage === 2) {
+    return <AnimatedTeenCat isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+  }
+  return <AnimatedBabyCat isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+};
 
 const AnimatedAdultLizard = ({ color, isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
@@ -344,17 +365,54 @@ const AnimatedBabyLizard = ({ color, isSad, isDirty, isExhausted }) => (
   </div>
 );
 
-export const PixelLizard = ({ stage = 1, color = "green", isSad = false, isDirty = false, isExhausted = false }) => (
-  stage === 3
-    ? <AnimatedAdultLizard color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
-    : stage === 2
-      ? <AnimatedTeenLizard color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
-      : <AnimatedBabyLizard color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+// Adult lizard with hat (placeholder variant)
+const AnimatedAdultLizardWithHat = ({ color, isSad, isDirty, isExhausted }) => (
+  <div style={{ position: "relative", width: 170, height: 170 }}>
+    <div className="pixelart-lizard-with-hat" aria-label="Adult Lizard With Hat" style={{ filter: getLizardColorFilter(color) }} />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
+  </div>
 );
+
+export const PixelLizard = ({ stage = 1, color = "green", isSad = false, isDirty = false, isExhausted = false, equippedAccessories = [] }) => {
+  const hasHatEquipped = Array.isArray(equippedAccessories) && equippedAccessories.includes("Hat");
+  if (stage === 3) {
+    return hasHatEquipped
+      ? <AnimatedAdultLizardWithHat color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+      : <AnimatedAdultLizard color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+  }
+  if (stage === 2) {
+    return <AnimatedTeenLizard color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+  }
+  return <AnimatedBabyLizard color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+};
 
 const AnimatedAdultBird = ({ color, isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
     <div className="pixelart-bird-adult" aria-label="Adult Bird" style={{ filter: getBirdColorFilter(color) }} />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
+  </div>
+);
+
+// Adult bird with hat (placeholder variant)
+const AnimatedAdultBirdWithHat = ({ color, isSad, isDirty, isExhausted }) => (
+  <div style={{ position: "relative", width: 170, height: 170 }}>
+    <div className="pixelart-bird-with-hat" aria-label="Adult Bird With Hat" style={{ filter: getBirdColorFilter(color) }} />
     {isSad && (
       <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
     )}
@@ -397,9 +455,18 @@ const AnimatedBabyBird = ({ color, isSad, isDirty, isExhausted }) => (
   </div>
 );
 
-export const PixelBird = ({ stage = 1, color = "yellow", isSad = false, isDirty = false, isExhausted = false }) => (
-  stage === 3 ? <AnimatedAdultBird color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} /> : stage === 2 ? <AnimatedTeenBird color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} /> : <AnimatedBabyBird color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
-);
+export const PixelBird = ({ stage = 1, color = "yellow", isSad = false, isDirty = false, isExhausted = false, equippedAccessories = [] }) => {
+  const hasHatEquipped = Array.isArray(equippedAccessories) && equippedAccessories.includes("Hat");
+  if (stage === 3) {
+    return hasHatEquipped
+      ? <AnimatedAdultBirdWithHat color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+      : <AnimatedAdultBird color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+  }
+  if (stage === 2) {
+    return <AnimatedTeenBird color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+  }
+  return <AnimatedBabyBird color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+};
 
 const AnimatedBabyBunny = ({ color, isSad, isDirty, isExhausted }) => (
   <div style={{ position: "relative", width: 170, height: 170 }}>
@@ -447,9 +514,38 @@ const AnimatedAdultBunny = ({ color, isSad, isDirty, isExhausted }) => (
   </div>
 );
 
-export const PixelBunny = ({ stage = 1, color = "pink", isSad = false, isDirty = false, isExhausted = false }) => (
-  stage === 3 ? <AnimatedAdultBunny color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} /> : stage === 2 ? <AnimatedTeenBunny color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} /> : <AnimatedBabyBunny color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+// Adult bunny with hat (placeholder variant)
+const AnimatedAdultBunnyWithHat = ({ color, isSad, isDirty, isExhausted }) => (
+  <div style={{ position: "relative", width: 170, height: 170 }}>
+    <div
+      className="pixelart-bunny-with-hat"
+      aria-label="Adult Bunny With Hat"
+      style={{ filter: getBunnyColorFilter(color) }}
+    />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
+  </div>
 );
+
+export const PixelBunny = ({ stage = 1, color = "pink", isSad = false, isDirty = false, isExhausted = false, equippedAccessories = [] }) => {
+  const hasHatEquipped = Array.isArray(equippedAccessories) && equippedAccessories.includes("Hat");
+  if (stage === 3) {
+    return hasHatEquipped
+      ? <AnimatedAdultBunnyWithHat color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+      : <AnimatedAdultBunny color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+  }
+  if (stage === 2) {
+    return <AnimatedTeenBunny color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+  }
+  return <AnimatedBabyBunny color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+};
 
 // Owl (placeholder) - simple components referencing CSS classes you can animate later
 const AnimatedAdultOwl = ({ color, isSad, isDirty, isExhausted }) => (
@@ -497,13 +593,34 @@ const AnimatedBabyOwl = ({ color, isSad, isDirty, isExhausted }) => (
   </div>
 );
 
-export const PixelOwl = ({ stage = 1, color = "blue", isSad = false, isDirty = false, isExhausted = false }) => (
-  stage === 3
-    ? <AnimatedAdultOwl color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
-    : stage === 2
-      ? <AnimatedTeenOwl color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
-      : <AnimatedBabyOwl color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+// Adult owl with hat (placeholder variant)
+const AnimatedAdultOwlWithHat = ({ color, isSad, isDirty, isExhausted }) => (
+  <div style={{ position: "relative", width: 170, height: 170 }}>
+    <div className="pixelart-owl-with-hat" aria-label="Adult Owl With Hat" style={{ filter: getOwlColorFilter(color) }} />
+    {isSad && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, right: -8, fontSize: 42, pointerEvents: "none" }}>😢</div>
+    )}
+    {isExhausted && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", top: -8, left: -8, fontSize: 40, pointerEvents: "none" }}>💤</div>
+    )}
+    {isDirty && (
+      <div aria-hidden="true" className="attention-emoji" style={{ position: "absolute", bottom: -8, left: -8, fontSize: 38, pointerEvents: "none" }}>💩</div>
+    )}
+  </div>
 );
+
+export const PixelOwl = ({ stage = 1, color = "blue", isSad = false, isDirty = false, isExhausted = false, equippedAccessories = [] }) => {
+  const hasHatEquipped = Array.isArray(equippedAccessories) && equippedAccessories.includes("Hat");
+  if (stage === 3) {
+    return hasHatEquipped
+      ? <AnimatedAdultOwlWithHat color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+      : <AnimatedAdultOwl color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+  }
+  if (stage === 2) {
+    return <AnimatedTeenOwl color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+  }
+  return <AnimatedBabyOwl color={color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />;
+};
 
 // Available pet species with their pixel art components
 export const PET_SPECIES = [

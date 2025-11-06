@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { subscribeToUserPets, deletePet } from "../services/petService";
+import { subscribeToUserPets, subscribeToPetById, deletePet } from "../services/petService";
 import { getPetPixelArt } from "../utils/pixelArt";
 import { getStageLabelWithEmoji, getStageInfo } from "../utils/petStages";
 import { formatAgeDisplay } from "../utils/petAge";
@@ -21,6 +21,7 @@ export default function Home({ user }) {
   const [error, setError] = useState(null);
   const [petToDelete, setPetToDelete] = useState(null);
   const [interactionStats, setInteractionStats] = useState({});
+  const [petAccessories, setPetAccessories] = useState({});
 
   // Filter states
   const [filterSpecies, setFilterSpecies] = useState("all");
@@ -68,6 +69,26 @@ export default function Home({ user }) {
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, [user.uid]);
+
+  // Keep equipped accessories in sync per pet (ensures Home sees latest hat equip state)
+  useEffect(() => {
+    if (!Array.isArray(pets) || pets.length === 0) return;
+    const unsubscribes = pets.map((p) =>
+      subscribeToPetById(p.id, (petDoc, err) => {
+        if (err || !petDoc) return;
+        const accessories = Array.isArray(petDoc.equippedAccessories) ? petDoc.equippedAccessories : [];
+        setPetAccessories((prev) => {
+          if (prev[p.id] === accessories) return prev;
+          return { ...prev, [p.id]: accessories };
+        });
+      })
+    );
+    return () => {
+      unsubscribes.forEach((u) => {
+        try { typeof u === "function" && u(); } catch (_) {}
+      });
+    };
+  }, [pets]);
 
   const handleDeletePet = async () => {
     if (!petToDelete) return;
@@ -319,7 +340,14 @@ export default function Home({ user }) {
                   </div>
                   {PixelArtComponent && (
                     <div className="pet-card-pixel-art">
-                      <PixelArtComponent stage={pet.stage || 1} color={pet.color} isSad={isSad} isDirty={isDirty} isExhausted={isExhausted} />
+                      <PixelArtComponent
+                        stage={pet.stage || 1}
+                        color={pet.color}
+                        isSad={isSad}
+                        isDirty={isDirty}
+                        isExhausted={isExhausted}
+                        equippedAccessories={petAccessories[pet.id] ?? pet.equippedAccessories ?? []}
+                      />
                     </div>
                   )}
                   <div className="pet-card-body">
