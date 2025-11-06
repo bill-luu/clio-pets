@@ -10,6 +10,7 @@ import SharedPetView from "components/SharedPetView";
 import OtherPets from "components/OtherPets";
 import Leaderboard from "components/Leaderboard";
 import TestPage from "components/TestPage";
+import BackgroundMusic from "components/BackgroundMusic";
 
 import {
   NotificationProvider,
@@ -73,34 +74,55 @@ export default function App() {
 
 function AuthenticatedApp({ user, handleLogout }) {
   const { toasts, removeToast } = useNotifications();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
 
   return (
     <div className="app-container">
       <nav className="navbar">
         <div className="navbar-content">
           <div className="navbar-brand">
-            <Link to="/" className="brand-link">
+            <Link to="/" className="brand-link" onClick={closeMenu}>
               🐾 Clio Pets
             </Link>
           </div>
-          <ul className="navbar-menu">
+          
+          <button 
+            className="hamburger-menu" 
+            onClick={toggleMenu}
+            aria-label="Toggle menu"
+            aria-expanded={isMenuOpen}
+          >
+            <span className={`hamburger-line ${isMenuOpen ? 'open' : ''}`}></span>
+            <span className={`hamburger-line ${isMenuOpen ? 'open' : ''}`}></span>
+            <span className={`hamburger-line ${isMenuOpen ? 'open' : ''}`}></span>
+          </button>
+
+          <ul className={`navbar-menu ${isMenuOpen ? 'open' : ''}`}>
             <li>
-              <Link to="/" className="nav-link">
+              <Link to="/" className="nav-link" onClick={closeMenu}>
                 Home
               </Link>
             </li>
             <li>
-              <Link to="/about" className="nav-link">
+              <Link to="/about" className="nav-link" onClick={closeMenu}>
                 About
               </Link>
             </li>
             <li>
-              <Link to="/other-pets" className="nav-link">
+              <Link to="/other-pets" className="nav-link" onClick={closeMenu}>
                 Other Clio-Pets
               </Link>
             </li>
             <li>
-              <Link to="/leaderboard" className="nav-link">
+              <Link to="/leaderboard" className="nav-link" onClick={closeMenu}>
                 Leaderboard
               </Link>
             </li>
@@ -110,12 +132,22 @@ function AuthenticatedApp({ user, handleLogout }) {
                   to="/test"
                   className="nav-link"
                   style={{ color: "#ffc107" }}
+                  onClick={closeMenu}
                 >
                   🧪 Test
                 </Link>
               </li>
             )}
+            <li className="mobile-only">
+              <div className="mobile-user-info">
+                <span className="user-email-mobile">{user.email}</span>
+                <button className="logout-btn-mobile" onClick={() => { handleLogout(); closeMenu(); }}>
+                  Logout
+                </button>
+              </div>
+            </li>
           </ul>
+          
           <div className="navbar-actions">
             <span className="user-email">{user.email}</span>
             <button className="logout-btn" onClick={handleLogout}>
@@ -146,6 +178,9 @@ function AuthenticatedApp({ user, handleLogout }) {
           />
         ))}
       </div>
+
+      {/* Background Music Controls */}
+      <BackgroundMusic />
     </div>
   );
 }
