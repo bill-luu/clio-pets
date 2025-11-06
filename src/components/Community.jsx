@@ -4,6 +4,7 @@ import { getPetPixelArt } from "../utils/pixelArt";
 import { getStageLabelWithEmoji, getStageInfo } from "../utils/petStages";
 import OtherPetDetailsModal from "./OtherPetDetailsModal";
 import Pagination from "./Pagination";
+import CustomSelect from "./CustomSelect";
 import "./styles/Home.css";
 
 export default function Community({ user }) {
@@ -16,6 +17,7 @@ export default function Community({ user }) {
   const [filterSpecies, setFilterSpecies] = useState("all");
   const [filterStage, setFilterStage] = useState("all");
   const [filterOwner, setFilterOwner] = useState("all");
+  const [filterShareable, setFilterShareable] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
 
   // Pagination states
@@ -64,6 +66,16 @@ export default function Community({ user }) {
       return false;
     }
 
+    // Filter by sharable status
+    if (filterShareable !== "all") {
+      if (filterShareable === "sharable" && !pet.sharingEnabled) {
+        return false;
+      }
+      if (filterShareable === "not-sharable" && pet.sharingEnabled) {
+        return false;
+      }
+    }
+
     return true;
   });
 
@@ -78,17 +90,18 @@ export default function Community({ user }) {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [filterSpecies, filterStage, filterOwner]);
+  }, [filterSpecies, filterStage, filterOwner, filterShareable]);
 
   // Reset filters
   const resetFilters = () => {
     setFilterSpecies("all");
     setFilterStage("all");
     setFilterOwner("all");
+    setFilterShareable("all");
   };
 
   // Check if any filters are active
-  const hasActiveFilters = filterSpecies !== "all" || filterStage !== "all" || filterOwner !== "all";
+  const hasActiveFilters = filterSpecies !== "all" || filterStage !== "all" || filterOwner !== "all" || filterShareable !== "all";
 
   if (loading) {
     return (
@@ -133,51 +146,68 @@ export default function Community({ user }) {
             <div className="filter-controls">
               <div className="filter-group">
                 <label htmlFor="filter-species">Species:</label>
-                <select
+                <CustomSelect
                   id="filter-species"
+                  name="filterSpecies"
                   value={filterSpecies}
                   onChange={(e) => setFilterSpecies(e.target.value)}
-                  className="filter-select"
-                >
-                  <option value="all">All Species</option>
-                  <option value="Dog">Dog</option>
-                  <option value="Cat">Cat</option>
-                  <option value="Bird">Bird</option>
-                  <option value="Bunny">Bunny</option>
-                  <option value="Lizard">Lizard</option>
-                </select>
+                  options={[
+                    { value: "all", label: "All Species" },
+                    { value: "Dog", label: "Dog" },
+                    { value: "Cat", label: "Cat" },
+                    { value: "Bird", label: "Bird" },
+                    { value: "Bunny", label: "Bunny" },
+                    { value: "Lizard", label: "Lizard" },
+                  ]}
+                />
               </div>
 
               <div className="filter-group">
                 <label htmlFor="filter-stage">Stage:</label>
-                <select
+                <CustomSelect
                   id="filter-stage"
+                  name="filterStage"
                   value={filterStage}
                   onChange={(e) => setFilterStage(e.target.value)}
-                  className="filter-select"
-                >
-                  <option value="all">All Stages</option>
-                  <option value="1">🍼 Baby</option>
-                  <option value="2">🐾 Teen</option>
-                  <option value="3">👑 Adult</option>
-                </select>
+                  options={[
+                    { value: "all", label: "All Stages" },
+                    { value: "1", label: "🍼 Baby" },
+                    { value: "2", label: "🐾 Teen" },
+                    { value: "3", label: "👑 Adult" },
+                  ]}
+                />
               </div>
 
               <div className="filter-group">
                 <label htmlFor="filter-owner">Owner:</label>
-                <select
+                <CustomSelect
                   id="filter-owner"
+                  name="filterOwner"
                   value={filterOwner}
                   onChange={(e) => setFilterOwner(e.target.value)}
-                  className="filter-select"
-                >
-                  <option value="all">All Owners</option>
-                  {uniqueOwners.map((owner) => (
-                    <option key={owner} value={owner}>
-                      {owner}
-                    </option>
-                  ))}
-                </select>
+                  options={[
+                    { value: "all", label: "All Owners" },
+                    ...uniqueOwners.map((owner) => ({
+                      value: owner,
+                      label: owner,
+                    })),
+                  ]}
+                />
+              </div>
+
+              <div className="filter-group">
+                <label htmlFor="filter-sharable">Sharable:</label>
+                <CustomSelect
+                  id="filter-sharable"
+                  name="filterShareable"
+                  value={filterShareable}
+                  onChange={(e) => setFilterShareable(e.target.value)}
+                  options={[
+                    { value: "all", label: "All Pets" },
+                    { value: "sharable", label: "Sharable Only" },
+                    { value: "not-sharable", label: "Not Sharable" },
+                  ]}
+                />
               </div>
 
               {hasActiveFilters && (
