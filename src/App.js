@@ -173,7 +173,7 @@ function AuthenticatedApp({ user, handleLogout }) {
         <Routes>
           <Route path="/about" element={<About />} />
           <Route path="/community" element={<Community user={user} />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/leaderboard" element={<Leaderboard user={user} />} />
           <Route path="/pet/:petId" element={<PetDetailsPage user={user} />} />
           {process.env.NODE_ENV === "development" && (
             <Route path="/test" element={<TestPage />} />

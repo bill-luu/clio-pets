@@ -7,14 +7,16 @@ import {
 import { getPetPixelArt } from "../utils/pixelArt";
 import { getStageLabelWithEmoji } from "../utils/petStages";
 import { formatAgeDisplay } from "../utils/petAge";
+import OtherPetDetailsModal from "./OtherPetDetailsModal";
 import "./styles/Leaderboard.css";
 
-export default function Leaderboard() {
+export default function Leaderboard({ user }) {
   const [topByXP, setTopByXP] = useState([]);
   const [topByInteractions, setTopByInteractions] = useState([]);
   const [featuredPets, setFeaturedPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedPet, setSelectedPet] = useState(null);
 
   useEffect(() => {
     const fetchLeaderboardData = async () => {
@@ -51,6 +53,8 @@ export default function Leaderboard() {
       <div
         key={pet.id}
         className={`leaderboard-pet-card ${isPodium ? `podium-${rank}` : ""}`}
+        onClick={() => setSelectedPet(pet)}
+        style={{ cursor: 'pointer' }}
       >
         <div className="pet-rank">
           {rank === 1 && "🥇"}
@@ -156,6 +160,14 @@ export default function Leaderboard() {
         "⭐ Featured Pets",
         "Random selection of pets from the community",
         featuredPets
+      )}
+
+      {selectedPet && (
+        <OtherPetDetailsModal
+          pet={selectedPet}
+          user={user}
+          onClose={() => setSelectedPet(null)}
+        />
       )}
     </div>
   );
