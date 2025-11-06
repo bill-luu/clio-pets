@@ -14,7 +14,7 @@ service cloud.firestore {
     
     // Helper function to check if update is only modifying allowed stat fields
     function isStatUpdate() {
-      let allowedFields = ['fullness', 'happiness', 'cleanliness', 'energy', 'xp', 'updatedAt', 'stage', 'ageInYears', 'lastAgeCheck'];
+      let allowedFields = ['fullness', 'happiness', 'cleanliness', 'energy', 'xp', 'coins', 'updatedAt', 'stage', 'ageInYears', 'lastAgeCheck'];
       let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
       // Check that all affected keys are in the allowed list
       return affectedKeys.hasOnly(allowedFields) && 
