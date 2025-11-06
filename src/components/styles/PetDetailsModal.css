@@ -1,11 +1,148 @@
 .pet-details-modal {
-  max-width: 800px;
+  max-width: 1100px;
 }
 
 .pet-details-body {
   padding: 1.5rem;
   max-height: calc(90vh - 150px);
   overflow-y: auto;
+  display: grid;
+  grid-template-columns: 320px 1fr 320px;
+  gap: 1rem;
+}
+
+
+.store-section {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1rem;
+  position: sticky;
+  top: 1rem;
+  height: fit-content;
+}
+
+/* Left Items Sidebar */
+.items-sidebar {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1rem;
+  position: sticky;
+  top: 1rem;
+  height: fit-content;
+}
+
+.items-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.items-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #2c3e50;
+}
+
+.store-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.store-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #2c3e50;
+}
+
+.store-balance {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  padding: 0.25rem 0.6rem;
+  font-weight: 700;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.store-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.store-item {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 64px;
+}
+
+.store-item-info {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0; /* allow text to wrap instead of pushing CTA out */
+  flex: 1 1 auto; /* take remaining width and wrap before CTA */
+}
+
+.store-item-icon {
+  font-size: 1.4rem;
+}
+
+.store-item-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.store-item-name {
+  font-weight: 700;
+  color: #2c3e50;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.store-item-desc {
+  font-size: 0.8rem;
+  color: #6c757d;
+  line-height: 1.1rem;
+  overflow-wrap: anywhere;
+}
+
+.store-item-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0; /* keep price + button from shrinking into overflow */
+  white-space: nowrap; /* avoid wrapping during state changes */
+}
+
+.store-item-price {
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.buy-btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Tighter button style for store to prevent overflow */
+.store-section .btn {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  border-radius: 10px;
+  min-width: 64px; /* keep button width stable */
 }
 
 /* Section Header with Info Icon */
@@ -539,6 +676,60 @@
   font-weight: 700;
 }
 
+/* Items / Inventory */
+.items-section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.item-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.item-icon {
+  font-size: 1.4rem;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.item-name {
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.item-desc {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.items-empty {
+  background: #fff;
+  border: 1px dashed #ced4da;
+  color: #6c757d;
+  padding: 0.9rem;
+  border-radius: 10px;
+  text-align: center;
+  font-style: italic;
+}
+
 .progression-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -695,6 +886,7 @@
 
   .pet-details-body {
     padding: 1rem;
+    grid-template-columns: 1fr;
   }
 
   .actions-grid {
@@ -708,6 +900,12 @@
   .pet-avatar {
     width: 100px;
     height: 100px;
+  }
+}
+
+@media (max-width: 900px) {
+  .pet-details-body {
+    grid-template-columns: 1fr;
   }
 }
 

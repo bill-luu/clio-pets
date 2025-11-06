@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { getPetPixelArt } from "../utils/pixelArt";
-import { subscribeToPetById } from "../services/petService";
+import { subscribeToPetById, purchaseItem } from "../services/petService";
 import {
   performPetAction,
   getAvailableActions,
@@ -26,6 +26,7 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
   const [interactionStats, setInteractionStats] = useState(null);
+  const [storeLoadingItem, setStoreLoadingItem] = useState(null);
 
   // Subscribe to real-time updates for this pet
   useEffect(() => {
@@ -98,6 +99,29 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
       hasNoCooldown: effectiveCooldown === 0,
     });
   }, [streakBonus, socialBonus, cooldownRemaining]);
+
+  // Basic store catalog (UI only for now)
+  const STORE_ITEMS = [
+    { name: "Food", price: 10, icon: "🍖", desc: "Boosts fullness" },
+    { name: "Toy", price: 15, icon: "🧸", desc: "Increases happiness" },
+    { name: "Soap", price: 12, icon: "🧼", desc: "Improves cleanliness" },
+    { name: "Energy Drink", price: 20, icon: "⚡", desc: "Restores energy" },
+  ];
+
+  const handleBuy = async (item) => {
+    try {
+      setStoreLoadingItem(item.name);
+      setError(null);
+      await purchaseItem(currentPet.id, item);
+      setNotifications([`Purchased ${item.name} for ${item.price} coins!`]);
+      setTimeout(() => setNotifications([]), 3000);
+    } catch (err) {
+      console.error("Error purchasing item:", err);
+      setError(err.message || "Failed to purchase item. Please try again.");
+    } finally {
+      setStoreLoadingItem(null);
+    }
+  };
 
   const handleClose = () => {
     // Notify parent to refresh pet list when modal closes
@@ -186,6 +210,49 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
         </div>
 
         <div className="pet-details-body">
+          {/* Items Sidebar (left) */}
+          <aside className="items-sidebar">
+            <div className="items-header">
+              <h3>Items</h3>
+            </div>
+            <div className="store-items">
+              {/* Pet House at top */}
+              <div className="store-item">
+                <div className="store-item-info">
+                  <span className="store-item-icon">🏠</span>
+                  <div className="store-item-text">
+                    <div className="store-item-name">House</div>
+                    <div className="store-item-desc">Your pet's house</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pet's actual items */}
+              {Array.isArray(currentPet.items) && currentPet.items.length > 0 ? (
+                currentPet.items.map((item, idx) => {
+                  const itemName = typeof item === 'string' ? item : (item?.name || 'Unknown');
+                  const itemIcon = typeof item === 'object' && item?.icon ? item.icon : '🎁';
+                  const itemDesc = typeof item === 'object' && item?.desc ? item.desc : '';
+                  const quantity = typeof item === 'object' && item?.quantity ? item.quantity : 1;
+                  return (
+                    <div key={`${itemName}-${idx}`} className="store-item">
+                      <div className="store-item-info">
+                        <span className="store-item-icon">{itemIcon}</span>
+                        <div className="store-item-text">
+                          <div className="store-item-name">{itemName}{quantity > 1 ? ` x ${quantity}` : ''}</div>
+                          {itemDesc && <div className="store-item-desc">{itemDesc}</div>}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="items-empty">Your pet has no items...</div>
+              )}
+            </div>
+          </aside>
+
+          <div className="pet-main-column">
           {/* Pet Avatar and Status */}
           <div className="pet-avatar-section">
             {PixelArtComponent && (
@@ -197,6 +264,8 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
               {petStatus.message}
             </div>
           </div>
+
+
 
           {/* Progression Section */}
           <div className="progression-section">
@@ -269,6 +338,8 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
               )}
             </div>
           </div>
+
+
 
           {/* Notifications */}
           {notifications.length > 0 && (
@@ -505,6 +576,9 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
           <div className="pet-info-section">
             <h3>Details</h3>
             <div className="pet-info-grid">
+              <div className="info-item">
+                <strong>Coins:</strong> {currentPet.coins ?? 0}
+              </div>
               {currentPet.breed && (
                 <div className="info-item">
                   <strong>Breed:</strong> {currentPet.breed}
@@ -537,6 +611,39 @@ export default function PetDetailsModal({ pet, onClose, onPetUpdated, user }) {
               </p>
             )}
           </div>
+          </div>
+
+          {/* Store Sidebar */}
+          <aside className="store-section">
+            <div className="store-header">
+              <h3>Pet Store</h3>
+              <div className="store-balance">💰 {currentPet.coins ?? 0} coins</div>
+            </div>
+            <div className="store-items">
+              {STORE_ITEMS.map((item) => (
+                <div key={item.name} className="store-item">
+                  <div className="store-item-info">
+                    <span className="store-item-icon">{item.icon}</span>
+                    <div className="store-item-text">
+                      <div className="store-item-name">{item.name}</div>
+                      <div className="store-item-desc">{item.desc}</div>
+                    </div>
+                  </div>
+                  <div className="store-item-cta">
+                    <span className="store-item-price">{item.price}c</span>
+                    <button
+                      className="btn btn-secondary buy-btn"
+                      disabled={storeLoadingItem === item.name || (currentPet.coins ?? 0) < item.price}
+                      onClick={() => handleBuy(item)}
+                      title={(currentPet.coins ?? 0) < item.price ? "Not enough coins" : "Buy item"}
+                    >
+                      Buy
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </aside>
         </div>
 
         <div className="modal-footer">

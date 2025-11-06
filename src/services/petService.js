@@ -11,6 +11,7 @@ import {
   serverTimestamp,
   getDoc,
   onSnapshot,
+  runTransaction,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { generateShareableId } from "./sharedPetService";
@@ -113,6 +114,9 @@ export const addPet = async (userId, petData, ownerEmail = null) => {
       cleanliness: 50,
       energy: 50,
       xp: 0,
+      // Initialize economy
+      coins: 100,
+      items: [],
       // Initialize age tracking (ageInYears stores months)
       ageInYears: 0,
       lastAgeCheck: serverTimestamp(),
@@ -155,6 +159,73 @@ export const updatePet = async (petId, petData) => {
     console.error("Error updating pet:", error);
     throw error;
   }
+};
+
+/**
+ * Purchase an item for a pet (atomic transaction)
+ * @param {string} petId
+ * @param {{name:string, icon?:string, desc?:string, price:number}} item
+ */
+export const purchaseItem = async (petId, item) => {
+  if (!item || typeof item.price !== "number") {
+    throw new Error("Invalid item");
+  }
+
+  const petRef = doc(db, "pets", petId);
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(petRef);
+    if (!snap.exists()) {
+      throw new Error("Pet not found");
+    }
+    const data = snap.data();
+    const currentCoins = data.coins || 0;
+    if (currentCoins < item.price) {
+      throw new Error("Not enough coins");
+    }
+
+    const newCoins = currentCoins - item.price;
+    const currentItems = Array.isArray(data.items) ? data.items : [];
+
+    // Merge by name; increment quantity if already owned
+    const index = currentItems.findIndex((it) => {
+      if (typeof it === "string") return it === item.name;
+      return (it && it.name) === item.name;
+    });
+
+    let newItems;
+    if (index >= 0) {
+      const existing = currentItems[index];
+      const existingObj =
+        typeof existing === "string"
+          ? { name: existing, icon: item.icon || "🎁", desc: item.desc || "", price: item.price }
+          : existing;
+      const updated = {
+        ...existingObj,
+        name: existingObj.name || item.name,
+        icon: existingObj.icon || item.icon || "🎁",
+        desc: existingObj.desc || item.desc || "",
+        price: existingObj.price ?? item.price,
+        quantity: (existingObj.quantity || 1) + 1,
+      };
+      newItems = [...currentItems];
+      newItems[index] = updated;
+    } else {
+      const purchasedItem = {
+        name: item.name,
+        icon: item.icon || "🎁",
+        desc: item.desc || "",
+        price: item.price,
+        quantity: 1,
+      };
+      newItems = [...currentItems, purchasedItem];
+    }
+
+    transaction.update(petRef, {
+      coins: newCoins,
+      items: newItems,
+      updatedAt: serverTimestamp(),
+    });
+  });
 };
 
 /**
