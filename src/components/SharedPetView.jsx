@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { getPetPixelArt } from "../utils/pixelArt";
 import { getPetStatus } from "../services/petActionService";
 import {
@@ -263,6 +263,15 @@ export default function SharedPetView() {
             <p className="cooldown-info">
               You can interact with {pet.name} once every 10 minutes
             </p>
+          </div>
+
+          {/* Call to Action Section */}
+          <div className="cta-section">
+            <h3>Want Your Own Pet?</h3>
+            <p>Create your own virtual pet and start your journey!</p>
+            <Link to="/" className="cta-button">
+              Get Started
+            </Link>
           </div>
         </div>
       </div>
