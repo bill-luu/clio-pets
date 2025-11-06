@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { subscribeToUserPets, deletePet } from "../services/petService";
 import { getPetPixelArt } from "../utils/pixelArt";
 import { getStageLabelWithEmoji, getStageInfo } from "../utils/petStages";
@@ -13,6 +13,17 @@ import ConfirmModal from "./ConfirmModal";
 import Pagination from "./Pagination";
 import "./styles/Home.css";
 
+// Utilities to manipulate query string
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
+// Update the URL query parameters based on state changes
+const updateQueryParams = (params) => {
+  const query = new URLSearchParams(params);
+  window.history.replaceState(null, '', `?${query.toString()}`);
+};
+
 export default function Home({ user }) {
   const navigate = useNavigate();
   const [pets, setPets] = useState([]);
@@ -23,14 +34,45 @@ export default function Home({ user }) {
   const [interactionStats, setInteractionStats] = useState({});
 
   // Filter states
-  const [filterSpecies, setFilterSpecies] = useState("all");
-  const [filterStage, setFilterStage] = useState("all");
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [showFilters, setShowFilters] = useState(false);
+  const query = useQuery();
+  const [filterSpecies, setFilterSpecies] = useState(query.get('species') || "all");
+  const [filterStage, setFilterStage] = useState(query.get('stage') || "all");
+  const [filterStatus, setFilterStatus] = useState(query.get('status') || "all");
+  const [showFilters, setShowFilters] = useState(query.get('showFilters') === 'true');
 
   // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(parseInt(query.get('page') || 1));
   const itemsPerPage = 9; // Show 9 pets per page (3x3 grid)
+
+  const isFirstLoad = useRef(true); // Flag to track first load
+
+  // On initial render, load states from sessionStorage
+  useEffect(() => {
+    const species = sessionStorage.getItem("filterSpecies") || "all";
+    const stage = sessionStorage.getItem("filterStage") || "all";
+    const status = sessionStorage.getItem("filterStatus") || "all";
+    const page = parseInt(sessionStorage.getItem("currentPage")) || 1;
+    const filtersVisible = sessionStorage.getItem("showFilters") === 'true';
+    
+    setFilterSpecies(species);
+    setFilterStage(stage);
+    setFilterStatus(status);
+    setCurrentPage(page);
+    setShowFilters(filtersVisible);
+  }, []);
+
+  // Save states to sessionStorage on change
+  useEffect(() => {
+    if (isFirstLoad.current) {
+      isFirstLoad.current = false; // Reset flag after first load
+      return; // Skip setting sessionStorage
+    }
+    sessionStorage.setItem("filterSpecies", filterSpecies);
+    sessionStorage.setItem("filterStage", filterStage);
+    sessionStorage.setItem("filterStatus", filterStatus);
+    sessionStorage.setItem("currentPage", currentPage.toString());
+    sessionStorage.setItem("showFilters", showFilters.toString());
+  }, [filterSpecies, filterStage, filterStatus, currentPage, showFilters]);
 
   useEffect(() => {
     setLoading(true);
@@ -69,6 +111,16 @@ export default function Home({ user }) {
     return () => unsubscribe();
   }, [user.uid]);
 
+  useEffect(() => {
+    updateQueryParams({
+      species: filterSpecies,
+      stage: filterStage,
+      status: filterStatus,
+      page: currentPage,
+      showFilters: showFilters.toString()
+    });
+  }, [filterSpecies, filterStage, filterStatus, currentPage, showFilters]);
+
   const handleDeletePet = async () => {
     if (!petToDelete) return;
 
@@ -88,8 +140,17 @@ export default function Home({ user }) {
     // No need to manually reload - real-time listener will update automatically
   };
 
-  const handlePetClick = (pet) => {
-    navigate(`/pet/${pet.id}`);
+  // Save state to sessionStorage just before navigating away
+  const handlePetClick = (petId) => {
+    // Save current state
+    sessionStorage.setItem("filterSpecies", filterSpecies);
+    sessionStorage.setItem("filterStage", filterStage);
+    sessionStorage.setItem("filterStatus", filterStatus);
+    sessionStorage.setItem("currentPage", currentPage.toString());
+    sessionStorage.setItem("showFilters", showFilters.toString());
+
+    // Navigate
+    navigate(`/pet/${petId}`);
   };
 
   // Calculate average stat for a pet
@@ -292,7 +353,7 @@ export default function Home({ user }) {
                 const socialTierInfo = getSocialTierInfo(socialBonus.tier);
 
                 return (
-                <div key={pet.id} className="pet-card" onClick={() => handlePetClick(pet)}>
+                <div key={pet.id} className="pet-card" onClick={() => handlePetClick(pet.id)}>
                   <div className="pet-card-header">
                     <h3>{pet.name}</h3>
                     <button
