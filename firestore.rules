@@ -24,6 +24,11 @@ service cloud.firestore {
              (!('shareableId' in resource.data) || request.resource.data.shareableId == resource.data.shareableId);
     }
     
+    // Helper function to check if pet has sharing enabled
+    function isSharingEnabled() {
+      return resource.data.sharingEnabled == true;
+    }
+    
     // Pets collection rules
     match /pets/{petId} {
       // Allow authenticated users to read any pet (needed for play dates)
@@ -39,9 +44,11 @@ service cloud.firestore {
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       
       // Allow users to update their own pets (full access)
-      // Allow authenticated users to update stats only on any pet (for play dates and shared interactions)
+      // Allow authenticated users to update stats only on any pet (for play dates)
+      // Allow anyone to update stats on shared pets (for shared pet interactions)
       allow update: if (isAuthenticated() && resource.data.userId == request.auth.uid) ||
-                       (isAuthenticated() && isStatUpdate());
+                       (isAuthenticated() && isStatUpdate()) ||
+                       (isSharingEnabled() && isStatUpdate());
       
       // Allow users to delete their own pets
       allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
@@ -52,8 +59,9 @@ service cloud.firestore {
       // Allow anyone to read interactions
       allow read: if true;
       
-      // Allow authenticated users to create interactions (for shared pet feature and play dates)
-      allow create: if isAuthenticated();
+      // Allow anyone to create interactions (for shared pet feature and play dates)
+      // This is safe because interactions are just records of actions, not sensitive data
+      allow create: if true;
       
       // Don't allow updates or deletes
       allow update, delete: if false;
@@ -64,7 +72,8 @@ service cloud.firestore {
       // Allow users to read their own notifications
       allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
       
-      // Allow anyone to create notifications (system-generated)
+      // Allow anyone to create notifications (system-generated and from shared pet interactions)
+      // This is safe because notifications are just informational and tied to specific users
       allow create: if true;
       
       // Allow users to update their own notifications (e.g., mark as read)
