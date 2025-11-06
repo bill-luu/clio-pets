@@ -12,6 +12,7 @@ import Leaderboard from "components/Leaderboard";
 import TestPage from "components/TestPage";
 import BackgroundMusic from "components/BackgroundMusic";
 import PetDetailsPage from "components/PetDetailsPage";
+import TutorialPage from "components/TutorialPage";
 
 import {
   NotificationProvider,
@@ -171,7 +172,7 @@ function AuthenticatedApp({ user, handleLogout }) {
       </nav>
       <main className="main-content">
         <Routes>
-          <Route path="/about" element={<About />} />
+          <Route path="/about" element={<TutorialPage />} />
           <Route path="/community" element={<Community user={user} />} />
           <Route path="/leaderboard" element={<Leaderboard user={user} />} />
           <Route path="/pet/:petId" element={<PetDetailsPage user={user} />} />
@@ -197,8 +198,4 @@ function AuthenticatedApp({ user, handleLogout }) {
       <BackgroundMusic />
     </div>
   );
-}
-
-function About() {
-  return <h2>About</h2>;
 }
