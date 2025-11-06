@@ -10,6 +10,7 @@ import SharedPetView from "components/SharedPetView";
 import OtherPets from "components/OtherPets";
 import Leaderboard from "components/Leaderboard";
 import TestPage from "components/TestPage";
+import BackgroundMusic from "components/BackgroundMusic";
 
 import {
   NotificationProvider,
@@ -80,7 +81,7 @@ function AuthenticatedApp({ user, handleLogout }) {
         <div className="navbar-content">
           <div className="navbar-brand">
             <Link to="/" className="brand-link">
-              🐾 Clio Pets
+              🐾 Clio Pets ♫
             </Link>
           </div>
           <ul className="navbar-menu">
@@ -146,6 +147,9 @@ function AuthenticatedApp({ user, handleLogout }) {
           />
         ))}
       </div>
+
+      {/* Background Music Controls */}
+      <BackgroundMusic />
     </div>
   );
 }

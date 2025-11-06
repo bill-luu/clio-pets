@@ -1,0 +1,111 @@
+/* Retro Heart-style Background Music Control */
+.background-music-control {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 8px 12px;
+  border: 3px solid #fff;
+  box-shadow: 
+    3px 3px 0 0 rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+  image-rendering: pixelated;
+}
+
+.background-music-control:hover {
+  opacity: 1;
+}
+
+.music-btn {
+  min-width: auto;
+  padding: 4px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.music-btn.playing .music-icon {
+  animation: music-bounce 0.6s ease-in-out infinite;
+}
+
+.music-icon {
+  font-size: 24px;
+  line-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.music-btn:not(.playing) {
+  opacity: 0.7;
+}
+
+@keyframes music-bounce {
+  0%, 100% { 
+    transform: translateY(0) rotate(-5deg);
+  }
+  50% { 
+    transform: translateY(-4px) rotate(5deg);
+  }
+}
+
+.volume-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 80px;
+}
+
+.volume-control .nes-progress {
+  pointer-events: none;
+  margin: 0;
+  height: 16px;
+}
+
+.volume-slider-hidden {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+  margin: 0;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .background-music-control {
+    bottom: 10px;
+    right: 10px;
+    padding: 6px 10px;
+    gap: 6px;
+  }
+  
+  .music-icon {
+    font-size: 20px;
+  }
+  
+  .music-btn {
+    width: 28px;
+    height: 28px;
+    padding: 3px;
+  }
+  
+  .volume-control {
+    width: 60px;
+  }
+  
+  .volume-control .nes-progress {
+    height: 14px;
+  }
+}
+
