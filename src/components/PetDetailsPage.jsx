@@ -661,23 +661,42 @@ export default function PetDetailsPage({ user }) {
                 </div>
                 <div className="actions-grid">
                   {availableActions.map((action) => (
-                    <button
-                      key={action.type}
-                      className={`action-btn ${action.urgent ? "action-urgent" : ""} ${cooldownRemaining > 0 ? "action-cooldown" : ""}`}
-                      onClick={() => handleAction(action.type)}
-                      disabled={loading || action.disabled || cooldownRemaining > 0}
-                      title={
-                        cooldownRemaining > 0
-                          ? `Please wait ${cooldownRemaining} seconds`
-                          : action.disabled
-                          ? "Cannot perform this action right now"
-                          : action.description
-                      }
-                    >
-                      <span className="action-icon">{action.icon}</span>
-                      <span className="action-name">{action.name}</span>
-                      {action.urgent && cooldownRemaining === 0 && <span className="urgent-indicator">!</span>}
-                    </button>
+                    <div style={{ position: 'relative', display: 'inline-block' }}>
+                      <button
+                        key={action.type}
+                        className={`action-btn ${action.urgent ? 'action-urgent' : ''} ${cooldownRemaining > 0 ? 'action-cooldown' : ''}`}
+                        onClick={() => handleAction(action.type)}
+                        disabled={loading || action.disabled || cooldownRemaining > 0}
+                        title={
+                          cooldownRemaining > 0
+                            ? `Please wait ${cooldownRemaining} seconds`
+                            : action.disabled
+                            ? (action.type === 'work' && currentPet.stage < 2 ? 'Unlock at Teen Level' : 'Cannot perform this action right now')
+                            : action.description
+                        }
+                        style={{ width: '100%', height: 'auto', position: 'relative', zIndex: 1 }}
+                      >
+                        <span className="action-icon">{action.icon}</span>
+                        <span className="action-name">{action.name}</span>
+                        {action.urgent && cooldownRemaining === 0 && <span className="urgent-indicator">!</span>}
+                      </button>
+                      {action.type === 'work' && currentPet.stage < 2 && (
+                        <span style={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          color: 'red',
+                          fontWeight: 'bold',
+                          fontSize: '2em', // Further increased size for the emoji
+                          zIndex: 2,
+                          pointerEvents: 'none',
+                          textAlign: 'center'
+                        }}>
+                          🔒
+                        </span>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
