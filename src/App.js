@@ -12,6 +12,7 @@ import Leaderboard from "components/Leaderboard";
 import TestPage from "components/TestPage";
 import BackgroundMusic from "components/BackgroundMusic";
 import PetDetailsPage from "components/PetDetailsPage";
+import TutorialPage from "components/TutorialPage";
 import PrintablePetQR from "components/PrintablePetQR";
 
 import {
@@ -120,8 +121,8 @@ function AuthenticatedApp({ user, handleLogout }) {
               </Link>
             </li>
             <li>
-              <Link to="/about" className="nav-link" onClick={closeMenu}>
-                About
+              <Link to="/tutorial" className="nav-link" onClick={closeMenu}>
+                Tutorial
               </Link>
             </li>
             <li>
@@ -172,7 +173,7 @@ function AuthenticatedApp({ user, handleLogout }) {
       </nav>
       <main className="main-content">
         <Routes>
-          <Route path="/about" element={<About />} />
+          <Route path="/tutorial" element={<TutorialPage />} />
           <Route path="/community" element={<Community user={user} />} />
           <Route path="/leaderboard" element={<Leaderboard user={user} />} />
           <Route path="/pet/:petId" element={<PetDetailsPage user={user} />} />
@@ -199,8 +200,4 @@ function AuthenticatedApp({ user, handleLogout }) {
       <BackgroundMusic />
     </div>
   );
-}
-
-function About() {
-  return <h2>About</h2>;
 }
