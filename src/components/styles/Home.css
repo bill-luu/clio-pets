@@ -2,7 +2,9 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  overflow-x: hidden; /* Prevent horizontal scrolling */
+  overflow-x: visible; /* Allow proper display of content */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .home-header {
@@ -188,6 +190,8 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Pet Card */
@@ -199,6 +203,9 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s, box-shadow 0.2s;
   cursor: pointer;
+  box-sizing: border-box;
+  min-width: 0; /* Prevent grid blowout */
+  overflow: hidden; /* Contain content within card */
 }
 
 .pet-card:hover {
